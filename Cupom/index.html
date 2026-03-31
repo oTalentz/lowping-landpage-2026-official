@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LOWPING | Active Promotion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#33343c",
+                        "on-tertiary-fixed": "#002202",
+                        "tertiary-fixed": "#88fc7e",
+                        "on-secondary-fixed": "#400012",
+                        "on-primary-fixed": "#001a42",
+                        "primary-container": "#4d8eff",
+                        "outline": "#8c909f",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e2e2ec",
+                        "outline-variant": "#424754",
+                        "surface-container": "#1d1f27",
+                        "on-error": "#690005",
+                        "inverse-primary": "#005ac2",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#adc6ff",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-container-highest": "#33343c",
+                        "surface-bright": "#373941",
+                        "surface": "#11131a",
+                        "inverse-on-surface": "#2e3038",
+                        "on-secondary-container": "#ffa7b2",
+                        "primary": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#00530c",
+                        "on-surface": "#e2e2ec",
+                        "secondary-fixed-dim": "#ffb2bb",
+                        "on-surface-variant": "#c2c6d6",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#6cdf65",
+                        "on-primary-container": "#00285d",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-high": "#282a31",
+                        "surface-container-low": "#191b23",
+                        "on-secondary-fixed-variant": "#910033",
+                        "secondary-container": "#9e0038",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary": "#ffb2bb",
+                        "on-background": "#e2e2ec",
+                        "surface-dim": "#11131a",
+                        "tertiary": "#6cdf65",
+                        "on-tertiary-container": "#003204",
+                        "tertiary-container": "#31a634",
+                        "on-secondary": "#670022",
+                        "on-tertiary": "#003a06",
+                        "background": "#11131a",
+                        "surface-container-lowest": "#0c0e15",
+                        "on-primary": "#002e6a",
+                        "secondary-fixed": "#ffd9dd"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .kinetic-grid {
+            background-image: linear-gradient(rgba(173, 198, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(173, 198, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary/30">
+
+    <!-- Top Promo Bar (JSON Mapping) -->
+    <header class="fixed top-0 w-full z-[60] h-10 flex justify-center items-center gap-4 px-4 bg-[#11131a] bg-gradient-to-r from-[#11131a] via-[#1c1e26] to-[#11131a]">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#ffb2bb] text-lg" style="font-variation-settings: 'FILL' 1;">redeem</span>
+            <span class="font-['Space_Grotesk'] uppercase tracking-widest text-[10px] sm:text-xs font-bold text-[#ffb2bb]">
+                30% Off Recurring - Limited Time Left!
+            </span>
+        </div>
+        <div class="hidden sm:flex items-center gap-3 ml-4">
+            <div class="flex gap-1 text-[#adc6ff] font-label text-xs">
+                <span class="bg-surface-container-high px-1.5 py-0.5 rounded">02</span>
+                <span class="animate-pulse">:</span>
+                <span class="bg-surface-container-high px-1.5 py-0.5 rounded">14</span>
+                <span class="animate-pulse">:</span>
+                <span class="bg-surface-container-high px-1.5 py-0.5 rounded">55</span>
+            </div>
+            <button class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter hover:brightness-125 transition-all active:scale-95">
+                Buy Now
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Navigation (JSON Mapping) -->
+    <nav class="fixed top-10 w-full z-50 bg-[#11131a] border-b border-[#adc6ff]/15 shadow-[0_24px_24px_rgba(17,19,26,0.08)]">
+        <div class="flex justify-between items-center w-full px-8 py-4 max-w-full">
+            <a href="/Jogos/" class="text-2xl font-black text-[#adc6ff] italic font-['Plus_Jakarta_Sans'] tracking-tight hover:opacity-80 transition-opacity">
+                LOWPING
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 font-['Plus_Jakarta_Sans'] text-sm font-bold">
+                <a href="#" class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors">Servers</a>
+                <a href="#" class="text-[#ffb2bb] border-b-2 border-[#ffb2bb] pb-1">Pricing</a>
+                <a href="#" class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors">Locations</a>
+                <a href="#" class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors">Support</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button class="text-[#c2c6d6] text-sm font-bold hover:text-white transition-colors">Login</button>
+                <button class="bg-primary-container/20 border border-primary-container text-primary px-6 py-2 rounded-xl text-sm font-bold hover:bg-primary-container hover:text-on-primary-container transition-all scale-95 active:scale-90">
+                    Claim Offer
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Content -->
+    <main class="pt-32 pb-20 relative overflow-hidden">
+        <!-- Kinetic Grid Background -->
+        <div class="absolute inset-0 kinetic-grid pointer-events-none opacity-40"></div>
+        <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[150px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+            <!-- Breadcrumbs -->
+            <div class="flex items-center gap-2 text-xs font-label text-outline mb-8 tracking-widest uppercase">
+                <span>Home</span>
+                <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                <span class="text-secondary">Flash Sale</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-12 items-center">
+                <!-- Left Content: Editorial Typography -->
+                <div class="w-full lg:w-3/5">
+                    <h1 class="text-7xl lg:text-9xl font-headline font-extrabold tracking-tighter text-on-surface leading-[0.85] mb-6">
+                        ESCOLHA <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary-container">SEU SERVIDOR</span>
+                    </h1>
+                    <p class="text-xl text-on-surface-variant max-w-xl font-body leading-relaxed mb-10">
+                        Experience the raw power of the LOWPING engine. Ultra-low latency, NVMe storage, and dedicated threads for the ultimate gaming performance.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center gap-3 bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+                            <span class="material-symbols-outlined text-tertiary text-3xl">bolt</span>
+                            <div>
+                                <div class="text-[10px] font-label text-outline uppercase tracking-wider">Performance</div>
+                                <div class="text-sm font-bold">99.9% Uptime</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+                            <span class="material-symbols-outlined text-primary text-3xl">shield</span>
+                            <div>
+                                <div class="text-[10px] font-label text-outline uppercase tracking-wider">Security</div>
+                                <div class="text-sm font-bold">DDoS Protection</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content: The Promotional Card (Glassmorphism) -->
+                <div class="w-full lg:w-2/5 flex justify-center">
+                    <div class="relative group">
+                        <!-- Glow effect -->
+                        <div class="absolute -inset-1 bg-gradient-to-r from-secondary to-primary rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+                        
+                        <div class="relative bg-surface-container-lowest/80 backdrop-blur-2xl border border-outline-variant/20 p-8 rounded-[2rem] w-full max-w-[400px] shadow-2xl">
+                            <div class="flex justify-between items-start mb-8">
+                                <div class="bg-secondary/10 text-secondary p-3 rounded-2xl">
+                                    <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">savings</span>
+                                </div>
+                                <div class="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-tertiary/20">
+                                    Recommended
+                                </div>
+                            </div>
+
+                            <div class="mb-8">
+                                <div class="text-secondary font-label font-bold text-5xl tracking-tighter mb-2">30% OFF</div>
+                                <div class="text-on-surface-variant font-label text-sm uppercase tracking-widest">Recurring Discount</div>
+                            </div>
+
+                            <div class="bg-surface-container-high rounded-2xl p-6 mb-8 flex flex-col items-center gap-4">
+                                <span class="text-[10px] font-label text-outline uppercase tracking-[0.2em]">Offer Ends In</span>
+                                <div class="flex gap-4">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-headline font-bold text-on-surface">02</div>
+                                        <div class="text-[8px] font-label text-outline uppercase">Hours</div>
+                                    </div>
+                                    <div class="text-3xl font-headline font-bold text-primary-container">:</div>
+                                    <div class="text-center">
+                                        <div class="text-3xl font-headline font-bold text-on-surface">14</div>
+                                        <div class="text-[8px] font-label text-outline uppercase">Minutes</div>
+                                    </div>
+                                    <div class="text-3xl font-headline font-bold text-primary-container">:</div>
+                                    <div class="text-center">
+                                        <div class="text-3xl font-headline font-bold text-on-surface">55</div>
+                                        <div class="text-[8px] font-label text-outline uppercase">Seconds</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="w-full bg-gradient-to-br from-secondary to-secondary-container text-on-secondary py-5 rounded-2xl font-headline font-extrabold text-lg tracking-tight hover:brightness-110 hover:shadow-[0_0_20px_rgba(255,178,187,0.3)] transition-all active:scale-95">
+                                ACTIVATE PROMO
+                            </button>
+                            
+                            <p class="text-center text-[10px] text-outline mt-6 font-label uppercase tracking-widest">
+                                Valid for all game server plans
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asymmetric Image Integration (Reference {{DATA:IMAGE:IMAGE_5}}) -->
+        <div class="mt-24 w-full px-8 max-w-7xl mx-auto overflow-hidden">
+            <div class="relative h-[400px] rounded-[3rem] overflow-hidden group">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" 
+                     alt="Gaming setup" 
+                     class="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700 scale-105 group-hover:scale-100"
+                     data-alt="cinematic shot of high-end gaming station with neon pink and blue ambient lighting in a dark modern room">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent"></div>
+                
+                <div class="absolute bottom-12 left-12 max-w-lg">
+                    <h3 class="text-4xl font-headline font-bold text-white mb-4">Engineered for the Elite.</h3>
+                    <div class="flex gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-tertiary">speed</span>
+                            <span class="text-xs font-label uppercase tracking-wider text-on-surface">Fast Provisioning</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">hub</span>
+                            <span class="text-xs font-label uppercase tracking-wider text-on-surface">Global Network</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Secondary Offer Section -->
+    <section class="py-24 bg-surface-container-lowest">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="mb-16">
+                <h2 class="text-4xl font-headline font-extrabold tracking-tight mb-4">Choose Your Pulse</h2>
+                <div class="w-20 h-1.5 bg-secondary rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-surface p-8 rounded-[2rem] border border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+                    <div class="text-primary font-label text-xs font-bold tracking-widest uppercase mb-6">Level I</div>
+                    <div class="font-headline font-bold text-2xl mb-2">Wood Rank</div>
+                    <div class="text-on-surface-variant text-sm mb-8">Perfect for a small group of friends.</div>
+                    <div class="flex items-baseline gap-1 mb-8">
+                        <span class="text-4xl font-headline font-extrabold">$8.99</span>
+                        <span class="text-outline text-xs uppercase font-label">/mo</span>
+                    </div>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            2GB Dedicated RAM
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Unlimited Slots
+                        </li>
+                    </ul>
+                    <button class="w-full bg-surface-container-highest border border-outline-variant/20 text-on-surface py-3 rounded-xl font-bold hover:bg-primary-container hover:text-on-primary-container transition-all">Configure</button>
+                </div>
+
+                <!-- Card 2 (Active) -->
+                <div class="bg-surface-container-low p-8 rounded-[2rem] border-2 border-secondary/30 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-secondary text-on-secondary px-6 py-2 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest">Hot</div>
+                    <div class="text-secondary font-label text-xs font-bold tracking-widest uppercase mb-6">Level II</div>
+                    <div class="font-headline font-bold text-2xl mb-2">Iron Rank</div>
+                    <div class="text-on-surface-variant text-sm mb-8">The most popular choice for active communities.</div>
+                    <div class="flex items-baseline gap-1 mb-8">
+                        <span class="text-4xl font-headline font-extrabold">$18.99</span>
+                        <span class="text-outline text-xs uppercase font-label">/mo</span>
+                    </div>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            8GB Dedicated RAM
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Premium CPU Nodes
+                        </li>
+                    </ul>
+                    <button class="w-full bg-secondary text-on-secondary py-3 rounded-xl font-bold shadow-lg shadow-secondary/20 hover:brightness-110 transition-all">Configure</button>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-surface p-8 rounded-[2rem] border border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+                    <div class="text-primary font-label text-xs font-bold tracking-widest uppercase mb-6">Level III</div>
+                    <div class="font-headline font-bold text-2xl mb-2">Netherite Rank</div>
+                    <div class="text-on-surface-variant text-sm mb-8">Maximum performance for large networks.</div>
+                    <div class="flex items-baseline gap-1 mb-8">
+                        <span class="text-4xl font-headline font-extrabold">$34.99</span>
+                        <span class="text-outline text-xs uppercase font-label">/mo</span>
+                    </div>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            16GB Dedicated RAM
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Priority Support
+                        </li>
+                    </ul>
+                    <button class="w-full bg-surface-container-highest border border-outline-variant/20 text-on-surface py-3 rounded-xl font-bold hover:bg-primary-container hover:text-on-primary-container transition-all">Configure</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (JSON Mapping) -->
+    <footer class="bg-[#11131a] border-t border-[#adc6ff]/10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 py-8 w-full max-w-7xl mx-auto">
+            <div class="mb-4 md:mb-0">
+                <span class="font-headline font-black text-[#adc6ff] text-xl">LOWPING</span>
+            </div>
+            
+            <div class="flex gap-8 mb-4 md:mb-0">
+                <a href="#" class="font-['Plus_Jakarta_Sans'] text-sm text-[#c2c6d6] hover:text-white transition-colors">Terms of Service</a>
+                <a href="#" class="font-['Plus_Jakarta_Sans'] text-sm text-[#c2c6d6] hover:text-white transition-colors">Privacy Policy</a>
+                <a href="https://status.lowping.com.br/" target="_blank" rel="noopener noreferrer" class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors">SLA</a>
+                <a href="#" class="font-['Plus_Jakarta_Sans'] text-sm text-[#c2c6d6] hover:text-white transition-colors">Contact</a>
+                <a class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Admin/code.html">Admin</a>
+                
+            </div>
+
+            <div class="font-['Plus_Jakarta_Sans'] text-sm text-[#adc6ff]/60">
+                © 2026 LOWPING. Powered by high-performance pulses.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html></style></head><body></body></html>
+
+

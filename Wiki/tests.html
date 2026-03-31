@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testes da Wiki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #11131a; color: #e3e5ee; font-family: sans-serif; padding: 2rem; }
+        .pass { color: #6cdf65; }
+        .fail { color: #ffb4ab; }
+        .test-block { background: #1a1d27; padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; }
+    </style>
+</head>
+<body>
+    <h1 class="text-3xl font-bold mb-6">Testes da Wiki Lowping</h1>
+    <div id="results"></div>
+
+    <script src="mock_db.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function logResult(name, passed, message = '') {
+            const div = document.createElement('div');
+            div.className = `test-block border-l-4 ${passed ? 'border-tertiary' : 'border-error'}`;
+            div.innerHTML = `
+                <h3 class="font-bold ${passed ? 'pass' : 'fail'}">${passed ? 'œ… PASSOU' : 'Œ FALHOU'}: ${name}</h3>
+                ${message ? `<p class="text-sm mt-2 text-on-surface-variant">${message}</p>` : ''}
+            `;
+            resultsDiv.appendChild(div);
+        }
+
+        async function runTests() {
+            resultsDiv.innerHTML = '';
+            
+            // Test 1: DB Initialization
+            try {
+                const categories = db.getCategories();
+                const articles = db.getArticles();
+                logResult('Inicialização do Banco de Dados', categories.length > 0 && articles.length > 0, `${categories.length} categorias e ${articles.length} artigos carregados.`);
+            } catch (e) {
+                logResult('Inicialização do Banco de Dados', false, e.message);
+            }
+
+            // Test 2: User Roles & Permissions
+            try {
+                const adminUser = db.getUsers().find(u => u.role === 'admin');
+                db.setCurrentUser(adminUser);
+                const currentUser = db.getCurrentUser();
+                logResult('Autenticação e Permissões', currentUser.role === 'admin', `Usuário atual: ${currentUser.username} (${currentUser.role})`);
+            } catch (e) {
+                logResult('Autenticação e Permissões', false, e.message);
+            }
+
+            // Test 3: Article Creation and Versioning
+            try {
+                const initialVersions = db.getVersions().length;
+                
+                // Create
+                const articles = db.getArticles();
+                const newArticle = {
+                    id: 999, title: 'Test Article', slug: 'test-article', categoryId: 1,
+                    status: 'published', content: '<p>Test content</p>',
+                    authorId: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                };
+                articles.push(newArticle);
+                db.saveArticles(articles);
+
+                // Update (should trigger versioning in our admin logic, but here we test the mock DB save directly)
+                const versions = db.getVersions();
+                versions.push({ id: Date.now(), articleId: 999, content: '<p>Test content</p>', savedAt: new Date().toISOString(), savedBy: 1 });
+                db.saveVersions(versions);
+
+                const updatedArticles = db.getArticles();
+                const updatedVersions = db.getVersions();
+
+                const pass = updatedArticles.find(a => a.id === 999) && updatedVersions.length > initialVersions;
+                logResult('Criação de Artigos e Versionamento', pass, 'Artigo criado e versão salva com sucesso no banco mockado.');
+                
+                // Cleanup
+                db.saveArticles(updatedArticles.filter(a => a.id !== 999));
+            } catch (e) {
+                logResult('Criação de Artigos e Versionamento', false, e.message);
+            }
+
+            // Test 4: Search Logic
+            try {
+                const query = 'configurar';
+                const articles = db.getArticles().filter(a => 
+                    a.status === 'published' && 
+                    (a.title.toLowerCase().includes(query.toLowerCase()) || a.content.toLowerCase().includes(query.toLowerCase()))
+                );
+                logResult('Lógica de Busca', articles.length > 0, `Encontrados ${articles.length} artigos para a query "${query}".`);
+            } catch (e) {
+                logResult('Lógica de Busca', false, e.message);
+            }
+
+            db.logout(); // clean up
+        }
+
+        runTests();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LOWPING | Minecraft Server Hosting</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(29, 31, 39, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #ffb2bb 0%, #9e0038 100%);
+        }
+        .text-glow-primary {
+            text-shadow: 0 0 15px rgba(173, 198, 255, 0.3);
+        }
+        body {
+            @apply bg-[#11131a] text-[#e2e2ec] font-sans;
+        }
+        .partner-logo {
+            @apply opacity-30 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 hover:brightness-125 cursor-pointer;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-container": "#31a634",
+                        "secondary-container": "#9e0038",
+                        "inverse-primary": "#005ac2",
+                        "surface": "#11131a",
+                        "inverse-on-surface": "#2e3038",
+                        "primary-container": "#4d8eff",
+                        "on-primary": "#002e6a",
+                        "secondary-fixed-dim": "#ffb2bb",
+                        "surface-container-lowest": "#0c0e15",
+                        "secondary-fixed": "#ffd9dd",
+                        "outline-variant": "#424754",
+                        "surface-container-high": "#282a31",
+                        "inverse-surface": "#e2e2ec",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed": "#002202",
+                        "on-secondary-fixed-variant": "#910033",
+                        "surface-container": "#1d1f27",
+                        "on-tertiary-container": "#003204",
+                        "tertiary": "#6cdf65",
+                        "on-tertiary": "#003a06",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#191b23",
+                        "on-tertiary-fixed-variant": "#00530c",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary": "#ffb2bb",
+                        "on-secondary-fixed": "#400012",
+                        "surface-variant": "#33343c",
+                        "error-container": "#93000a",
+                        "outline": "#8c909f",
+                        "on-primary-fixed": "#001a42",
+                        "surface-tint": "#adc6ff",
+                        "on-primary-container": "#00285d",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-background": "#e2e2ec",
+                        "surface-bright": "#373941",
+                        "background": "#11131a",
+                        "on-secondary": "#670022",
+                        "surface-dim": "#11131a",
+                        "tertiary-fixed-dim": "#6cdf65",
+                        "on-surface": "#e2e2ec",
+                        "on-secondary-container": "#ffa7b2",
+                        "tertiary-fixed": "#88fc7e",
+                        "surface-container-highest": "#33343c",
+                        "on-error": "#690005",
+                        "primary": "#adc6ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body">
+<nav class="bg-[#11131a] fixed top-0 z-50 flex justify-between items-center w-full px-8 py-4 transition-all duration-300 ease-in-out border-b border-outline-variant/10">
+<div class="max-w-7xl mx-auto flex justify-between items-center w-full">
+<a href="/Jogos/" class="text-2xl font-black text-[#ffb2bb] tracking-tighter font-headline hover:opacity-80 transition-opacity">LOWPING</a>
+<div class="hidden md:flex gap-8 items-center font-headline font-semibold tracking-tight">
+<a class="text-[#ffb2bb] border-b-2 border-[#ffb2bb] pb-1" href="#">Games</a>
+<a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="/Vps/">VPS</a>
+<a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="#">Dedicated</a>
+<a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="/Wiki/">Wiki</a>
+</div>
+<div class="flex gap-4 items-center">
+<button class="text-blue-200 font-headline font-semibold">Login</button>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-xl font-headline font-bold hover:brightness-110 transition-all">Get Started</button>
+</div>
+</div>
+</nav>
+<main>
+<section class="relative pt-32 pb-32 overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Cinematic high-angle view of a sprawling Minecraft voxel landscape" class="w-full h-full object-cover opacity-20 grayscale brightness-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7lLivQRbrhhavQZFcenpku9JSBOzuytUlQSA9c33BRwIf-AuzQP2ltUj8jAK6z04RTbYjmPi-vwHvN-MuJ4G1n92BinliQlzI5nfIMn2RzFCOJd8dq2M5O25TdBloLc4kwFaQGMq1WJZTpCObrjuMWn0QjFjx82J9YGR4ibn8TGElAfmk7W8oFilBCbU9IUnTQWNzi-jTQeks1NzHvaj5FoBPuk5SJL5pFz9JzJAHgiUgGn5OdGtBORruZvo4yOd4ZZJ-6xImwNk"/>
+<div class="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background"></div>
+</div>
+<div class="max-w-7xl mx-auto px-8 relative z-10 flex flex-col md:flex-row items-center gap-16">
+<div class="w-full md:w-3/5">
+<h1 class="font-headline font-extrabold text-6xl md:text-8xl tracking-tighter text-on-surface mb-6 leading-none">
+                    START YOUR OWN <span class="text-secondary text-glow-primary">MINECRAFT</span> SERVER
+                </h1>
+<p class="text-on-surface-variant text-xl mb-10 max-w-xl">
+                    Experience low-latency gaming with automated modpack deployments and 24/7 technical precision. Built for creators and competitive players.
+                </p>
+<div class="grid grid-cols-2 gap-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">bolt</span>
+<span class="font-label text-sm uppercase tracking-wider text-on-surface">One-click installs</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">support_agent</span>
+<span class="font-label text-sm uppercase tracking-wider text-on-surface">Fast support</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">speed</span>
+<span class="font-label text-sm uppercase tracking-wider text-on-surface">Instant setup</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">terminal</span>
+<span class="font-label text-sm uppercase tracking-wider text-on-surface">Paper/Fabric support</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-2/5 glass-panel p-8 rounded-3xl border border-outline-variant/10 shadow-2xl">
+<div class="mb-8">
+<label class="font-label text-xs font-bold text-primary mb-3 block uppercase tracking-widest">Select Region</label>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between cursor-pointer hover:bg-surface-container transition-colors mb-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">location_on</span>
+<span class="font-semibold">US West (Oregon)</span>
+</div>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low/50 px-4 py-3 rounded-xl border border-outline-variant/10">
+<div class="flex flex-col">
+<span class="text-[10px] font-label font-bold text-on-surface-variant/50 uppercase tracking-[0.2em] mb-0.5">Test Server IP</span>
+<span class="text-sm font-mono text-on-surface select-all font-medium">play.lowping.com.br:25565</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center p-2 bg-surface-container-high/50 rounded-lg" title="Copy IP">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+</div>
+</div>
+<div class="mb-8">
+<label class="font-label text-xs font-bold text-primary mb-3 block uppercase tracking-widest">Memory Allocation (RAM)</label>
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-low p-3 rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="font-label text-lg font-bold">4GB</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Para amigos</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="font-label text-lg font-bold">6GB</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Para pequenos</div>
+</div>
+<div class="bg-surface-container-high border border-primary/30 p-3 rounded-xl text-center cursor-pointer relative shadow-[0_0_15px_rgba(173,198,255,0.1)]">
+<div class="absolute -top-2 -right-1 bg-tertiary text-on-tertiary text-[8px] font-black px-1.5 py-0.5 rounded-full">POPULAR</div>
+<div class="font-label text-lg font-bold text-primary">8GB</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Recomendado</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="font-label text-lg font-bold">10GB</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Servidores grandes</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="font-label text-lg font-bold">12GB</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Médio porte</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="font-label text-lg font-bold">16GB</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Grandes redes</div>
+</div>
+</div>
+</div>
+<div class="mb-10">
+<label class="font-label text-xs font-bold text-primary mb-3 block uppercase tracking-widest">Billing Cycle</label>
+<div class="flex gap-2 p-1 bg-surface-container-lowest rounded-xl">
+<button class="flex-1 py-2 text-xs font-bold rounded-lg bg-surface-container text-on-surface">Monthly</button>
+<button class="flex-1 py-2 text-xs font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-colors">Quarterly <span class="text-tertiary font-black">-10%</span></button>
+<button class="flex-1 py-2 text-xs font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-colors">Yearly <span class="text-tertiary font-black">-20%</span></button>
+</div>
+</div>
+<button class="w-full kinetic-gradient text-white py-5 rounded-xl font-headline font-black text-lg tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all uppercase">
+                    CONFIGURE SERVER
+                </button>
+</div>
+</div>
+</section>
+<section class="py-12 bg-surface-container-lowest border-y border-outline-variant/10">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex flex-col items-center">
+<h3 class="font-label text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-[0.4em] mb-10">Trusted Partners &amp; Top Creators</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 md:gap-12 w-full items-center justify-items-center">
+<img alt="Logo 1" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+1'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 2" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+2'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 3" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+3'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 4" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+4'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 5" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+5'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 6" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+6'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 7" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+7'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 8" class="partner-logo h-8 object-contain" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+8'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-container-low py-24">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline font-bold text-4xl mb-2">POPULAR MODPACKS</h2>
+<p class="text-on-surface-variant">Deploy your favorite packs with zero configuration.</p>
+</div>
+<div class="flex gap-4">
+<button class="w-12 h-12 rounded-full border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-12 h-12 rounded-full border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-high transition-colors text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer">
+<img alt="Sevtech Ages concept art" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBguy_pPo0JcgVMz7CDvAwVVsKzagPFUT7OI4q_rTkXFECjWZwS1fdIUH3SwswSF8rBgLNhMQ5ARc9Mm8rTp0Bb03G4pSbA-G3XxVo3Kx4ee8GHUkbtrVBEjRRddpM0inby_YyDaQbz2Nknnco9okPuhFc2UVMsytHa1AjW-L1MX88wvjrmMurUNOolzJWqgobZz4kaBA9DLSqtaqkBweOoCu6xnnvN8q7yc-1VVuE2TKC7jKoVQiJfrBowto9KzglHHSQ3Ew5fjbY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<div class="bg-primary/20 backdrop-blur-md text-primary px-3 py-1 rounded-full text-[10px] font-black w-fit mb-3 tracking-widest uppercase">QUESTS</div>
+<h3 class="font-headline font-bold text-2xl mb-2 uppercase">SEVTECH: AGES</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity">A massive progression-based pack that introduces new mechanics as you evolve through the ages.</p>
+</div>
+</div>
+<div class="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer">
+<img alt="FTB Infinity Evolved theme" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj49HF2TSt5ZBDSm4p0X25dJo9eO6E3DmQt9xIqC5jLouYDvnaVKkiZ5J2pzeAjB60BlnvBsifHjxOAGBrAzH02gOsXHuPenQmE8RnML27b3JlkCI8dry92p1jd3qxm5pEuGGG4QtGLXKCmsxSCCWCSnXRwDEz4m8JIJSpNHGzwvXZUOC9SHRhTYDLMTXGQbJKqwRFQJaHXPGBNWnzlYa2FkrtefnmDThacvkY_7yOjgJDsQ6l9uKRFj-kTmu7o0zIxs6tVDOi4dU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<div class="bg-secondary/20 backdrop-blur-md text-secondary px-3 py-1 rounded-full text-[10px] font-black w-fit mb-3 tracking-widest uppercase">TECH</div>
+<h3 class="font-headline font-bold text-2xl mb-2 uppercase">FTB INFINITY EVOLVED</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity">The definitive modded Minecraft experience featuring hundreds of mods for engineering and magic.</p>
+</div>
+</div>
+<div class="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer">
+<img alt="RLCraft hard survival theme" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbiR1c6altsmieDTc7mHyTWLAiUEaJ3qOwSCxbw8hA-piK1G8plqQA6omgIiCKEWE2ZsrhYGSz-O6xRt1VBcdz9ANchGMkh0cmol9xCPoGdGs7jSZpS0DraDI5UU-846PjMmZvPFYTIJyo0PDy6z0qJKG4a4JGVtcdtU8EgFC8D7ptjO_RvhL-2-X1q2Lzb-fQLzLAmzESS-UMj7NWJXnng63SDMqDKg6Km3e75WboIuqEOtqxTeie06FX1Wm2Ow9TefsktS7leQQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<div class="bg-tertiary/20 backdrop-blur-md text-tertiary px-3 py-1 rounded-full text-[10px] font-black w-fit mb-3 tracking-widest uppercase">HARDCORE</div>
+<h3 class="font-headline font-bold text-2xl mb-2 uppercase">RLCRAFT</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity">Real Life Craft: A survival experience so difficult it's earned a reputation as the ultimate challenge.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-surface overflow-hidden">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex flex-col md:flex-row items-center gap-20">
+<div class="w-full md:w-1/2">
+<h2 class="font-headline font-bold text-5xl tracking-tighter mb-8 leading-tight uppercase">CONFIGURE YOUR SERVER IN A CLICK</h2>
+<div class="space-y-8">
+<div class="flex gap-6 items-start">
+<div class="bg-surface-container-high w-14 h-14 rounded-2xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">folder_managed</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-xl mb-1">Full File Access</h4>
+<p class="text-on-surface-variant">Complete FTP and web-based file management. Edit your config.yml or upload worlds in seconds.</p>
+</div>
+</div>
+<div class="flex gap-6 items-start">
+<div class="bg-surface-container-high w-14 h-14 rounded-2xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-3xl">auto_fix_high</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-xl mb-1">One-Click Mod Installer</h4>
+<p class="text-on-surface-variant">Switch between versions or install complex modpacks with a single button. No more manual JAR uploads.</p>
+</div>
+</div>
+<div class="flex gap-6 items-start">
+<div class="bg-surface-container-high w-14 h-14 rounded-2xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary text-3xl">monitoring</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-xl mb-1">Real-time Statistics</h4>
+<p class="text-on-surface-variant">Monitor CPU, RAM, and Network usage with precise visual graphs directly in your browser.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full md:w-1/2 relative">
+<div class="absolute -inset-4 bg-primary/10 blur-[100px] rounded-full"></div>
+<div class="relative bg-surface-container-high rounded-3xl border border-outline-variant/30 shadow-2xl overflow-hidden p-2">
+<img alt="Technical code view" class="rounded-2xl opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkSxGZCTRHA0MmVU8xk3tSfOhN35TVVcNiG1GFZbfrmUnpokmSfvOuOmtPOnhL6AupzUl1aGn9LxQQVvEI9eTeAxcZmPIvFPD_f_0W8qemCxsWsOOFcXq_5rjlJ04nDKHzScNYp03r13ydA_xeRwT152Pttk_GduD6ypxs05kZ8cglXHocG8tStakegXKezDjRwzfws7OGGtO40ymmq9QKzC1yelLrrKGcfYnWWFEH3rh_7LHC_wEQRCQaPFWSuBWFI7SsYfkASWQ"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="glass-panel p-6 rounded-2xl border border-white/10 shadow-2xl">
+<div class="flex gap-4 items-center mb-4">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+</div>
+<div class="font-label text-sm text-on-surface-variant font-mono">
+                                    $ systemctl status minecraft-srv<br/>
+<span class="text-tertiary">—</span> active (running) since Mon 2024-05-12<br/>
+                                    Main PID: 2491 (java)<br/>
+                                    Tasks: 51 (limit: 4915)<br/>
+                                    Memory: 7.8G / 8.0G<br/>
+                                    CPU: 12.4%
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center mb-16">
+<h2 class="font-headline font-bold text-4xl mb-4 uppercase">Vanilla, Modded, and Bedrock</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Whatever version of Minecraft you play, we have the optimized infrastructure to support your journey.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface p-8 rounded-3xl hover:bg-surface-container transition-colors border border-outline-variant/5">
+<span class="material-symbols-outlined text-4xl text-primary mb-6">grass</span>
+<h5 class="font-headline font-bold text-xl mb-2">Vanilla</h5>
+<p class="text-on-surface-variant text-sm">The pure Minecraft experience. Optimized for Spigot or Paper.</p>
+</div>
+<div class="bg-surface p-8 rounded-3xl hover:bg-surface-container transition-colors border border-outline-variant/5">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6">extension</span>
+<h5 class="font-headline font-bold text-xl mb-2">Modded</h5>
+<p class="text-on-surface-variant text-sm">Forge, Fabric, or Quilt. Ready for the most demanding mods.</p>
+</div>
+<div class="bg-surface p-8 rounded-3xl hover:bg-surface-container transition-colors border border-outline-variant/5">
+<span class="material-symbols-outlined text-4xl text-tertiary mb-6">devices</span>
+<h5 class="font-headline font-bold text-xl mb-2">Bedrock</h5>
+<p class="text-on-surface-variant text-sm">Cross-play support for console, mobile, and Windows players.</p>
+</div>
+<div class="bg-surface p-8 rounded-3xl hover:bg-surface-container transition-colors border border-outline-variant/5">
+<span class="material-symbols-outlined text-4xl text-on-primary-fixed-variant mb-6">security</span>
+<h5 class="font-headline font-bold text-xl mb-2">Anti-DDoS</h5>
+<p class="text-on-surface-variant text-sm">Enterprise-grade protection against network attacks.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-surface">
+<div class="max-w-3xl mx-auto px-8">
+<h2 class="font-headline font-extrabold text-4xl text-center mb-16 tracking-tight uppercase">FREQUENTLY ASKED QUESTIONS</h2>
+<div class="space-y-4">
+<div class="bg-surface-container-low rounded-2xl overflow-hidden">
+<button class="w-full p-6 flex justify-between items-center text-left hover:bg-surface-container-high transition-colors group">
+<span class="font-headline font-bold">How long does the setup take?</span>
+<span class="material-symbols-outlined group-hover:text-primary">add</span>
+</button>
+</div>
+<div class="bg-surface-container-low rounded-2xl overflow-hidden">
+<button class="w-full p-6 flex justify-between items-center text-left hover:bg-surface-container-high transition-colors group">
+<span class="font-headline font-bold">Can I upgrade my RAM later?</span>
+<span class="material-symbols-outlined group-hover:text-primary">add</span>
+</button>
+</div>
+<div class="bg-surface-container-low rounded-2xl overflow-hidden border border-primary/20">
+<button class="w-full p-6 flex justify-between items-center text-left bg-surface-container-high group">
+<span class="font-headline font-bold text-primary">Is there a money-back guarantee?</span>
+<span class="material-symbols-outlined text-primary rotate-45">add</span>
+</button>
+<div class="p-6 pt-0 text-on-surface-variant text-sm">
+                        Yes! We offer a no-questions-asked 48-hour refund policy if you aren't completely satisfied with the performance of our servers.
+                    </div>
+</div>
+<div class="bg-surface-container-low rounded-2xl overflow-hidden">
+<button class="w-full p-6 flex justify-between items-center text-left hover:bg-surface-container-high transition-colors group">
+<span class="font-headline font-bold">Do you support custom JAR files?</span>
+<span class="material-symbols-outlined group-hover:text-primary">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-[#11131a] py-12 border-t border-outline-variant/10">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col gap-2">
+<div class="text-lg font-bold text-[#ffb2bb] font-headline">LOWPING</div>
+<p class="font-headline text-sm text-[#c2c6d6]">© 2026 LOWPING. All rights reserved.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-headline text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Termos/">Termos de Serviço</a>
+<a class="font-headline text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Privacidade/">Política de Privacidade</a>
+<a href="https://status.lowping.com.br/" target="_blank" rel="noopener noreferrer" class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors">SLA</a>
+<a class="font-headline text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Contato/">Contato</a>
+</div>
+</div>
+</footer>
+
+</body></html>
+

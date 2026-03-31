@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Unit Test: API Error Boundary</title>
+</head>
+<body>
+    <h1>Test Results</h1>
+    <pre id="log"></pre>
+
+    <!-- Mock DOM for app.js -->
+    <div id="toast-container"></div>
+    <div id="login-view" class="hidden-view"></div>
+    <div id="dashboard-view" class="hidden-view"></div>
+    <div id="section-banners"></div>
+    <form id="login-form">
+        <input type="text" id="login-user">
+        <input type="password" id="login-pass">
+    </form>
+    
+    <script>
+        // Mock CSS classes for app.js to work
+        document.head.insertAdjacentHTML("beforeend", `<style>.hidden-view { display: none; }</style>`);
+        
+        function log(msg) {
+            document.getElementById('log').textContent += msg + '\n';
+            console.log(msg);
+        }
+    </script>
+
+    <!-- Load scripts -->
+    <script src="./mock_api.js"></script>
+    <script src="./app.js"></script>
+
+    <script>
+        async function runTests() {
+            log("Running Unit Tests...");
+            
+            // Test 1: Simulating legacy call that returns 404
+            log("\\n[Test 1] Simulating call to removed /api/coupons endpoint...");
+            try {
+                const result = await apiCall('/api/coupons');
+                if (Array.isArray(result) && result.length === 0) {
+                    log("✓ PASS: 404 gracefully handled and returned fallback []");
+                } else {
+                    log("✗ FAIL: Did not return expected fallback []");
+                }
+            } catch (err) {
+                log("✗ FAIL: Exception was thrown instead of graceful handling: " + err.message);
+            }
+
+            // Test 2: Valid call to /api/banners
+            log("\\n[Test 2] Simulating valid call to /api/banners...");
+            try {
+                // Ensure we have a mock token to bypass 401
+                currentToken = 'mock-jwt-token-123'; 
+                const result = await apiCall('/api/banners');
+                if (Array.isArray(result)) {
+                    log("✓ PASS: Valid endpoint returns array data normally");
+                } else {
+                    log("✗ FAIL: Valid endpoint failed to return array");
+                }
+            } catch (err) {
+                log("✗ FAIL: Exception on valid endpoint: " + err.message);
+            }
+        }
+
+        // Run after app initializes
+        setTimeout(runTests, 500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin - Gerenciamento</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.quilljs.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.quilljs.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="./tailwind-config.js"></script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #11131a;
+            color: #e2e2ec;
+            font-family: 'Inter', sans-serif;
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #ffb2bb 0%, #9e0038 100%);
+        }
+        .glass-card {
+            backdrop-filter: blur(12px);
+            background: rgba(29, 31, 39, 0.7);
+        }
+        .hidden-view { display: none !important; }
+        
+        /* Toast styles */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 250px;
+            padding: 16px;
+            border-radius: 8px;
+            background: #33343c;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 4px solid #6cdf65; }
+        .toast.error { border-left: 4px solid #ffb4ab; }
+    </style>
+    <!-- Quill.js for Rich Text Editing -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <style>
+        .quill-editor { background-color: #0d0f15; color: #e3e5ee; min-height: 300px; border-radius: 0 0 1rem 1rem; border-color: rgba(255,255,255,0.1) !important; }
+        .ql-toolbar { background-color: #1a1d27; border-radius: 1rem 1rem 0 0; border-color: rgba(255,255,255,0.1) !important; }
+        .ql-stroke { stroke: #e3e5ee !important; }
+        .ql-fill { fill: #e3e5ee !important; }
+        .ql-picker { color: #e3e5ee !important; }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div id="toast-container"></div>
+
+    <!-- LOGIN VIEW -->
+    <div id="login-view" class="h-screen w-screen flex items-center justify-center bg-background hidden-view">
+        <div class="bg-surface-container rounded-2xl p-8 border border-white/5 glass-card w-full max-w-md shadow-2xl relative overflow-hidden">
+            <!-- decorative -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-secondary/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10">
+                <div class="text-center mb-8">
+                    <span class="material-symbols-outlined text-5xl text-secondary mb-4" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+                    <h1 class="text-2xl font-headline font-bold">Acesso Restrito</h1>
+                    <p class="text-sm text-on-surface-variant mt-2">Área administrativa do sistema</p>
+                </div>
+                
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="font-label text-xs uppercase tracking-widest text-on-surface-variant block mb-2">Usuário</label>
+                        <input type="text" id="login-user" required class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-secondary focus:ring-1 focus:ring-secondary transition-all text-on-surface" placeholder="Digite seu usuário">
+                    </div>
+                    <div>
+                        <label class="font-label text-xs uppercase tracking-widest text-on-surface-variant block mb-2">Senha</label>
+                        <input type="password" id="login-pass" required class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-secondary focus:ring-1 focus:ring-secondary transition-all text-on-surface" placeholder="••••••••">
+                    </div>
+                    <div id="login-error" class="text-error text-xs hidden">Credenciais inválidas ou limite de tentativas excedido.</div>
+                    <button type="submit" class="w-full kinetic-gradient text-white py-3 rounded-xl font-headline font-bold text-sm transition-all active:scale-95 mt-4 flex justify-center items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">login</span> Entrar
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <a href="../index.html" class="text-on-surface-variant/60 hover:text-on-surface-variant text-sm transition-colors flex items-center justify-center gap-1 inline-flex p-2 min-h-[44px] min-w-[44px]" aria-label="Voltar para a página de Jogos">
+                        &larr; Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboard-view" class="h-screen w-screen flex flex-col md:flex-row hidden-view">
+        
+        <!-- Side Navigation -->
+        <nav class="bg-[#11131a] border-r border-white/5 flex flex-col h-screen fixed left-0 top-0 pt-6 w-64 z-40 hidden md:flex">
+            <div class="px-6 mb-2">
+                <button id="btn-return-home" class="flex items-center gap-2 text-on-surface-variant/80 hover:text-white transition-colors text-xs font-medium py-2 px-3 bg-white/5 rounded-lg w-full" aria-label="Voltar para a página de Jogos" tabindex="0">
+                    <span class="material-symbols-outlined text-sm">home</span>
+                    Voltar para Jogos
+                </button>
+            </div>
+
+            <div class="px-6 py-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+                </div>
+                <div>
+                    <p class="text-[#adc6ff] font-black italic font-['Space_Grotesk'] uppercase tracking-widest text-[10px]">Painel Admin</p>
+                    <p class="text-on-surface-variant text-[10px] font-['Space_Grotesk'] uppercase">Gestão</p>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex flex-col gap-1 px-3">
+                <a href="#" id="nav-banners" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-[#ffb2bb] bg-white/5 border-r-2 border-[#ffb2bb] font-['Space_Grotesk'] text-sm uppercase tracking-widest transition-all">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">campaign</span>
+                    <span>Banners</span>
+                </a>
+                <a href="#" id="nav-wiki" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-[#c2c6d6] opacity-70 hover:opacity-100 hover:bg-white/5 font-['Space_Grotesk'] text-sm uppercase tracking-widest transition-all">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu_book</span>
+                    <span>Wiki</span>
+                </a>
+            </div>
+            
+            <div class="mt-auto px-6 py-8">
+                <button id="btn-logout-desktop" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-error bg-error/10 hover:bg-error/20 font-['Space_Grotesk'] text-sm uppercase tracking-widest transition-colors">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Canvas -->
+        <main class="md:pl-64 h-screen w-full overflow-y-auto bg-background pb-20 md:pb-0">
+            <!-- Mobile Header -->
+            <header class="md:hidden flex items-center justify-between p-4 border-b border-white/5 sticky top-0 bg-[#11131a]/80 backdrop-blur-md z-30">
+                <span class="text-lg font-bold font-headline text-primary">Admin</span>
+                <button id="btn-logout-mobile" class="text-error"><span class="material-symbols-outlined">logout</span></button>
+            </header>
+
+            <div class="max-w-6xl mx-auto p-4 md:p-8">
+                
+                <!-- BANNERS SECTION -->
+                <section id="section-banners">
+                    <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                        <div>
+                            <h1 class="text-4xl font-extrabold font-headline tracking-tight mb-2">Banners Promocionais</h1>
+                            <p class="text-on-surface-variant text-sm">Gerencie banners com upload de imagem, período e ordem.</p>
+                        </div>
+                        <button id="btn-new-banner" class="kinetic-gradient text-white px-6 py-3 rounded-xl font-headline font-bold text-sm flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+                            <span class="material-symbols-outlined">add</span> Novo Banner
+                        </button>
+                    </header>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="banners-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- WIKI SECTION -->
+                <section id="section-wiki" class="hidden-view">
+                    <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                        <div>
+                            <h1 id="wiki-section-title" class="text-4xl font-extrabold font-headline tracking-tight mb-2">Wiki - Artigos</h1>
+                            <p class="text-on-surface-variant text-sm">Gerencie o conteúdo da base de conhecimento.</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="btn-wiki-articles" class="px-4 py-2 rounded-xl text-[#adc6ff] bg-white/5 font-medium text-sm transition-colors border border-[#adc6ff]/20">Artigos</button>
+                            <button id="btn-wiki-categories" class="px-4 py-2 rounded-xl text-[#c2c6d6] hover:bg-white/5 font-medium text-sm transition-colors border border-transparent">Categorias</button>
+                            <button id="btn-new-wiki" class="kinetic-gradient text-white px-6 py-3 rounded-xl font-headline font-bold text-sm flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all sm:ml-2">
+                                <span class="material-symbols-outlined">add</span> <span id="btn-new-wiki-text">Novo Artigo</span>
+                            </button>
+                        </div>
+                    </header>
+
+                    <div id="wiki-content-area" class="w-full">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+
+            </div>
+        </main>
+
+        <!-- Mobile Bottom Nav -->
+        <div class="md:hidden fixed bottom-0 left-0 w-full bg-[#11131a]/90 backdrop-blur-md border-t border-white/5 z-40 flex justify-around items-center p-2 pb-safe">
+            <button id="mob-nav-banners" class="mob-nav-item flex flex-col items-center gap-1 p-2 text-[#ffb2bb] transition-colors">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">campaign</span>
+                <span class="text-[10px] font-['Space_Grotesk'] uppercase tracking-widest">Banners</span>
+            </button>
+            <button id="mob-nav-wiki" class="mob-nav-item flex flex-col items-center gap-1 p-2 text-[#c2c6d6] opacity-70 transition-colors">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu_book</span>
+                <span class="text-[10px] font-['Space_Grotesk'] uppercase tracking-widest">Wiki</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- BANNER MODAL -->
+    <div id="banner-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden-view">
+        <div class="bg-surface-container rounded-2xl p-6 w-full max-w-md border border-white/10 shadow-2xl">
+            <h2 id="banner-modal-title" class="text-xl font-bold font-headline mb-4">Novo Banner</h2>
+            <form id="banner-form" class="space-y-4">
+                <input type="hidden" id="banner-id">
+                <div>
+                    <label class="block text-xs text-on-surface-variant mb-1">Título/Identificação</label>
+                    <input type="text" id="banner-title" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                </div>
+                <div>
+                    <label class="block text-xs text-on-surface-variant mb-1">Imagem URL (Mock Upload)</label>
+                    <input type="url" id="banner-image" required placeholder="https://..." class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                    <p class="text-[10px] text-on-surface-variant mt-1">Insira uma URL de imagem para simular o upload.</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs text-on-surface-variant mb-1">Início</label>
+                        <input type="date" id="banner-start" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-on-surface-variant mb-1">Fim</label>
+                        <input type="date" id="banner-end" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-on-surface-variant mb-1">Ordem de Exibição</label>
+                    <input type="number" id="banner-order" required min="1" value="1" class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" id="btn-cancel-banner" class="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm transition-colors">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2 rounded-lg kinetic-gradient text-white font-bold text-sm transition-colors">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <!-- WIKI EDITOR MODAL -->
+    <div id="editor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden-view overflow-y-auto">
+        <div class="bg-surface-container rounded-2xl p-6 w-full max-w-4xl border border-white/10 shadow-2xl my-8">
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h2 id="editor-title" class="text-xl font-bold font-headline">Criar/Editar Artigo</h2>
+                <button type="button" onclick="closeEditor()" class="text-[#c2c6d6] hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <form id="article-form" class="space-y-6">
+                <input type="hidden" id="article-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs text-on-surface-variant mb-1">Título</label>
+                        <input type="text" id="article-title-input" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-on-surface-variant mb-1">Categoria</label>
+                        <select id="article-category-input" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                            <!-- Categories populated via JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-on-surface-variant mb-1">Slug (URL)</label>
+                    <input type="text" id="article-slug-input" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                    <p class="text-[10px] text-on-surface-variant mt-1">Ex: como-configurar-servidor</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label class="block text-xs text-on-surface-variant">Status:</label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sm">
+                        <input type="radio" name="article-status" value="published" checked class="text-[#adc6ff] focus:ring-[#adc6ff] bg-surface-container-lowest border-white/10">
+                        <span>Publicado</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sm">
+                        <input type="radio" name="article-status" value="draft" class="text-[#adc6ff] focus:ring-[#adc6ff] bg-surface-container-lowest border-white/10">
+                        <span>Rascunho</span>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-on-surface-variant mb-1">Conteúdo</label>
+                    <div id="quill-editor" class="quill-editor"></div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-white/10">
+                    <button type="button" onclick="closeEditor()" class="px-6 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm transition-colors">Cancelar</button>
+                    <button type="submit" class="px-6 py-2 rounded-lg kinetic-gradient text-white font-bold text-sm transition-colors">Salvar Artigo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./mock_api.js"></script>
+    <script src="./wiki_mock_db.js"></script>
+    <script src="./wiki_admin.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
