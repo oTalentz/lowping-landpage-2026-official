@@ -101,10 +101,19 @@ async function apiCall(url, options = {}) {
     
     try {
         const response = await fetch(url, { ...options, headers });
-        const data = await response.json();
+        
+        // Handle non-JSON responses gracefully (e.g. HTML error pages from Vercel)
+        let data;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            throw new Error(`Servidor retornou resposta inválida (${response.status}): ${text.substring(0, 50)}...`);
+        }
         
         if (!response.ok) {
-            if (response.status === 401 && url !== '/api/login') {
+            if (response.status === 401 && url !== '/api/login' && url !== '/api/auth/login') {
                 logout();
             }
             
@@ -133,7 +142,10 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const pass = document.getElementById('login-pass').value;
     
     try {
-        const data = await apiCall('/api/login', {
+        // Usa a rota real se disponível, ou a rota antiga
+        const loginUrl = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1') ? '/api/login' : '/api/auth/login';
+        
+        const data = await apiCall(loginUrl, {
             method: 'POST',
             body: JSON.stringify({ username: user, password: pass })
         });
