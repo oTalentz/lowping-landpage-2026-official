@@ -126,7 +126,7 @@ function showWikiSection(section) {
     }
 }
 
-async function renderAdminArticles() {
+function renderAdminArticles() {
     const articles = await db.getArticles();
     const categories = await db.getCategories();
     const contentArea = document.getElementById('wiki-content-area');
@@ -177,7 +177,7 @@ async function renderAdminArticles() {
     contentArea.innerHTML = html;
 }
 
-async function renderAdminCategories() {
+function renderAdminCategories() {
     const categories = await db.getCategories();
     const contentArea = document.getElementById('wiki-content-area');
 
@@ -205,14 +205,14 @@ async function renderAdminCategories() {
 }
 
 // Editor Functions
-async function populateCategorySelect() {
+function populateCategorySelect() {
     const select = document.getElementById('article-category-input');
     const categories = await db.getCategories();
     select.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 }
 
-async function openArticleEditor(articleId = null) {
-    await populateCategorySelect();
+function openArticleEditor(articleId = null) {
+    populateCategorySelect();
     const modal = document.getElementById('editor-modal');
     const titleEl = document.getElementById('editor-title');
     
@@ -221,8 +221,7 @@ async function openArticleEditor(articleId = null) {
     quill.root.innerHTML = '';
 
     if (articleId) {
-        const allArticles = await db.getArticles();
-        const article = allArticles.find(a => a.id === articleId);
+        const article = db.getArticles().find(a => a.id === articleId);
         if (article) {
             titleEl.innerText = 'Editar Artigo';
             document.getElementById('article-id').value = article.id;
@@ -304,7 +303,7 @@ window.editArticle = function(id) {
     openArticleEditor(id);
 }
 
-window.deleteArticle = async function(id) {
+window.deleteArticle = function(id) {
     if (confirm('Tem certeza que deseja excluir este artigo?')) {
         let articles = await db.getArticles();
         articles = articles.filter(a => a.id !== id);

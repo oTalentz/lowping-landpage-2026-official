@@ -1,0 +1,15 @@
+{
+  "name": "lowping-landpage-2026",
+  "version": "1.0.0",
+  "description": "Lowping website and admin panel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/postgres": "^0.7.2"
+  }
+}

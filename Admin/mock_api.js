@@ -162,9 +162,10 @@ class MockAPI {
 // Intercept fetch
 const mockAPI = new MockAPI();
 window.originalFetch = window.fetch;
-window.fetch = async (url, options) => {
-    if (url.startsWith('/api/')) {
-        return mockAPI.handleRequest(url, options);
-    }
-    return window.originalFetch(url, options);
-};
+// Desativando mock_api.js - agora o fetch() original vai chamar a API Serverless da Vercel!
+// window.fetch = async (url, options) => {
+//     if (url.startsWith('/api/')) {
+//         return mockAPI.handleRequest(url, options);
+//     }
+//     return window.originalFetch(url, options);
+// };

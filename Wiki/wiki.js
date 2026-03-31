@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (searchQuery) {
         renderSearch(searchQuery);
     } else {
-        renderHome();
+        await renderHome();
     }
 
     // Handle search input
@@ -52,7 +52,7 @@ function renderCategoriesSidebar() {
     const sidebar = document.getElementById('categories-sidebar');
     if (!sidebar) return;
 
-    const categories = db.getCategories();
+    const categories = await db.getCategories();
     let html = '';
     categories.forEach(cat => {
         html += `
@@ -65,12 +65,13 @@ function renderCategoriesSidebar() {
     sidebar.innerHTML = html;
 }
 
-function renderHome() {
+async function renderHome() {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
 
-    const categories = db.getCategories();
-    const articles = db.getArticles().filter(a => a.status === 'published');
+    const categories = await db.getCategories();
+    const allArticles = await db.getArticles();
+    const articles = allArticles.filter(a => a.status === 'published');
 
     let html = `
         <!-- Category Grid -->
@@ -134,9 +135,10 @@ function renderHome() {
     mainContent.innerHTML = html;
 }
 
-function renderArticle(slug) {
+async function renderArticle(slug) {
     const mainContent = document.getElementById('main-content');
-    const article = db.getArticles().find(a => a.slug === slug && a.status === 'published');
+    const allArticles = await db.getArticles();
+    const article = allArticles.find(a => a.slug === slug && a.status === 'published');
     
     if (!article) {
         mainContent.innerHTML = `<h2 class="text-3xl font-bold text-on-surface">Artigo não encontrado</h2>`;
@@ -146,7 +148,8 @@ function renderArticle(slug) {
     // SEO Meta Tags update
     document.title = `${article.title} - Wiki`;
     
-    const cat = db.getCategories().find(c => c.id === article.categoryId);
+    const allCategories = await db.getCategories();
+    const cat = allCategories.find(c => c.id === article.categoryId);
 
     mainContent.innerHTML = `
         <div class="bg-surface-container-lowest p-8 rounded-[2rem] border border-outline-variant/5">
@@ -166,9 +169,10 @@ function renderArticle(slug) {
     `;
 }
 
-function renderCategory(slug) {
+async function renderCategory(slug) {
     const mainContent = document.getElementById('main-content');
-    const category = db.getCategories().find(c => c.slug === slug);
+    const allCategories = await db.getCategories();
+    const category = allCategories.find(c => c.slug === slug);
     
     if (!category) {
         mainContent.innerHTML = `<h2 class="text-3xl font-bold text-on-surface">Categoria não encontrada</h2>`;
@@ -177,7 +181,8 @@ function renderCategory(slug) {
 
     document.title = `${category.name} - Wiki`;
 
-    const articles = db.getArticles().filter(a => a.categoryId === category.id && a.status === 'published');
+    const allArticles = await db.getArticles();
+    const articles = allArticles.filter(a => a.categoryId === category.id && a.status === 'published');
 
     let html = `
         <div class="mb-8">
@@ -214,9 +219,10 @@ function renderCategory(slug) {
     mainContent.innerHTML = html;
 }
 
-function renderSearch(query) {
+async function renderSearch(query) {
     const mainContent = document.getElementById('main-content');
-    const articles = db.getArticles().filter(a => 
+    const allArticles = await db.getArticles();
+    const articles = allArticles.filter(a => 
         a.status === 'published' && 
         (a.title.toLowerCase().includes(query.toLowerCase()) || a.content.toLowerCase().includes(query.toLowerCase()))
     );
@@ -234,7 +240,7 @@ function renderSearch(query) {
     if (articles.length === 0) {
         html += `<p class="text-on-surface-variant">Tente buscar com outros termos.</p>`;
     } else {
-        const categories = db.getCategories();
+        const categories = await db.getCategories();
         articles.forEach(article => {
             const cat = categories.find(c => c.id === article.categoryId);
             const icon = cat ? cat.icon : 'article';
