@@ -136,6 +136,22 @@ async function apiCall(url, options = {}) {
 }
 
 // Auth Logic
+const togglePasswordBtn = document.getElementById('toggle-password');
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+        const passInput = document.getElementById('login-pass');
+        const icon = togglePasswordBtn.querySelector('span');
+        
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            icon.textContent = 'visibility_off';
+        } else {
+            passInput.type = 'password';
+            icon.textContent = 'visibility';
+        }
+    });
+}
+
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const user = document.getElementById('login-user').value;

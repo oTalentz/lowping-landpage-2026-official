@@ -90,7 +90,12 @@
                     </div>
                     <div>
                         <label class="font-label text-xs uppercase tracking-widest text-on-surface-variant block mb-2">Senha</label>
-                        <input type="password" id="login-pass" required class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-secondary focus:ring-1 focus:ring-secondary transition-all text-on-surface" placeholder="••••••••">
+                        <div class="relative">
+                            <input type="password" id="login-pass" required class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-secondary focus:ring-1 focus:ring-secondary transition-all text-on-surface" placeholder="••••••••">
+                            <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </button>
+                        </div>
                     </div>
                     <div id="login-error" class="text-error text-xs hidden">Credenciais inválidas ou limite de tentativas excedido.</div>
                     <button type="submit" class="w-full kinetic-gradient text-white py-3 rounded-xl font-headline font-bold text-sm transition-all active:scale-95 mt-4 flex justify-center items-center gap-2">
