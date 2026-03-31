@@ -243,7 +243,7 @@ window.closeEditor = function() {
     document.getElementById('editor-modal').classList.add('hidden-view');
 }
 
-function handleArticleSubmit(e) {
+async function handleArticleSubmit(e) {
     e.preventDefault();
     
     // Assuming currentUser logic is skipped or mocked to admin here
