@@ -4,6 +4,8 @@
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <title>LOWPING | Hospedagem de Servidores Minecraft</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
         <link
             href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
@@ -114,8 +116,8 @@
             }
             .glass-panel {
                 background: rgba(29, 31, 39, 0.75);
-                backdrop-filter: blur(16px);
-                -webkit-backdrop-filter: blur(16px);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
             }
             K5deg, #ffb2bb 0%, #9e0038 100%);
             }
@@ -175,7 +177,6 @@
                 transform: scale(1.05);
             }
             .kinetic-gradient { background: linear-gradient(135deg, #ffb2bb 0%, #9e0038 100%); }
-            .will-change-transform { will-change: transform; }
 
             @keyframes subtle-float {
                 0% { transform: translateY(0px); }
@@ -184,7 +185,6 @@
             }
             .animate-subtle-float {
                 animation: subtle-float 6s ease-in-out infinite;
-                will-change: transform;
             }
 
             @keyframes text-shine {
@@ -239,16 +239,14 @@
                         class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
                         >00</span
                     >
-                    <span class="text-[#adc6ff] font-bold animate-pulse"
-                        >:</span
+                    <span class="text-[#adc6ff] font-bold">:</span
                     >
                     <span
                         id="timer-m"
                         class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
                         >00</span
                     >
-                    <span class="text-[#adc6ff] font-bold animate-pulse"
-                        >:</span
+                    <span class="text-[#adc6ff] font-bold">:</span
                     >
                     <span
                         id="timer-s"
@@ -267,7 +265,7 @@
 
         <!-- Navegacao Superior -->
         <nav
-            class="sticky top-0 md:top-10 z-50 w-full bg-[#11131a]/80 backdrop-blur-md transition-all duration-300 border-b md:border-b-0 border-white/5"
+            class="sticky top-0 md:top-10 z-50 w-full bg-[#11131a]/80 backdrop-blur-sm transition-all duration-300 border-b md:border-b-0 border-white/5"
             id="main-nav"
         >
             <div
@@ -336,7 +334,7 @@
                 <div class="absolute inset-0 z-0">
                     <img
                         alt="Paisagem voxel cinematica do Minecraft"
-                        class="w-full h-full object-cover opacity-20 grayscale brightness-50 will-change-transform"
+                        class="w-full h-full object-cover opacity-20 grayscale brightness-50 "
                         loading="eager"
                         fetchpriority="high"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7lLivQRbrhhavQZFcenpku9JSBOzuytUlQSA9c33BRwIf-AuzQP2ltUj8jAK6z04RTbYjmPi-vwHvN-MuJ4G1n92BinliQlzI5nfIMn2RzFCOJd8dq2M5O25TdBloLc4kwFaQGMq1WJZTpCObrjuMWn0QjFjx82J9YGR4ibn8TGElAfmk7W8oFilBCbU9IUnTQWNzi-jTQeks1NzHvaj5FoBPuk5SJL5pFz9JzJAHgiUgGn5OdGtBORruZvo4yOd4ZZJ-6xImwNk"
@@ -427,7 +425,7 @@
                                     <div class="flex items-center gap-3">
                                         <span class="material-symbols-outlined text-on-surface-variant">location_on</span>
                                         <div class="flex items-center gap-2">
-                                            <img id="selected-region-flag" src="https://flagcdn.com/w20/br.png" alt="BR" class="w-5 rounded-[2px] shadow-sm">
+                                            <img loading="lazy" decoding="async" id="selected-region-flag" src="https://flagcdn.com/w20/br.png" alt="BR" class="w-5 rounded-[2px] shadow-sm">
                                             <span id="selected-region-text" class="font-semibold text-on-surface">Brazil - Sao Paulo</span>
                                         </div>
                                     </div>
@@ -436,11 +434,11 @@
                                 
                                 <div id="region-dropdown-menu" class="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-surface-container-high border border-outline-variant/10 rounded-xl overflow-hidden shadow-2xl z-50 hidden flex-col">
                                     <div class="px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest cursor-pointer transition-colors region-option" data-value="br" data-ip="br1.lowping.com.br" data-name="Brazil - Sao Paulo" data-flag="br" data-tier="Premium" data-cpu="Ryzen 9 5950X" data-tier-color="text-primary" data-multiplier="9">
-                                        <img src="https://flagcdn.com/w20/br.png" alt="BR" class="w-5 rounded-[2px] shadow-sm">
+                                        <img loading="lazy" decoding="async" src="https://flagcdn.com/w20/br.png" alt="BR" class="w-5 rounded-[2px] shadow-sm">
                                         <span class="font-semibold text-on-surface">Brazil - Sao Paulo</span>
                                     </div>
                                     <div class="px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest cursor-pointer transition-colors region-option" data-value="ca" data-ip="ca1.lowping.com.br" data-name="Canada - Beauharnois" data-flag="ca" data-tier="Econômico" data-cpu="Ryzen 7 9700X" data-tier-color="text-secondary" data-multiplier="7.5">
-                                        <img src="https://flagcdn.com/w20/ca.png" alt="CA" class="w-5 rounded-[2px] shadow-sm">
+                                        <img loading="lazy" decoding="async" src="https://flagcdn.com/w20/ca.png" alt="CA" class="w-5 rounded-[2px] shadow-sm">
                                         <span class="font-semibold text-on-surface">Canada - Beauharnois</span>
                                     </div>
                                 </div>
@@ -674,7 +672,7 @@
                             >
                                 <img
                                     alt="Bonfire Comunidade"
-                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
+                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 "
                                     src="/bonfire.png"
                                     loading="lazy"
                                     decoding="async"
@@ -706,7 +704,7 @@
                             >
                                 <img
                                     alt="Matematica em Evidencia"
-                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
+                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 "
                                     src="/matematica-em-evidencia.png"
                                     loading="lazy"
                                     decoding="async"
@@ -743,7 +741,7 @@
                             >
                                 <img
                                     alt="Eco Studios"
-                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
+                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 "
                                     src="/eco-studios.png"
                                     loading="lazy"
                                     decoding="async"
@@ -787,7 +785,7 @@
                             >
                                 <img
                                     alt="ZappyCommunity"
-                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
+                                    class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 "
                                     src="/zappy-community.png"
                                     loading="lazy"
                                     decoding="async"
@@ -859,7 +857,7 @@
                         >
                             <img
                                 alt="Tema de sobrevivencia hardcore RLCraft"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 "
                                 src="RLCraft.png"
                                 loading="lazy"
                                 decoding="async"
@@ -890,7 +888,7 @@
                         >
                             <img
                                 alt="All The Mods 10"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 "
                                 src="AllTheMods10-png.png"
                                 loading="lazy"
                                 decoding="async"
@@ -921,7 +919,7 @@
                         >
                             <img
                                 alt="Pixelmon Mod"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 "
                                 src="PixelModded.png"
                                 loading="lazy"
                                 decoding="async"
@@ -1288,6 +1286,12 @@
                         return String(n).padStart(2, "0");
                     }
                     function tick() {
+                        const banner = document.getElementById("promo-banner");
+                        if (!banner || banner.style.display === 'none') {
+                            setTimeout(tick, 1000);
+                            return;
+                        }
+                        
                         const rem = endTime - Math.floor(Date.now() / 1000);
                         if (rem <= 0) {
                             ["timer-d", "timer-h", "timer-m", "timer-s"].forEach(
@@ -1315,11 +1319,18 @@
                     tick();
                 })();
 
-                // Sombra no scroll da nav
+                // Sombra no scroll da nav com requestAnimationFrame para performance
                 const nav = document.getElementById("main-nav");
+                let isScrolling = false;
                 window.addEventListener("scroll", () => {
-                    nav.classList.toggle("nav-scrolled", window.scrollY > 10);
-                });
+                    if (!isScrolling) {
+                        window.requestAnimationFrame(() => {
+                            nav.classList.toggle("nav-scrolled", window.scrollY > 10);
+                            isScrolling = false;
+                        });
+                        isScrolling = true;
+                    }
+                }, { passive: true });
 
                 // Selecao de card RAM
                 let selectedRam = 8; // Valor padrao do plano de 8GB

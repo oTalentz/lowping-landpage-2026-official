@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     renderCategoriesSidebar();
     
     // Check URL to see if we should render an article or the home page
@@ -48,7 +48,7 @@ function timeAgo(dateString) {
     return 'Publicado recentemente';
 }
 
-function renderCategoriesSidebar() {
+async function renderCategoriesSidebar() {
     const sidebar = document.getElementById('categories-sidebar');
     if (!sidebar) return;
 
