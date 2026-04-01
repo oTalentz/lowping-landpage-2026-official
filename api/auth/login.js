@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { sql, createPool } from '@vercel/postgres';
 
 export default async function handler(req, res) {
   // CORS Headers for API
@@ -17,6 +17,15 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  // Workaround for Neon DB prefix issues in Vercel
+  // If standard env vars are missing but STORAGE_ prefixed ones exist, map them over
+  if (!process.env.POSTGRES_URL && process.env.STORAGE_POSTGRES_URL) {
+      process.env.POSTGRES_URL = process.env.STORAGE_POSTGRES_URL;
+  }
+  if (!process.env.POSTGRES_URL_NON_POOLING && process.env.STORAGE_POSTGRES_URL_NON_POOLING) {
+      process.env.POSTGRES_URL_NON_POOLING = process.env.STORAGE_POSTGRES_URL_NON_POOLING;
   }
 
   try {
@@ -41,20 +50,25 @@ export default async function handler(req, res) {
     try {
         console.log(`Tentando conectar ao banco para usuário: ${username}`);
         
+        // Use createPool specifically to ensure it uses the latest env vars
+        const db = createPool({
+            connectionString: process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL
+        });
+        
         // Verifica se a tabela existe antes de fazer a query
         try {
-            await sql`SELECT 1 FROM admin_users LIMIT 1`;
+            await db.sql`SELECT 1 FROM admin_users LIMIT 1`;
         } catch (tableCheckError) {
             console.log('Tabela admin_users não encontrada, criando e inicializando...', tableCheckError.message);
             try {
-                await sql`
+                await db.sql`
                 CREATE TABLE IF NOT EXISTS admin_users (
                     id SERIAL PRIMARY KEY,
                     username VARCHAR(255) UNIQUE NOT NULL,
                     password_hash VARCHAR(255) NOT NULL
                 );
                 `;
-                await sql`
+                await db.sql`
                 INSERT INTO admin_users (username, password_hash)
                 VALUES ('admin', 'admin123')
                 ON CONFLICT (username) DO NOTHING;
@@ -69,7 +83,7 @@ export default async function handler(req, res) {
             }
         }
 
-        const { rows } = await sql`SELECT * FROM admin_users WHERE username = ${username}`;
+        const { rows } = await db.sql`SELECT * FROM admin_users WHERE username = ${username}`;
         
         if (rows.length === 0) {
             console.log(`Usuário ${username} não encontrado no banco de dados.`);
@@ -90,7 +104,11 @@ export default async function handler(req, res) {
         console.error('Database connection or query error:', dbError);
         return res.status(500).json({ 
             error: 'Erro de conexão com o banco de dados. Verifique as variáveis de ambiente.',
-            details: dbError.message 
+            details: dbError.message,
+            env_check: {
+                has_postgres_url: !!process.env.POSTGRES_URL,
+                has_storage_postgres_url: !!process.env.STORAGE_POSTGRES_URL
+            }
         });
     }
   } catch (error) {

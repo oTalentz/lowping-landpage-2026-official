@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { sql, createPool } from '@vercel/postgres';
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -12,9 +12,19 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Workaround for Neon DB prefix issues in Vercel
+  if (!process.env.POSTGRES_URL && process.env.STORAGE_POSTGRES_URL) {
+      process.env.POSTGRES_URL = process.env.STORAGE_POSTGRES_URL;
+  }
+
   try {
     const startTime = Date.now();
-    const { rows } = await sql`SELECT NOW() as time, version() as pg_version`;
+    
+    const db = createPool({
+        connectionString: process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL
+    });
+    
+    const { rows } = await db.sql`SELECT NOW() as time, version() as pg_version`;
     const endTime = Date.now();
 
     return res.status(200).json({ 
@@ -25,8 +35,8 @@ export default async function handler(req, res) {
         ping_ms: endTime - startTime,
         env_check: {
             has_url: !!process.env.POSTGRES_URL,
-            has_user: !!process.env.POSTGRES_USER,
-            has_host: !!process.env.POSTGRES_HOST
+            has_storage_url: !!process.env.STORAGE_POSTGRES_URL,
+            url_length: process.env.POSTGRES_URL ? process.env.POSTGRES_URL.length : 0
         }
     });
   } catch (error) {
@@ -37,8 +47,7 @@ export default async function handler(req, res) {
         error: error.message,
         env_check: {
             has_url: !!process.env.POSTGRES_URL,
-            has_user: !!process.env.POSTGRES_USER,
-            has_host: !!process.env.POSTGRES_HOST
+            has_storage_url: !!process.env.STORAGE_POSTGRES_URL
         }
     });
   }
