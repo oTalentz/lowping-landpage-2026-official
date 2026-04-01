@@ -115,20 +115,33 @@
             #promo-banner {
                 min-height: 40px;
                 padding: 0.35rem 0.75rem;
+                align-items: center;
+                justify-content: center;
+                gap: 0.45rem 0.75rem;
+                flex-wrap: wrap;
             }
             #promo-banner .promo-banner-main {
                 min-width: 0;
-                flex: 1 1 auto;
+                flex: 0 1 auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
             }
             #promo-banner-text {
                 display: inline-block;
-                max-width: 58vw;
+                max-width: min(58vw, 760px);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                line-height: 1.2;
             }
             #promo-banner .promo-banner-meta {
                 flex: 0 0 auto;
+                display: flex;
+                align-items: center;
+                gap: 0.45rem;
+                white-space: nowrap;
             }
             #promo-banner-action {
                 border-radius: 999px;
@@ -157,16 +170,26 @@
                 #promo-banner {
                     gap: 0.45rem;
                     align-items: center;
-                    justify-content: space-between;
+                    justify-content: center;
+                    flex-wrap: nowrap;
+                    padding: 0.35rem 0.55rem;
+                }
+                #promo-banner .promo-banner-main {
+                    flex: 0 1 auto;
+                    justify-content: center;
+                    gap: 0.35rem;
                 }
                 #promo-banner-text {
-                    max-width: 44vw;
+                    max-width: 46vw;
                     font-size: 10px;
                     line-height: 1.1;
                 }
                 #promo-banner .promo-time-separator,
                 #promo-banner .promo-time-day {
                     display: none;
+                }
+                #promo-banner .promo-banner-meta {
+                    gap: 0.35rem;
                 }
                 #promo-banner .promo-time {
                     font-size: 10px;
