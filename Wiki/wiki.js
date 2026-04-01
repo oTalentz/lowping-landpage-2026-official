@@ -48,6 +48,17 @@ function timeAgo(dateString) {
     return 'Publicado recentemente';
 }
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag]));
+}
+
 async function renderCategoriesSidebar() {
     const sidebar = document.getElementById('categories-sidebar');
     if (!sidebar) return;
@@ -236,10 +247,11 @@ async function renderSearch(query) {
     );
 
     document.title = `Busca: ${query} - Wiki`;
+    const safeQuery = escapeHTML(query);
 
     let html = `
         <div class="mb-8">
-            <h1 class="font-headline text-4xl font-extrabold text-on-surface mb-2">Resultados para "${query}"</h1>
+            <h1 class="font-headline text-4xl font-extrabold text-on-surface mb-2">Resultados para "${safeQuery}"</h1>
             <p class="text-on-surface-variant">${articles.length} artigo(s) encontrado(s).</p>
         </div>
         <div class="space-y-4">

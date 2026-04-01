@@ -1,6 +1,13 @@
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
+  if (req.method !== 'GET' && req.method !== 'OPTIONS') {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('admin_token_')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  }
+
   const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
   const sql = neon(connectionString);
   if (req.method === 'GET') {

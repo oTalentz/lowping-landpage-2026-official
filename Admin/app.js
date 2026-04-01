@@ -17,8 +17,9 @@ function showToast(message, type = 'success') {
     
     toast.innerHTML = `
         <span class="material-symbols-outlined ${colorClass}">${icon}</span>
-        <span class="text-sm font-medium">${message}</span>
+        <span class="text-sm font-medium toast-message"></span>
     `;
+    toast.querySelector('.toast-message').textContent = message;
     
     container.appendChild(toast);
     
@@ -244,21 +245,19 @@ function renderBanners() {
         `;
         grid.appendChild(div);
     });
-
-    // Attach event listeners for dynamic buttons
-    document.querySelectorAll('.btn-edit-banner').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            editBanner(id);
-        });
-    });
-    document.querySelectorAll('.btn-delete-banner').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            deleteBanner(id);
-        });
-    });
 }
+
+// Event Delegation for dynamic buttons
+document.getElementById('banners-grid')?.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.btn-edit-banner');
+    const deleteBtn = e.target.closest('.btn-delete-banner');
+    
+    if (editBtn) {
+        editBanner(editBtn.getAttribute('data-id'));
+    } else if (deleteBtn) {
+        deleteBanner(deleteBtn.getAttribute('data-id'));
+    }
+});
 
 function openBannerModal(id = null) {
     const form = document.getElementById('banner-form');
