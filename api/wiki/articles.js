@@ -1,14 +1,17 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
+  const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
+  const sql = neon(connectionString);
+
   if (req.method === 'GET') {
     const { category } = req.query;
     try {
       let rows;
       if (category) {
-        ({ rows } = await sql`SELECT * FROM wiki_articles WHERE category_id = ${category} ORDER BY created_at DESC`);
+        rows = await sql`SELECT * FROM wiki_articles WHERE category_id = ${category} ORDER BY created_at DESC`;
       } else {
-        ({ rows } = await sql`SELECT * FROM wiki_articles ORDER BY created_at DESC`);
+        rows = await sql`SELECT * FROM wiki_articles ORDER BY created_at DESC`;
       }
       return res.status(200).json(rows);
     } catch (error) {

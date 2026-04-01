@@ -1,7 +1,12 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
 export default async function handler(request, response) {
   try {
+    const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
+    if (!connectionString) {
+        throw new Error("String de conexão não encontrada");
+    }
+    const sql = neon(connectionString);
     // Tabela de Usuários Admin
     await sql`
       CREATE TABLE IF NOT EXISTS admin_users (
