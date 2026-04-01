@@ -133,6 +133,123 @@
       <link rel="stylesheet" crossorigin href="/assets/style-ZdpWcq85.css">
     </head>
     <body class="font-body">
+    <!-- Preloader Completo -->
+    <style>
+        #site-preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999999;
+            background-color: #11131a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #site-preloader.preloader-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .preloader-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 178, 187, 0.1);
+            border-left-color: #ffb2bb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .preloader-text {
+            color: #e2e2ec;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            animation: pulseText 2s ease-in-out infinite;
+        }
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+    </style>
+    <div id="site-preloader" aria-hidden="false" role="alert" aria-busy="true" aria-label="Carregando site LOWPING">
+        <div class="preloader-spinner"></div>
+        <div class="preloader-text">Carregando LOWPING...</div>
+    </div>
+    <noscript>
+        <style>#site-preloader { display: none !important; }</style>
+    </noscript>
+    <script>
+        (function() {
+            const preloader = document.getElementById('site-preloader');
+            if (!preloader) return;
+            
+            let isLoaded = false;
+            let safetyTimer;
+            
+            const hidePreloader = () => {
+                if (isLoaded) return;
+                isLoaded = true;
+                clearTimeout(safetyTimer);
+                preloader.classList.add('preloader-hidden');
+                preloader.setAttribute('aria-hidden', 'true');
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 600); // tempo da transição
+            };
+
+            // Timeout de segurança máximo (15 segundos)
+            safetyTimer = setTimeout(() => {
+                console.warn('Preloader timeout atingido. Forçando remoção.');
+                hidePreloader();
+            }, 15000);
+
+            // Monitorar carregamento
+            const checkLoad = async () => {
+                try {
+                    const promises = [];
+                    
+                    // DOM e Recursos básicos (Imagens, CSS, Scripts)
+                    const windowLoad = new Promise(resolve => {
+                        if (document.readyState === 'complete') {
+                            resolve();
+                        } else {
+                            window.addEventListener('load', resolve);
+                        }
+                    });
+                    promises.push(windowLoad);
+
+                    // Fontes
+                    if (document.fonts && document.fonts.ready) {
+                        promises.push(document.fonts.ready);
+                    }
+
+                    // Aguardar tudo com um timeout para as promessas individuais
+                    const allResources = Promise.all(promises);
+                    const resourceTimeout = new Promise(resolve => setTimeout(resolve, 10000)); // 10s max pra recursos
+
+                    await Promise.race([allResources, resourceTimeout]);
+                    
+                    // Se chegou aqui, os essenciais carregaram ou deu timeout menor
+                    // Dar um pequeno delay de 200ms para estabilização visual
+                    setTimeout(hidePreloader, 200);
+                } catch (e) {
+                    console.error('Erro no preloader:', e);
+                    hidePreloader();
+                }
+            };
+            
+            // Inicia checagem assim que possível
+            checkLoad();
+        })();
+    </script>
+    <!-- Fim Preloader -->
+
         <!-- Spacer para o banner fixo -->
         <div class="h-10"></div>
 
