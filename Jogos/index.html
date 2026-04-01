@@ -328,8 +328,11 @@
         </nav>
 
         <main>
+            <!-- Banners Dinâmicos -->
+            <div id="dynamic-banners-container" class="w-full max-w-7xl mx-auto px-4 sm:px-8 pt-6 z-10 relative"></div>
+
             <!-- Hero -->
-            <section class="relative pt-24 pb-32 overflow-hidden">
+            <section class="relative pt-8 pb-32 overflow-hidden">
                 <div class="absolute inset-0 z-0">
                     <img
                         alt="Paisagem voxel cinematica do Minecraft"
@@ -1529,34 +1532,36 @@
 
             // --- Banners ---
             try {
-                const banners = JSON.parse(localStorage.getItem('banners') || '[]');
-                const now = new Date();
-                const activeBanners = banners.filter(b => {
-                    const start = new Date(b.startDate);
-                    const end = new Date(b.endDate);
-                    // Ajuste o final do dia para a data de fim
-                    end.setHours(23, 59, 59, 999);
-                    return now >= start && now <= end;
-                }).sort((a, b) => a.order - b.order);
+                fetch('/api/admin/banners')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Falha ao carregar banners');
+                        return response.json();
+                    })
+                    .then(banners => {
+                        const activeBanners = banners.filter(b => b.active).sort((a, b) => a.order_index - b.order_index);
 
-                if (activeBanners.length > 0) {
-                    const main = document.querySelector('main');
-                    if (main) {
-                        const bannerContainer = document.createElement('div');
-                        bannerContainer.className = 'w-full max-w-7xl mx-auto px-4 mt-8 mb-8 flex flex-col gap-4 relative z-20';
-                        activeBanners.forEach(b => {
-                            const img = document.createElement('img');
-                            img.src = b.imageUrl;
-                            img.alt = b.title;
-                            img.className = 'w-full h-auto rounded-xl shadow-lg object-cover max-h-48 md:max-h-64 border border-white/5';
-                            bannerContainer.appendChild(img);
-                        });
-                        // Insere no começo do main
-                        main.insertBefore(bannerContainer, main.firstChild);
-                    }
-                }
+                        const container = document.getElementById('dynamic-banners-container');
+                        if (activeBanners.length > 0 && container) {
+                            activeBanners.forEach(b => {
+                                if (b.image_url) {
+                                    const a = document.createElement('a');
+                                    a.href = b.link_url || '#';
+                                    a.className = 'block w-full mb-4 transition-transform hover:scale-[1.01]';
+                                    
+                                    const img = document.createElement('img');
+                                    img.src = b.image_url;
+                                    img.alt = b.title;
+                                    img.className = 'w-full h-auto rounded-2xl shadow-2xl object-cover max-h-48 md:max-h-64 border border-outline-variant/20';
+                                    
+                                    a.appendChild(img);
+                                    container.appendChild(a);
+                                }
+                            });
+                        }
+                    })
+                    .catch(e => console.error('Erro ao sincronizar banners:', e));
             } catch (e) {
-                console.error('Erro ao sincronizar banners:', e);
+                console.error('Erro ao buscar banners:', e);
             }
         });
     </script>
