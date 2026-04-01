@@ -137,7 +137,7 @@ async function handler(req, res) {
     }
 
     clearLoginRateLimit(rateKey);
-    const token = issueAuthToken(user.id, user.role || 'admin', 3600);
+    const token = issueAuthToken(user.id, user.role || 'admin', 3600, connectionString);
     if (!token) {
       return res.status(500).json({ error: 'Configuração de segurança inválida' });
     }

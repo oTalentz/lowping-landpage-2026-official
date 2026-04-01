@@ -62,7 +62,16 @@ function setCors(req, res, methods) {
   return true;
 }
 
-function getSecret() {
+function toDerivedSecret(seed) {
+  if (typeof seed !== 'string') return null;
+  const normalized = seed.trim();
+  if (!normalized) return null;
+  return crypto.createHash('sha256').update(normalized).digest('hex');
+}
+
+function getSecret(secretSeed = '') {
+  const seeded = toDerivedSecret(`lowping-admin:${secretSeed}`);
+  if (seeded) return seeded;
   const candidateSecrets = [
     process.env.ADMIN_JWT_SECRET,
     process.env.JWT_SECRET,
@@ -74,16 +83,15 @@ function getSecret() {
     const normalized = candidate.trim();
     if (!normalized) continue;
     if (normalized.length >= 32) return normalized;
-    return crypto.createHash('sha256').update(normalized).digest('hex');
+    return toDerivedSecret(normalized);
   }
   const connectionSeed =
     process.env.POSTGRES_URL ||
     process.env.STORAGE_POSTGRES_URL ||
     process.env.DATABASE_URL ||
     process.env.STORAGE_DATABASE_URL;
-  if (typeof connectionSeed === 'string' && connectionSeed.trim()) {
-    return crypto.createHash('sha256').update(`lowping-admin:${connectionSeed.trim()}`).digest('hex');
-  }
+  const derivedFromConnection = toDerivedSecret(`lowping-admin:${connectionSeed || ''}`);
+  if (derivedFromConnection) return derivedFromConnection;
   return null;
 }
 
@@ -132,8 +140,8 @@ function verifySignedToken(token, secret) {
   }
 }
 
-function issueAuthToken(subject, role = 'admin', ttlSeconds = 3600) {
-  const secret = getSecret();
+function issueAuthToken(subject, role = 'admin', ttlSeconds = 3600, secretSeed = '') {
+  const secret = getSecret(secretSeed);
   if (!secret) return null;
   const now = Math.floor(Date.now() / 1000);
   return signPayload(
