@@ -329,5 +329,22 @@
     <!-- Scripts -->
     <script type="module" src="wiki_api.js"></script>
     <script type="module" src="wiki.js"></script>
+
+    <script>
+        // Menu Mobile Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+                mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                const icon = mobileMenuBtn.querySelector('.material-symbols-outlined');
+                if(icon) icon.textContent = isExpanded ? 'menu' : 'close';
+            });
+        }
+    </script>
+
 </body></html>
 
