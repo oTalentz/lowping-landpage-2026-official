@@ -3,12 +3,12 @@ import{t as e}from"./modulepreload-polyfill-D1H0ivOT.js";/* empty css           
             <span class="material-symbols-outlined text-xl" data-icon="grid_view">grid_view</span>
             Visão Geral
         </a>
-    `;t.forEach(e=>{n+=`
+    `;t.forEach(e=>{e.slug===`geral`||e.name.toLowerCase()===`visão geral`||(n+=`
             <a class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="?category=${e.slug}">
                 <span class="material-symbols-outlined text-xl" data-icon="${e.icon}">${e.icon}</span>
                 ${e.name}
             </a>
-        `}),e.innerHTML=n}async function r(){let t=document.getElementById(`main-content`);if(!t)return;let n=await db.getCategories(),r=(await db.getArticles()).filter(e=>e.status===`published`),i=`
+        `)}),e.innerHTML=n}async function r(){let t=document.getElementById(`main-content`);if(!t)return;let n=await db.getCategories(),r=(await db.getArticles()).filter(e=>e.status===`published`),i=`
         <!-- Category Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
     `;n.slice(0,4).forEach((e,t)=>{let n=[`primary`,`secondary`,`tertiary`,`outline`],r=n[t%n.length];i+=`

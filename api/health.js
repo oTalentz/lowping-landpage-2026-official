@@ -1,57 +1,38 @@
-import { neon } from '@neondatabase/serverless';
+const { neon } = require('@neondatabase/serverless');
+const { applySecurityHeaders, setCors, authenticateRequest } = require('./_lib/security');
 
-export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', '*');
+async function handler(req, res) {
+  applySecurityHeaders(res);
+  if (!setCors(req, res, ['GET', 'OPTIONS'])) return;
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  // Workaround for Neon DB prefix issues in Vercel
-  if (!process.env.POSTGRES_URL && process.env.STORAGE_POSTGRES_URL) {
-      process.env.POSTGRES_URL = process.env.STORAGE_POSTGRES_URL;
-  }
+  const auth = authenticateRequest(req, res, ['admin']);
+  if (!auth) return;
 
   try {
     const startTime = Date.now();
-    
-    const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
+    const connectionString =
+      process.env.POSTGRES_URL ||
+      process.env.STORAGE_POSTGRES_URL ||
+      process.env.DATABASE_URL ||
+      process.env.STORAGE_DATABASE_URL;
     if (!connectionString) {
-        throw new Error("String de conexão com o banco de dados não encontrada");
+      return res.status(503).json({ status: 'error' });
     }
 
     const sql = neon(connectionString);
-    
-    const rows = await sql`SELECT NOW() as time, version() as pg_version`;
-    const endTime = Date.now();
+    await sql`SELECT NOW() as time`;
 
-    return res.status(200).json({ 
-        status: 'ok', 
-        message: 'API is running and connected to database',
-        db_time: rows[0].time,
-        pg_version: rows[0].pg_version,
-        ping_ms: endTime - startTime,
-        env_check: {
-            has_url: !!process.env.POSTGRES_URL,
-            has_storage_url: !!process.env.STORAGE_POSTGRES_URL,
-            url_length: process.env.POSTGRES_URL ? process.env.POSTGRES_URL.length : 0
-        }
+    return res.status(200).json({
+      status: 'ok',
+      ping_ms: Date.now() - startTime
     });
-  } catch (error) {
-    console.error('Health check failed:', error);
-    return res.status(500).json({ 
-        status: 'error', 
-        message: 'Database connection failed',
-        error: error.message,
-        env_check: {
-            has_url: !!process.env.POSTGRES_URL,
-            has_storage_url: !!process.env.STORAGE_POSTGRES_URL
-        }
-    });
+  } catch {
+    return res.status(500).json({ status: 'error' });
   }
 }
+
+module.exports = handler;

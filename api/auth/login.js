@@ -1,125 +1,136 @@
-import { neon } from '@neondatabase/serverless';
+const { neon } = require('@neondatabase/serverless');
+const {
+  applySecurityHeaders,
+  setCors,
+  parseJsonBody,
+  issueAuthToken,
+  hashPassword,
+  verifyPassword,
+  getClientIp,
+  consumeLoginRateLimit,
+  clearLoginRateLimit
+} = require('../_lib/security');
 
-export default async function handler(req, res) {
-  // CORS Headers for API
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-  );
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+async function handler(req, res) {
+  applySecurityHeaders(res);
+  if (!setCors(req, res, ['POST', 'OPTIONS'])) return;
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  // Workaround for Neon DB prefix issues in Vercel
-  // If standard env vars are missing but STORAGE_ prefixed ones exist, map them over
-  if (!process.env.POSTGRES_URL && process.env.STORAGE_POSTGRES_URL) {
-      process.env.POSTGRES_URL = process.env.STORAGE_POSTGRES_URL;
+  const body = parseJsonBody(req);
+  if (!body) {
+    return res.status(400).json({ error: 'Corpo JSON inválido' });
   }
-  if (!process.env.POSTGRES_URL_NON_POOLING && process.env.STORAGE_POSTGRES_URL_NON_POOLING) {
-      process.env.POSTGRES_URL_NON_POOLING = process.env.STORAGE_POSTGRES_URL_NON_POOLING;
+
+  const username = typeof body.username === 'string' ? body.username.trim() : '';
+  const password = typeof body.password === 'string' ? body.password : '';
+
+  if (username.length < 3 || username.length > 80 || password.length < 8 || password.length > 200) {
+    return res.status(400).json({ error: 'Credenciais inválidas' });
+  }
+
+  const ip = getClientIp(req);
+  const rateKey = `${ip}:${username}`;
+  const rateLimit = consumeLoginRateLimit(rateKey);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(Math.ceil(rateLimit.retryAfterMs / 1000)));
+    return res.status(429).json({ error: 'Muitas tentativas. Tente novamente depois.' });
+  }
+
+  const connectionString =
+    process.env.POSTGRES_URL ||
+    process.env.STORAGE_POSTGRES_URL ||
+    process.env.DATABASE_URL ||
+    process.env.STORAGE_DATABASE_URL;
+
+  if (!connectionString) {
+    return res.status(500).json({ error: 'Serviço indisponível' });
+  }
+
+  const bootstrapPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
+  if (bootstrapPassword && bootstrapPassword.length < 12) {
+    return res.status(500).json({ error: 'Configuração de bootstrap inválida' });
   }
 
   try {
-    let body;
-    if (typeof req.body === 'string') {
-        try {
-            body = JSON.parse(req.body);
-        } catch (e) {
-            console.error('Invalid JSON body:', e);
-            return res.status(400).json({ error: 'Invalid JSON body' });
-        }
-    } else {
-        body = req.body;
-    }
+    const sql = neon(connectionString);
 
-    const { username, password } = body;
-
-    if (!username || !password) {
-        return res.status(400).json({ success: false, message: 'Usuário e senha são obrigatórios' });
-    }
-
+    await sql`
+      CREATE TABLE IF NOT EXISTS admin_users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'admin',
+        active BOOLEAN DEFAULT TRUE
+      );
+    `;
     try {
-        console.log(`Tentando conectar ao banco para usuário: ${username}`);
-        
-        // Use neon directly
-        const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
-        
-        if (!connectionString) {
-            throw new Error("String de conexão com o banco de dados não encontrada");
-        }
-        
-        const sql = neon(connectionString);
-        
-        // Verifica se a tabela existe antes de fazer a query
-        try {
-            await sql`SELECT 1 FROM admin_users LIMIT 1`;
-        } catch (tableCheckError) {
-            console.log('Tabela admin_users não encontrada, criando e inicializando...', tableCheckError.message);
-            try {
-                await sql`
-                CREATE TABLE IF NOT EXISTS admin_users (
-                    id SERIAL PRIMARY KEY,
-                    username VARCHAR(255) UNIQUE NOT NULL,
-                    password_hash VARCHAR(255) NOT NULL
-                );
-                `;
-                await sql`
-                INSERT INTO admin_users (username, password_hash)
-                VALUES ('admin', 'admin123')
-                ON CONFLICT (username) DO NOTHING;
-                `;
-                console.log('Tabela admin_users criada e inicializada com sucesso.');
-            } catch (initError) {
-                console.error('Erro crítico ao criar/inicializar tabela admin_users:', initError);
-                return res.status(500).json({ 
-                    error: 'Erro de inicialização do banco de dados.',
-                    details: initError.message 
-                });
-            }
-        }
-
-        const rows = await sql`SELECT * FROM admin_users WHERE username = ${username}`;
-        
-        if (rows.length === 0) {
-            console.log(`Usuário ${username} não encontrado no banco de dados.`);
-            return res.status(401).json({ success: false, message: 'Usuário não encontrado' });
-        }
-
-        const user = rows[0];
-        
-        if (user.password_hash === password) {
-            console.log(`Login bem-sucedido para usuário: ${username}`);
-            const token = `admin_token_${Date.now()}`;
-            return res.status(200).json({ success: true, token, user: { id: user.id, username: user.username } });
-        } else {
-            console.log(`Senha incorreta para usuário: ${username}`);
-            return res.status(401).json({ success: false, message: 'Senha incorreta' });
-        }
-    } catch (dbError) {
-        console.error('Database connection or query error:', dbError);
-        return res.status(500).json({ 
-            error: 'Erro de conexão com o banco de dados. Verifique as variáveis de ambiente.',
-            details: dbError.message,
-            env_check: {
-                has_postgres_url: !!process.env.POSTGRES_URL,
-                has_storage_postgres_url: !!process.env.STORAGE_POSTGRES_URL
-            }
-        });
+      await sql`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'admin';`;
+      await sql`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;`;
+    } catch {
     }
-  } catch (error) {
-    console.error('General login handler error:', error);
-    return res.status(500).json({ 
-        error: 'Erro interno no servidor',
-        details: error.message 
+
+    const countRows = await sql`SELECT COUNT(*)::int AS count FROM admin_users`;
+    const userCount = Number(countRows?.[0]?.count || 0);
+    if (userCount === 0) {
+      if (!bootstrapPassword) {
+        return res.status(503).json({ error: 'Configuração inicial de administrador pendente' });
+      }
+      await sql`
+        INSERT INTO admin_users (username, password_hash, role, active)
+        VALUES ('admin', ${hashPassword(bootstrapPassword)}, 'admin', TRUE)
+        ON CONFLICT (username) DO NOTHING;
+      `;
+    }
+
+    const rows = await sql`
+      SELECT id, username, password_hash, role, active
+      FROM admin_users
+      WHERE username = ${username}
+      LIMIT 1
+    `;
+
+    if (!rows || rows.length === 0) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const user = rows[0];
+    if (user.active === false) {
+      return res.status(403).json({ error: 'Conta desativada' });
+    }
+
+    let authenticated = verifyPassword(password, user.password_hash || '');
+
+    if (!authenticated && typeof user.password_hash === 'string' && user.password_hash === password) {
+      authenticated = true;
+      await sql`UPDATE admin_users SET password_hash = ${hashPassword(password)} WHERE id = ${user.id}`;
+    }
+
+    if (!authenticated) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    clearLoginRateLimit(rateKey);
+    const token = issueAuthToken(user.id, user.role || 'admin', 3600);
+    if (!token) {
+      return res.status(500).json({ error: 'Configuração de segurança inválida' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role || 'admin'
+      },
+      expiresIn: 3600
     });
+  } catch {
+    return res.status(500).json({ error: 'Falha interna no login' });
   }
 }
+
+module.exports = handler;

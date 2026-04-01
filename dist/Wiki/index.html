@@ -55,9 +55,9 @@
             background: rgba(29, 31, 39, 0.7);
         }
     </style>
-  <script type="module" crossorigin src="/assets/wiki-BiaVXr1R.js"></script>
+  <script type="module" crossorigin src="/assets/wiki-C80j2UYI.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-D1H0ivOT.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-ZdpWcq85.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BZlUyUNf.css">
 </head>
 <body class="bg-background text-on-surface font-body selection:bg-secondary selection:text-on-secondary">
     <!-- Preloader Completo -->
@@ -329,5 +329,22 @@
     </div>
 </footer>
     <!-- Scripts -->
+
+    <script>
+        // Menu Mobile Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+                mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                const icon = mobileMenuBtn.querySelector('.material-symbols-outlined');
+                if(icon) icon.textContent = isExpanded ? 'menu' : 'close';
+            });
+        }
+    </script>
+
 </body></html>
 

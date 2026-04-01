@@ -136,9 +136,10 @@ function maskDate(e) {
 
 // API Helpers
 async function apiCall(url, options = {}) {
+    const authHeader = currentToken ? (currentToken.startsWith('Bearer ') ? currentToken : `Bearer ${currentToken}`) : null;
     const headers = {
         'Content-Type': 'application/json',
-        ...(currentToken ? { 'Authorization': currentToken } : {})
+        ...(authHeader ? { 'Authorization': authHeader } : {})
     };
     
     try {
@@ -155,7 +156,7 @@ async function apiCall(url, options = {}) {
         }
         
         if (!response.ok) {
-            if (response.status === 401 && url !== '/api/login' && url !== '/api/auth/login') {
+            if (response.status === 401 && url !== '/api/auth/login') {
                 logout();
             }
             
@@ -200,10 +201,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const pass = document.getElementById('login-pass').value;
     
     try {
-        // Usa a rota real se disponível, ou a rota antiga
-        const loginUrl = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1') ? '/api/login' : '/api/auth/login';
-        
-        const data = await apiCall(loginUrl, {
+        const data = await apiCall('/api/auth/login', {
             method: 'POST',
             body: JSON.stringify({ username: user, password: pass })
         });

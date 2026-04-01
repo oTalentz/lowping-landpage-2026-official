@@ -44,7 +44,7 @@
 }
     </style>
 
-  <link rel="stylesheet" crossorigin href="/assets/style-ZdpWcq85.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BZlUyUNf.css">
 </head>
 <body class="font-body">
     <!-- Preloader Completo -->
@@ -222,7 +222,7 @@
     </div>
 </header>
 <nav class="sticky top-0 z-50 w-full bg-[#11131a]/80 backdrop-blur-sm transition-all duration-300 border-b border-white/5" id="main-nav">
-<div class="max-w-7xl mx-auto flex justify-between items-center w-full">
+<div class="max-w-7xl mx-auto flex justify-between items-center w-full px-8 py-4">
 <a href="/Jogos/" class="text-2xl font-black text-[#ffb2bb] tracking-tighter font-headline hover:opacity-80 transition-opacity">LOWPING</a>
 <div class="hidden md:flex gap-8 items-center font-headline font-semibold tracking-tight">
 <a class="text-[#ffb2bb] border-b-2 border-[#ffb2bb] pb-1" href="#">Games</a>
@@ -230,10 +230,24 @@
 <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="#">Dedicated</a>
 <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="/Wiki/">Wiki</a>
 </div>
-<div class="flex gap-4 items-center">
+<div class="hidden md:flex gap-4 items-center">
 <button class="text-blue-200 font-headline font-semibold">Login</button>
 <button class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-xl font-headline font-bold hover:brightness-110 transition-all">Get Started</button>
 </div>
+<button id="mobile-menu-btn" class="md:hidden text-[#c2c6d6] hover:text-white transition-colors" aria-label="Abrir menu mobile" aria-expanded="false">
+    <span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+
+<!-- Menu Mobile -->
+<div id="mobile-menu" class="hidden md:hidden bg-surface-container-high border-t border-outline-variant/20 absolute w-full left-0 flex-col px-8 py-6 gap-4 shadow-2xl">
+    <a class="text-[#ffb2bb] font-headline font-semibold text-lg" href="#">Games</a>
+    <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors font-headline font-semibold text-lg" href="/Vps/">VPS</a>
+    <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors font-headline font-semibold text-lg" href="#">Dedicated</a>
+    <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors font-headline font-semibold text-lg" href="/Wiki/">Wiki</a>
+    <div class="h-px w-full bg-outline-variant/20 my-2"></div>
+    <button class="text-[#c2c6d6] font-headline font-semibold py-2 text-left hover:text-white text-lg">Login</button>
+    <button class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-headline font-bold hover:brightness-110 transition-all text-center text-lg mt-2">Get Started</button>
 </div>
 </nav>
 <main>
@@ -251,7 +265,7 @@
 <p class="text-on-surface-variant text-xl mb-10 max-w-xl">
                     Experience low-latency gaming with automated modpack deployments and 24/7 technical precision. Built for creators and competitive players.
                 </p>
-<div class="grid grid-cols-2 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 <div class="flex items-center gap-3">
 <span class="material-symbols-outlined text-tertiary">bolt</span>
 <span class="font-label text-sm uppercase tracking-wider text-on-surface">One-click installs</span>
@@ -292,7 +306,7 @@
 </div>
 <div class="mb-8">
 <label class="font-label text-xs font-bold text-primary mb-3 block uppercase tracking-widest">Memory Allocation (RAM)</label>
-<div class="grid grid-cols-3 gap-3">
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
 <div class="bg-surface-container-low p-3 rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-all">
 <div class="font-label text-lg font-bold">4GB</div>
 <div class="text-[10px] text-on-surface-variant uppercase">Vanilla</div>
@@ -792,5 +806,22 @@ document.addEventListener('DOMContentLoaded', () => {
             tick();
         })();
 </script>
+
+    <script>
+        // Menu Mobile Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+                mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                const icon = mobileMenuBtn.querySelector('.material-symbols-outlined');
+                if(icon) icon.textContent = isExpanded ? 'menu' : 'close';
+            });
+        }
+    </script>
+
 </body></html>
 

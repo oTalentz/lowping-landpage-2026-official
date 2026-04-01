@@ -46,7 +46,7 @@ const db = {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('admin_token') || ''
+                    'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
                 },
                 body: JSON.stringify(payload)
             });
@@ -83,7 +83,7 @@ const db = {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('admin_token') || ''
+                'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
             },
             body: JSON.stringify(payload)
         });
@@ -109,7 +109,7 @@ const db = {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('admin_token') || ''
+                    'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
                 },
                 body: JSON.stringify(payload)
             });
@@ -138,7 +138,7 @@ const db = {
         const res = await fetch(`${API_BASE}/wiki/articles?id=${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': localStorage.getItem('admin_token') || ''
+                'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
             }
         });
         if (!res.ok) {

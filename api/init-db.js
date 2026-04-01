@@ -1,30 +1,55 @@
-import { neon } from '@neondatabase/serverless';
+const { neon } = require('@neondatabase/serverless');
+const { applySecurityHeaders, setCors, hashPassword } = require('./_lib/security');
 
-export default async function handler(request, response) {
+async function handler(request, response) {
+  applySecurityHeaders(response);
+  if (!setCors(request, response, ['POST', 'OPTIONS'])) return;
+
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Método não permitido' });
+  }
+
+  const initKey = request.headers['x-init-key'];
+  if (!process.env.DB_INIT_KEY || initKey !== process.env.DB_INIT_KEY) {
+    return response.status(403).json({ error: 'Acesso negado' });
+  }
+
   try {
-    const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
+    const connectionString =
+      process.env.POSTGRES_URL ||
+      process.env.STORAGE_POSTGRES_URL ||
+      process.env.DATABASE_URL ||
+      process.env.STORAGE_DATABASE_URL;
     if (!connectionString) {
-        throw new Error("String de conexão não encontrada");
+      return response.status(500).json({ error: 'Serviço indisponível' });
     }
+
     const sql = neon(connectionString);
-    // Tabela de Usuários Admin
+
     await sql`
       CREATE TABLE IF NOT EXISTS admin_users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'admin',
+        active BOOLEAN DEFAULT TRUE
       );
     `;
+    try {
+      await sql`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'admin';`;
+      await sql`ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;`;
+    } catch {
+    }
 
-    // Inserir usuário padrão se não existir (a senha deve ser trocada depois)
-    // admin / admin123 (hash mockado ou apenas texto para teste temporário)
-    await sql`
-      INSERT INTO admin_users (username, password_hash)
-      VALUES ('admin', 'admin123')
-      ON CONFLICT (username) DO NOTHING;
-    `;
+    const bootstrapPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
+    if (bootstrapPassword && bootstrapPassword.length >= 12) {
+      await sql`
+        INSERT INTO admin_users (username, password_hash, role, active)
+        VALUES ('admin', ${hashPassword(bootstrapPassword)}, 'admin', TRUE)
+        ON CONFLICT (username) DO NOTHING;
+      `;
+    }
 
-    // Tabelas Wiki
     await sql`
       CREATE TABLE IF NOT EXISTS wiki_categories (
         id VARCHAR(255) PRIMARY KEY,
@@ -35,10 +60,9 @@ export default async function handler(request, response) {
       );
     `;
 
-    // Inserir categorias padrão da Wiki
     await sql`
       INSERT INTO wiki_categories (id, name, slug, description, icon)
-      VALUES 
+      VALUES
         ('geral', 'Visão Geral', 'geral', 'Termos de serviço e guias introdutórios.', 'dashboard'),
         ('minecraft', 'Minecraft', 'minecraft', 'Tudo sobre instalação de plugins, mods, otimização de performance.', 'sports_esports'),
         ('vps', 'VPS Hosting', 'vps', 'Guias para Linux, Windows, configuração de firewall e administração.', 'dns'),
@@ -61,7 +85,6 @@ export default async function handler(request, response) {
       );
     `;
 
-    // Tabelas Cupons e Banners
     await sql`
       CREATE TABLE IF NOT EXISTS coupons (
         id VARCHAR(255) PRIMARY KEY,
@@ -85,8 +108,10 @@ export default async function handler(request, response) {
       );
     `;
 
-    return response.status(200).json({ message: 'Banco de dados inicializado com sucesso!' });
-  } catch (error) {
-    return response.status(500).json({ error: error.message });
+    return response.status(200).json({ success: true });
+  } catch {
+    return response.status(500).json({ error: 'Falha na inicialização' });
   }
 }
+
+module.exports = handler;
