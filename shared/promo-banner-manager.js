@@ -154,6 +154,7 @@
     promoBanner.style.flexWrap = 'wrap';
     promoBanner.style.overflow = 'hidden';
     promoBanner.style.alignItems = 'center';
+    promoBanner.style.justifyContent = 'center';
     promoBanner.style.gap = '8px';
     promoBanner.style.minHeight = '40px';
     promoBanner.style.padding = '0.35rem 0.75rem';
@@ -168,6 +169,7 @@
       if (mainGroup) {
         mainGroup.style.display = 'flex';
         mainGroup.style.alignItems = 'center';
+        mainGroup.style.justifyContent = 'center';
         mainGroup.style.gap = '8px';
       }
       if (metaGroup) {
