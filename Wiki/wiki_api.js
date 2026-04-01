@@ -2,6 +2,10 @@
 // Client API para conectar ao Vercel Serverless Backend
 
 const API_BASE = '/api';
+let cachedCategories = null;
+let cachedArticles = null;
+let pendingCategoriesRequest = null;
+let pendingArticlesRequest = null;
 
 const db = {
     // Flag temporária para fallback se o backend falhar
@@ -9,10 +13,22 @@ const db = {
 
     async getCategories() {
         if (this.useMock) return JSON.parse(localStorage.getItem('wiki_categories') || '[]');
+        if (cachedCategories) return cachedCategories;
+        if (pendingCategoriesRequest) return pendingCategoriesRequest;
         try {
-            const res = await fetch(`${API_BASE}/wiki/categories`);
-            if (!res.ok) throw new Error('Falha ao carregar categorias');
-            return await res.json();
+            pendingCategoriesRequest = fetch(`${API_BASE}/wiki/categories`)
+                .then((res) => {
+                    if (!res.ok) throw new Error('Falha ao carregar categorias');
+                    return res.json();
+                })
+                .then((data) => {
+                    cachedCategories = Array.isArray(data) ? data : [];
+                    return cachedCategories;
+                })
+                .finally(() => {
+                    pendingCategoriesRequest = null;
+                });
+            return await pendingCategoriesRequest;
         } catch (err) {
             console.error(err);
             return [];
@@ -21,10 +37,22 @@ const db = {
     
     async getArticles() {
         if (this.useMock) return JSON.parse(localStorage.getItem('wiki_articles') || '[]');
+        if (cachedArticles) return cachedArticles;
+        if (pendingArticlesRequest) return pendingArticlesRequest;
         try {
-            const res = await fetch(`${API_BASE}/wiki/articles`);
-            if (!res.ok) throw new Error('Falha ao carregar artigos');
-            return await res.json();
+            pendingArticlesRequest = fetch(`${API_BASE}/wiki/articles`)
+                .then((res) => {
+                    if (!res.ok) throw new Error('Falha ao carregar artigos');
+                    return res.json();
+                })
+                .then((data) => {
+                    cachedArticles = Array.isArray(data) ? data : [];
+                    return cachedArticles;
+                })
+                .finally(() => {
+                    pendingArticlesRequest = null;
+                });
+            return await pendingArticlesRequest;
         } catch (err) {
             console.error(err);
             return [];
@@ -55,6 +83,8 @@ const db = {
                 throw new Error(errorData.error || 'Erro ao salvar categoria');
             }
         }
+        cachedCategories = null;
+        pendingCategoriesRequest = null;
     },
 
     async saveArticle(art) {
@@ -91,6 +121,8 @@ const db = {
             const errorData = await res.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao salvar artigo');
         }
+        cachedArticles = null;
+        pendingArticlesRequest = null;
     },
 
     async saveArticles(data) {
@@ -118,6 +150,8 @@ const db = {
                 throw new Error(errorData.error || 'Erro ao salvar artigo');
             }
         }
+        cachedArticles = null;
+        pendingArticlesRequest = null;
     },
 
     // Versões ainda em localStorage por enquanto (para não complicar o DB demais agora)
@@ -145,6 +179,8 @@ const db = {
             const errorData = await res.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao excluir artigo');
         }
+        cachedArticles = null;
+        pendingArticlesRequest = null;
     }
 };
 

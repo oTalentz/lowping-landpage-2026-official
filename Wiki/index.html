@@ -139,30 +139,27 @@
                 try {
                     const promises = [];
                     
-                    // DOM e Recursos básicos (Imagens, CSS, Scripts)
-                    const windowLoad = new Promise(resolve => {
-                        if (document.readyState === 'complete') {
-                            resolve();
+                    const domReady = new Promise(resolve => {
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', resolve, { once: true });
                         } else {
-                            window.addEventListener('load', resolve);
+                            resolve();
                         }
                     });
-                    promises.push(windowLoad);
+                    promises.push(domReady);
 
                     // Fontes
                     if (document.fonts && document.fonts.ready) {
-                        promises.push(document.fonts.ready);
+                        const fontTimeout = new Promise(resolve => setTimeout(resolve, 1500));
+                        promises.push(Promise.race([document.fonts.ready, fontTimeout]));
                     }
 
-                    // Aguardar tudo com um timeout para as promessas individuais
                     const allResources = Promise.all(promises);
-                    const resourceTimeout = new Promise(resolve => setTimeout(resolve, 10000)); // 10s max pra recursos
+                    const resourceTimeout = new Promise(resolve => setTimeout(resolve, 4000));
 
                     await Promise.race([allResources, resourceTimeout]);
                     
-                    // Se chegou aqui, os essenciais carregaram ou deu timeout menor
-                    // Dar um pequeno delay de 200ms para estabilização visual
-                    setTimeout(hidePreloader, 200);
+                    setTimeout(hidePreloader, 60);
                 } catch (e) {
                     console.error('Erro no preloader:', e);
                     hidePreloader();

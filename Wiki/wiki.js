@@ -1,5 +1,32 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    renderCategoriesSidebar();
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        mainContent.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16 animate-pulse">
+                <div class="bg-surface-container-low rounded-[2rem] h-52"></div>
+                <div class="bg-surface-container-low rounded-[2rem] h-52"></div>
+                <div class="bg-surface-container-low rounded-[2rem] h-52"></div>
+                <div class="bg-surface-container-low rounded-[2rem] h-52"></div>
+            </div>
+            <div class="space-y-4 animate-pulse">
+                <div class="bg-surface-container-lowest rounded-2xl h-24"></div>
+                <div class="bg-surface-container-lowest rounded-2xl h-24"></div>
+                <div class="bg-surface-container-lowest rounded-2xl h-24"></div>
+            </div>
+        `;
+    }
+    const sidebar = document.getElementById('categories-sidebar');
+    if (sidebar) {
+        sidebar.innerHTML = `
+            <div class="space-y-2 animate-pulse">
+                <div class="bg-surface-container h-12 rounded-xl"></div>
+                <div class="bg-surface-container h-12 rounded-xl"></div>
+                <div class="bg-surface-container h-12 rounded-xl"></div>
+                <div class="bg-surface-container h-12 rounded-xl"></div>
+            </div>
+        `;
+    }
+    const sidebarPromise = renderCategoriesSidebar();
     
     // Check URL to see if we should render an article or the home page
     const params = new URLSearchParams(window.location.search);
@@ -8,14 +35,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchQuery = params.get('q');
 
     if (articleSlug) {
-        renderArticle(articleSlug);
+        await renderArticle(articleSlug);
     } else if (categorySlug) {
-        renderCategory(categorySlug);
+        await renderCategory(categorySlug);
     } else if (searchQuery) {
-        renderSearch(searchQuery);
+        await renderSearch(searchQuery);
     } else {
         await renderHome();
     }
+    await sidebarPromise;
 
     // Handle search input
     const searchInput = document.getElementById('search-input');
@@ -89,8 +117,10 @@ async function renderHome() {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
 
-    const categories = await db.getCategories();
-    const allArticles = await db.getArticles();
+    const [categories, allArticles] = await Promise.all([
+        db.getCategories(),
+        db.getArticles()
+    ]);
     const articles = allArticles.filter(a => a.status === 'published');
 
     let html = `
