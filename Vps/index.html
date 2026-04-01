@@ -146,7 +146,34 @@
                 transform: scale(1.05);
             }
             .kinetic-gradient { background: linear-gradient(135deg, #ffb2bb 0%, #9e0038 100%); }
-</style>
+            .text-glow-secondary {
+                text-shadow: 0 0 30px rgba(255, 178, 187, 0.45);
+            }
+            .will-change-transform { will-change: transform; }
+
+            @keyframes subtle-float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+            .animate-subtle-float {
+                animation: subtle-float 6s ease-in-out infinite;
+                will-change: transform;
+            }
+
+            @keyframes text-shine {
+                0% { background-position: 200% center; }
+                100% { background-position: -200% center; }
+            }
+            .animate-text-shine {
+                background: linear-gradient(120deg, #ffb2bb 20%, #ffffff 50%, #ffb2bb 80%);
+                background-size: 200% auto;
+                color: transparent;
+                -webkit-background-clip: text;
+                background-clip: text;
+                animation: text-shine 5s linear infinite;
+            }
+        </style>
     </head>
     <body
         class="bg-background text-on-surface font-body selection:bg-secondary/30"
@@ -299,7 +326,7 @@
                             class="text-6xl md:text-8xl font-headline font-extrabold tracking-tighter leading-none kinetic-text mb-8"
                         >
                             SERVIDOR<br />
-                            <span class="text-secondary">PRIVADO</span><br />
+                            <span class="text-secondary text-glow-secondary animate-text-shine">PRIVADO</span><br />
                             VIRTUAL
                         </h1>
                         <p
@@ -335,14 +362,16 @@
                         >
                             <img
                                 alt="Hardware de servidor em data center"
-                                class="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:scale-105 transition-transform duration-700"
+                                class="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:scale-105 transition-transform duration-700 will-change-transform"
+                                loading="eager"
+                                fetchpriority="high"
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ3hjmvmAAkwvgZPXXXQ1H71A6WQeoOehTMdai_hclkF830SGkAKbDQIyBeXanPqFBd2xvs-QgtFn7eKpcHVcB2UsoITt9wnLqRcu8hUyYe2DxXR--M_9UXY2FqvxaPRGgA6-cn7N2Zs952Qjmzk4xRdK8nOVYfnWBB9zc5Eb0fh273H3fQ3XHje1KRjjSCmRsNovvAkezIjS3opgTuNeHHlm4X63CepquGuQO7QDfX0GhBY8Ck1EPUxdoPR6PfJDqXxovY1vgrj8"
                             />
                             <div
                                 class="absolute inset-0 bg-gradient-to-tr from-background via-transparent to-transparent"
                             ></div>
                             <div
-                                class="absolute bottom-8 left-8 right-8 p-6 glass-card rounded-2xl border border-white/10"
+                                class="absolute bottom-8 left-8 right-8 p-6 glass-card rounded-2xl border border-white/10 animate-subtle-float"
                             >
                                 <div
                                     class="flex justify-between items-center mb-4"
@@ -390,8 +419,9 @@
                         >
                             <img
                                 alt="Bonfire Comunidade"
-                                class="h-12 object-contain transition-all duration-300 group-hover:scale-110"
+                                class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
                                 loading="lazy"
+                                decoding="async"
                                 style="
                                     opacity: 0.85;
                                     filter: drop-shadow(
@@ -421,8 +451,9 @@
                         >
                             <img
                                 alt="Matematica em Evidencia"
-                                class="h-12 object-contain transition-all duration-300 group-hover:scale-110"
+                                class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
                                 loading="lazy"
+                                decoding="async"
                                 style="
                                     opacity: 0.85;
                                     filter: drop-shadow(
@@ -461,7 +492,9 @@
                         >
                             <img
                                 alt="Eco Studios"
-                                class="h-12 object-contain transition-all duration-300 group-hover:scale-110"
+                                class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
+                                loading="lazy"
+                                decoding="async"
                                 style="
                                     opacity: 0.9;
                                     filter: drop-shadow(
@@ -502,7 +535,9 @@
                         >
                             <img
                                 alt="ZappyCommunity"
-                                class="h-12 object-contain transition-all duration-300 group-hover:scale-110"
+                                class="h-16 md:h-20 object-contain transition-all duration-300 group-hover:scale-110 will-change-transform"
+                                loading="lazy"
+                                decoding="async"
                                 style="
                                     opacity: 0.85;
                                     filter: drop-shadow(
