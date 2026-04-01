@@ -1,4 +1,4 @@
-import { sql, createPool } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
   // CORS Headers for API
@@ -50,25 +50,29 @@ export default async function handler(req, res) {
     try {
         console.log(`Tentando conectar ao banco para usuário: ${username}`);
         
-        // Use createPool specifically to ensure it uses the latest env vars
-        const db = createPool({
-            connectionString: process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL
-        });
+        // Use neon directly
+        const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
+        
+        if (!connectionString) {
+            throw new Error("String de conexão com o banco de dados não encontrada");
+        }
+        
+        const sql = neon(connectionString);
         
         // Verifica se a tabela existe antes de fazer a query
         try {
-            await db.sql`SELECT 1 FROM admin_users LIMIT 1`;
+            await sql`SELECT 1 FROM admin_users LIMIT 1`;
         } catch (tableCheckError) {
             console.log('Tabela admin_users não encontrada, criando e inicializando...', tableCheckError.message);
             try {
-                await db.sql`
+                await sql`
                 CREATE TABLE IF NOT EXISTS admin_users (
                     id SERIAL PRIMARY KEY,
                     username VARCHAR(255) UNIQUE NOT NULL,
                     password_hash VARCHAR(255) NOT NULL
                 );
                 `;
-                await db.sql`
+                await sql`
                 INSERT INTO admin_users (username, password_hash)
                 VALUES ('admin', 'admin123')
                 ON CONFLICT (username) DO NOTHING;
@@ -83,7 +87,7 @@ export default async function handler(req, res) {
             }
         }
 
-        const { rows } = await db.sql`SELECT * FROM admin_users WHERE username = ${username}`;
+        const rows = await sql`SELECT * FROM admin_users WHERE username = ${username}`;
         
         if (rows.length === 0) {
             console.log(`Usuário ${username} não encontrado no banco de dados.`);

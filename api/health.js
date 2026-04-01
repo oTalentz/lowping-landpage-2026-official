@@ -1,4 +1,4 @@
-import { sql, createPool } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -20,11 +20,14 @@ export default async function handler(req, res) {
   try {
     const startTime = Date.now();
     
-    const db = createPool({
-        connectionString: process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL
-    });
+    const connectionString = process.env.POSTGRES_URL || process.env.STORAGE_POSTGRES_URL || process.env.DATABASE_URL || process.env.STORAGE_DATABASE_URL;
+    if (!connectionString) {
+        throw new Error("String de conexão com o banco de dados não encontrada");
+    }
+
+    const sql = neon(connectionString);
     
-    const { rows } = await db.sql`SELECT NOW() as time, version() as pg_version`;
+    const rows = await sql`SELECT NOW() as time, version() as pg_version`;
     const endTime = Date.now();
 
     return res.status(200).json({ 
