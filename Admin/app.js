@@ -241,6 +241,7 @@ let bannersList = [];
 async function loadBanners() {
     try {
         bannersList = await apiCall('/api/admin/banners');
+        localStorage.setItem('banners', JSON.stringify(bannersList));
         renderBanners();
     } catch (e) {
         console.error(e);

@@ -42,9 +42,90 @@
             --tw-grayscale: grayscale(0);
             filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
+        .promo-inline-highlight {
+            color: #fff;
+            background-color: rgba(255, 178, 187, 0.2);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            margin: 0 0.125rem;
+            -webkit-user-select: all;
+               -moz-user-select: all;
+                    user-select: all;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        #promo-banner {
+            min-height: 40px;
+            padding: 0.35rem 0.75rem;
+        }
+        #promo-banner .promo-banner-main {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        #promo-banner-text {
+            display: inline-block;
+            max-width: 58vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #promo-banner .promo-banner-meta {
+            flex: 0 0 auto;
+        }
+        #promo-banner-action {
+            border-radius: 999px;
+            min-height: 28px;
+            white-space: nowrap;
+        }
+        .promo-image-item {
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+        }
+        .promo-image-item:hover {
+            transform: scale(1.01);
+        }
+        .promo-image {
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            -o-object-fit: cover;
+               object-fit: cover;
+            max-height: 16rem;
+            border: 1px solid rgba(66, 71, 84, 0.4);
+        }
+        @media (max-width: 768px) {
+            #promo-banner {
+                gap: 0.45rem;
+                align-items: center;
+                justify-content: space-between;
+            }
+            #promo-banner-text {
+                max-width: 44vw;
+                font-size: 10px;
+                line-height: 1.1;
+            }
+            #promo-banner .promo-time-separator,
+            #promo-banner .promo-time-day {
+                display: none;
+            }
+            #promo-banner .promo-time {
+                font-size: 10px;
+                padding: 0.125rem 0.28rem;
+            }
+            #promo-banner-action {
+                font-size: 10px;
+                padding: 0.25rem 0.55rem;
+                min-height: 26px;
+            }
+        }
     </style>
 
-  <link rel="stylesheet" crossorigin href="/assets/style-BZlUyUNf.css">
+  <script type="module" crossorigin src="/assets/parceiros-DTpGXgg_.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-D1H0ivOT.js">
+  <link rel="modulepreload" crossorigin href="/assets/promo-banner-manager-UMPZWNLK.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-Cs98CA8F.css">
 </head>
 <body class="font-body">
     <!-- Preloader Completo -->
@@ -164,12 +245,14 @@
     </script>
     <!-- Fim Preloader -->
 
+<div id="promo-banner-spacer" style="height: 0;"></div>
+
 <header
     id="promo-banner"
-    class="fixed top-0 w-full z-[60] h-10 flex justify-center items-center gap-3 px-4 bg-[#11131a] bg-gradient-to-r from-[#11131a] via-[#1c1e26] to-[#11131a] border-b border-[#ffb2bb]/10"
+    class="fixed top-0 w-full z-[60] flex justify-center items-center gap-3 px-4 bg-[#11131a] bg-gradient-to-r from-[#11131a] via-[#1c1e26] to-[#11131a] border-b border-[#ffb2bb]/10"
     style="display: none;"
 >
-    <div class="flex items-center gap-2">
+    <div class="promo-banner-main flex items-center gap-2">
         <span
             class="material-symbols-outlined text-[#ffb2bb]"
             style="
@@ -179,42 +262,43 @@
             >redeem</span
         >
         <span
+            id="promo-banner-text"
             class="font-label uppercase tracking-widest text-[10px] sm:text-xs font-bold text-[#ffb2bb]"
             >CUPOM DE 15% OFF: <span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded ml-0.5 select-all font-mono">LOWPING15</span></span
         >
     </div>
-    <div class="flex items-center gap-2 ml-3">
-        <div class="flex items-center gap-1 font-label text-xs">
+    <div class="promo-banner-meta flex items-center gap-2">
+        <div class="promo-banner-timer flex items-center gap-1 font-label text-xs">
             <span
                 id="timer-d"
-                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                class="promo-time bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
                 >30</span
             >
-            <span class="text-[#adc6ff] font-bold text-[10px] mr-1"
+            <span class="promo-time-day text-[#adc6ff] font-bold text-[10px] mr-1"
                 >d</span
             >
             <span
                 id="timer-h"
-                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                class="promo-time bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
                 >00</span
             >
-            <span class="text-[#adc6ff] font-bold">:</span
+            <span class="promo-time-separator text-[#adc6ff] font-bold">:</span
             >
             <span
                 id="timer-m"
-                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                class="promo-time bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
                 >00</span
             >
-            <span class="text-[#adc6ff] font-bold">:</span
+            <span class="promo-time-separator text-[#adc6ff] font-bold">:</span
             >
             <span
                 id="timer-s"
-                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                class="promo-time bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
                 >00</span
             >
         </div>
         <button
-            onclick="navigator.clipboard.writeText('LOWPING15'); const btn = this; const originalText = btn.textContent; btn.textContent = 'COPIADO!'; setTimeout(() => btn.textContent = originalText, 2000);"
+            id="promo-banner-action"
             class="bg-[#ffb2bb] text-[#670022] px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter hover:brightness-110 transition-all active:scale-95"
         >
             Copiar
@@ -552,260 +636,7 @@
 </div>
 </div>
 </footer>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const promoBanner = document.getElementById('promo-banner');
-    
-    // 1. Aplicação imediata de cache unificada (Banners tem prioridade sobre Cupons)
-    try {
-        let showCouponFromCache = true;
-        
-        // Verifica banners em cache primeiro
-        const cachedBannersStr = localStorage.getItem('banners');
-        if (cachedBannersStr) {
-            const banners = JSON.parse(cachedBannersStr);
-            const now = new Date();
-            const activeTextBanner = banners.find(b => 
-                b.active && !b.image_url && 
-                (!b.start_date || new Date(b.start_date) <= now) && 
-                (!b.end_date || new Date(b.end_date) >= now)
-            );
-            
-            if (activeTextBanner && promoBanner) {
-                showCouponFromCache = false; // Tem banner de texto, não mostra o cupom
-                promoBanner.style.display = 'flex';
-                const textSpan = promoBanner.querySelector('span.font-label');
-                if (textSpan) textSpan.innerHTML = activeTextBanner.title.replace(/\*\*(.*?)\*\*/g, '<span style="color: white; background-color: rgba(255, 178, 187, 0.2); padding: 0.125rem 0.375rem; border-radius: 0.25rem; margin: 0 0.125rem; user-select: all; font-family: monospace;">$1</span>');
-                const copyBtn = promoBanner.querySelector('button');
-                if (copyBtn) {
-                    if (activeTextBanner.coupon_code) {
-                        copyBtn.textContent = 'COPIAR CUPOM';
-                    } else {
-                        copyBtn.textContent = 'ACESSAR';
-                    }
-                }
-            }
-        }
-        
-        // Se não tem banner de texto, verifica cupons em cache
-        if (showCouponFromCache) {
-            const cachedCouponsStr = localStorage.getItem('coupons');
-            if (cachedCouponsStr) {
-                const cachedCoupons = JSON.parse(cachedCouponsStr);
-                const activeCached = cachedCoupons.find(c => c.status === 'active' || c.active);
-                if (activeCached && promoBanner) {
-                    promoBanner.style.display = 'flex';
-                    const textSpan = promoBanner.querySelector('span.font-label');
-                    if (textSpan) {
-                        textSpan.innerHTML = `CUPOM DE ${activeCached.discount}% OFF: <span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded ml-0.5 select-all font-mono">${activeCached.code}</span>`;
-                    }
-                    const copyBtn = promoBanner.querySelector('button');
-                    if (copyBtn) {
-                        copyBtn.onclick = function() {
-                            navigator.clipboard.writeText(activeCached.code);
-                            const originalText = this.textContent;
-                            this.textContent = 'COPIADO!';
-                            setTimeout(() => this.textContent = originalText, 2000);
-                        };
-                    }
-                }
-            }
-        }
-    } catch (err) {
-        console.warn('Erro ao ler cache:', err);
-    }
-
-    // --- Cupons ---
-    try {
-        // 2. Sincronização em background
-        fetch('/api/admin/coupons')
-            .then(response => {
-                if (!response.ok) throw new Error('Falha ao carregar cupons');
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Resposta não é JSON válido');
-                }
-                return response.json();
-            })
-            .then(coupons => {
-                localStorage.setItem('coupons', JSON.stringify(coupons));
-                const activeCoupon = coupons.find(c => c.status === 'active' || c.active);
-                
-                if (activeCoupon) {
-                    if (promoBanner) {
-                        promoBanner.style.display = 'flex';
-                        const textSpan = promoBanner.querySelector('span.font-label');
-                        if (textSpan) {
-                            textSpan.innerHTML = `CUPOM DE ${activeCoupon.discount}% OFF: <span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded ml-0.5 select-all font-mono">${activeCoupon.code}</span>`;
-                        }
-                        
-                        // Update copy button
-                        const copyBtn = promoBanner.querySelector('button');
-                        if (copyBtn) {
-                            copyBtn.onclick = function() {
-                                navigator.clipboard.writeText(activeCoupon.code);
-                                const originalText = this.textContent;
-                                this.textContent = 'COPIADO!';
-                                setTimeout(() => this.textContent = originalText, 2000);
-                            };
-                        }
-                    }
-                } else {
-                    if (promoBanner) promoBanner.style.display = 'none';
-                }
-            })
-            .catch(e => {
-                console.warn('Fallback para cupons locais devido a erro:', e.message);
-            });
-    } catch (e) {
-        console.error('Erro ao buscar cupons:', e);
-        const promoBanner = document.getElementById('promo-banner');
-        if (promoBanner) promoBanner.style.display = 'none';
-    }
-
-    // --- Banners ---
-    try {
-        fetch('/api/admin/banners')
-            .then(response => {
-                if (!response.ok) throw new Error('Falha ao carregar banners');
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Resposta não é JSON válido');
-                }
-                return response.json();
-            })
-            .catch(e => {
-                console.warn('Fallback para banners locais devido a erro:', e.message);
-                return JSON.parse(localStorage.getItem('banners') || '[]');
-            })
-            .then(banners => {
-                const now = new Date();
-                        const activeBanners = banners.filter(b => {
-                            if (!b.active) return false;
-                            if (b.start_date && new Date(b.start_date) > now) return false;
-                            if (b.end_date && new Date(b.end_date) < now) return false;
-                            return true;
-                        }).sort((a, b) => a.order_index - b.order_index);
-
-                const container = document.getElementById('dynamic-banners-container');
-                        if (activeBanners.length > 0) {
-                            activeBanners.forEach(b => {
-                                if (b.image_url) {
-                                    if (container) {
-                                        const a = document.createElement('a');
-                                        a.href = b.link_url || '#';
-                                        a.className = 'block w-full mb-4 transition-transform hover:scale-[1.01]';
-                                        
-                                        const img = document.createElement('img');
-                                        img.src = b.image_url;
-                                        img.alt = b.title;
-                                        img.className = 'w-full h-auto rounded-2xl shadow-2xl object-cover max-h-48 md:max-h-64 border border-outline-variant/20';
-                                        
-                                        a.appendChild(img);
-                                        container.appendChild(a);
-                                    }
-                                } else {
-                                    // Text Banner (replaces promo-banner)
-                                    const promoBanner = document.getElementById('promo-banner');
-                                    if (promoBanner) {
-                                        promoBanner.style.display = 'flex';
-                                        const textSpan = promoBanner.querySelector('span.font-label');
-                                        if (textSpan) {
-                                            textSpan.innerHTML = b.title.replace(/\*\*(.*?)\*\*/g, '<span style="color: white; background-color: rgba(255, 178, 187, 0.2); padding: 0.125rem 0.375rem; border-radius: 0.25rem; margin: 0 0.125rem; user-select: all; font-family: monospace;">$1</span>');
-                                        }
-                                        
-                                        const copyBtn = promoBanner.querySelector('button');
-                                        if (copyBtn) {
-                                            if (b.coupon_code) {
-                                                copyBtn.textContent = 'COPIAR CUPOM';
-                                                copyBtn.onclick = function() {
-                                                    navigator.clipboard.writeText(b.coupon_code).then(() => {
-                                                        const originalText = copyBtn.textContent;
-                                                        copyBtn.textContent = 'COPIADO!';
-                                                        setTimeout(() => {
-                                                            copyBtn.textContent = originalText;
-                                                        }, 2000);
-                                                    });
-                                                };
-                                            } else {
-                                                copyBtn.textContent = 'ACESSAR';
-                                                copyBtn.onclick = function() {
-                                                    if(b.link_url) window.location.href = b.link_url;
-                                                };
-                                            }
-                                        }
-                                        
-                                        if (b.end_date) {
-                                            window.promoBannerEndTime = new Date(b.end_date).getTime() / 1000;
-                                        }
-                                    }
-                                }
-                            });
-                        }
-            })
-            .catch(e => console.error('Erro ao sincronizar banners:', e));
-    } catch (e) {
-        console.error('Erro ao buscar banners:', e);
-    }
-});
-
-        // Countdown timer do banner promocional
-        (function () {
-            const KEY = "mh_promo_end_30d";
-            const DURATION = 30 * 24 * 3600; // 30 dias em segundos
-            
-            function pad(n) {
-                return String(n).padStart(2, "0");
-            }
-            function tick() {
-                        if (document.hidden) {
-                            setTimeout(tick, 1000);
-                            return;
-                        }
-                        const banner = document.getElementById("promo-banner");
-                        if (!banner) return; // Stop timer if banner is removed from DOM
-                        if (banner.style.display === 'none') {
-                            setTimeout(tick, 1000);
-                            return;
-                        }
-                
-                let endTime = window.promoBannerEndTime;
-                if (!endTime) {
-                    endTime = parseInt(localStorage.getItem(KEY), 10);
-                    if (!endTime || endTime < Math.floor(Date.now() / 1000)) {
-                        endTime = Math.floor(Date.now() / 1000) + DURATION;
-                        localStorage.setItem(KEY, endTime);
-                    }
-                }
-                
-                const rem = endTime - Math.floor(Date.now() / 1000);
-                if (rem <= 0) {
-                    ["timer-d", "timer-h", "timer-m", "timer-s"].forEach(
-                        (id) => {
-                            const el = document.getElementById(id);
-                            if(el) el.textContent = "00";
-                        }
-                    );
-                    return;
-                }
-                
-                const d = Math.floor(rem / (24 * 3600));
-                const h = Math.floor((rem % (24 * 3600)) / 3600);
-                const m = Math.floor((rem % 3600) / 60);
-                const s = rem % 60;
-
-                const elD = document.getElementById("timer-d");
-                if(elD) elD.textContent = pad(d);
-                
-                document.getElementById("timer-h").textContent = pad(h);
-                document.getElementById("timer-m").textContent = pad(m);
-                document.getElementById("timer-s").textContent = pad(s);
-                setTimeout(tick, 1000);
-            }
-            tick();
-        })();
-</script>
+
 
     <script>
         // Menu Mobile Toggle
