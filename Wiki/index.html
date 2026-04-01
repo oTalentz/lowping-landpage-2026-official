@@ -39,80 +39,11 @@
   }
 }
 </script>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="/style.css" />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        safelist: [
-            'bg-primary/10', 'text-primary',
-            'bg-secondary/10', 'text-secondary',
-            'bg-tertiary/10', 'text-tertiary',
-            'bg-outline/10', 'text-on-surface'
-        ],
-        theme: {
-          extend: {
-            colors: {
-              "tertiary-fixed-dim": "#6cdf65",
-              "background": "#11131a",
-              "outline": "#8c909f",
-              "on-surface-variant": "#c2c6d6",
-              "on-primary": "#002e6a",
-              "on-tertiary-fixed-variant": "#00530c",
-              "on-tertiary": "#003a06",
-              "primary": "#adc6ff",
-              "surface-variant": "#33343c",
-              "inverse-on-surface": "#2e3038",
-              "surface-tint": "#adc6ff",
-              "on-primary-fixed-variant": "#004395",
-              "error": "#ffb4ab",
-              "inverse-surface": "#e2e2ec",
-              "tertiary": "#6cdf65",
-              "on-tertiary-fixed": "#002202",
-              "on-error-container": "#ffdad6",
-              "on-error": "#690005",
-              "primary-fixed": "#d8e2ff",
-              "on-surface": "#e2e2ec",
-              "surface-container": "#1d1f27",
-              "surface": "#11131a",
-              "on-secondary": "#670022",
-              "on-primary-container": "#00285d",
-              "on-primary-fixed": "#001a42",
-              "error-container": "#93000a",
-              "surface-container-high": "#282a31",
-              "on-secondary-container": "#ffa7b2",
-              "on-secondary-fixed": "#400012",
-              "tertiary-container": "#31a634",
-              "primary-fixed-dim": "#adc6ff",
-              "on-background": "#e2e2ec",
-              "on-secondary-fixed-variant": "#910033",
-              "surface-dim": "#11131a",
-              "surface-container-highest": "#33343c",
-              "secondary-fixed": "#ffd9dd",
-              "secondary": "#ffb2bb",
-              "secondary-fixed-dim": "#ffb2bb",
-              "outline-variant": "#424754",
-              "tertiary-fixed": "#88fc7e",
-              "surface-container-low": "#191b23",
-              "primary-container": "#4d8eff",
-              "inverse-primary": "#005ac2",
-              "surface-bright": "#373941",
-              "on-tertiary-container": "#003204",
-              "secondary-container": "#9e0038",
-              "surface-container-lowest": "#0c0e15"
-            },
-            fontFamily: {
-              "headline": ["Plus Jakarta Sans"],
-              "body": ["Inter"],
-              "label": ["Space Grotesk"]
-            },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-          },
-        },
-      }
-    </script>
+
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -279,7 +210,7 @@
     </div>
 </footer>
     <!-- Scripts -->
-    <script src="wiki_api.js"></script>
-    <script src="wiki.js"></script>
+    <script type="module" src="wiki_api.js"></script>
+    <script type="module" src="wiki.js"></script>
 </body></html>
 

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<!-- SEO Meta Tags -->
+<title>Wiki - Lowping | Central de Ajuda e Guias</title>
+<meta name="description" content="Central de ajuda da Lowping. Encontre guias completos sobre servidores de Minecraft, VPS, faturamento e segurança." />
+<meta name="keywords" content="wiki, lowping, minecraft, vps, hospedagem, guias, suporte, servidor" />
+<meta name="author" content="Lowping" />
+<link rel="canonical" href="https://wiki-lowping.vercel.app/" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://wiki-lowping.vercel.app/" />
+<meta property="og:title" content="Wiki - Lowping | Central de Ajuda" />
+<meta property="og:description" content="Encontre guias completos sobre servidores de Minecraft, VPS, faturamento e segurança." />
+<meta property="og:image" content="https://wiki-lowping.vercel.app/screen.png" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://wiki-lowping.vercel.app/" />
+<meta property="twitter:title" content="Wiki - Lowping | Central de Ajuda" />
+<meta property="twitter:description" content="Encontre guias completos sobre servidores de Minecraft, VPS, faturamento e segurança." />
+<meta property="twitter:image" content="https://wiki-lowping.vercel.app/screen.png" />
+
+<!-- Schema Markup (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Wiki Lowping",
+  "url": "https://wiki-lowping.vercel.app/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://wiki-lowping.vercel.app/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #ffb2bb 0%, #9e0038 100%);
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            background: rgba(29, 31, 39, 0.7);
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/wiki-vXOWn8GU.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-D1H0ivOT.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-B8DczyFH.css">
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary selection:text-on-secondary">
+<!-- Navegacao Superior -->
+<nav
+    class="sticky top-0 z-50 w-full bg-[#11131a]/80 backdrop-blur-md transition-all duration-300 border-b md:border-b-0 border-white/5"
+    id="main-nav"
+>
+    <div
+        class="max-w-7xl mx-auto flex justify-between items-center px-8 py-4"
+    >
+        <a href="/Jogos/" class="text-2xl font-black text-[#ffb2bb] tracking-tighter font-headline hover:opacity-80 transition-opacity">LOWPING</a>
+        <div
+            class="hidden md:flex gap-8 items-center font-headline font-semibold tracking-tight"
+        >
+            <a
+                class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors"
+                href="/Jogos/"
+                >Jogos</a
+            >
+            <a
+                class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors"
+                href="/Vps/"
+                >VPS</a
+            >
+            <a
+                class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors"
+                href="/Contato/"
+                >Contato</a
+            >
+            <a
+                class="text-[#ffb2bb] border-b-2 border-[#ffb2bb] pb-1"
+                href="/Wiki/"
+                >Wiki</a
+            >
+        </div>
+        <div class="hidden md:flex gap-6 items-center">
+            <a href="#" class="text-on-surface hover:text-primary transition-colors font-semibold">Entrar</a>
+            <button onclick="window.location.href='/Admin/code.html'" class="kinetic-gradient text-white px-6 py-2.5 rounded-2xl font-bold transition-transform active:scale-95 shadow-lg shadow-secondary/20 hover:shadow-xl hover:brightness-110">
+                Começar
+            </button>
+        </div>
+        <button id="mobile-menu-btn" class="md:hidden text-[#c2c6d6] hover:text-white transition-colors" aria-label="Abrir menu mobile" aria-expanded="false">
+            <span class="material-symbols-outlined text-3xl">menu</span>
+        </button>
+    </div>
+    
+    <!-- Menu Mobile -->
+    <div id="mobile-menu" class="hidden md:hidden bg-surface-container-high border-t border-outline-variant/20 absolute w-full left-0 flex-col px-8 py-6 gap-4 shadow-2xl">
+        <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors font-headline font-semibold text-lg" href="/Jogos/">Jogos</a>
+        <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors font-headline font-semibold text-lg" href="/Vps/">VPS</a>
+        <a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors font-headline font-semibold text-lg" href="/Contato/">Contato</a>
+        <a class="text-[#ffb2bb] font-headline font-semibold text-lg" href="/Wiki/">Wiki</a>
+        <div class="h-px w-full bg-outline-variant/20 my-2"></div>
+        <a href="#" class="text-on-surface hover:text-primary transition-colors font-semibold text-lg text-center py-2">Entrar</a>
+        <button onclick="window.location.href='/Admin/code.html'" class="kinetic-gradient text-white px-6 py-3 rounded-2xl font-headline font-bold hover:brightness-110 transition-all text-center text-lg mt-2">Começar</button>
+    </div>
+</nav>
+<main>
+<!-- Hero Section -->
+<section class="relative pt-24 pb-32 overflow-hidden">
+<!-- Background Elements -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30">
+<div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-secondary/10 blur-[120px] rounded-full"></div>
+</div>
+<div class="max-w-[1440px] mx-auto px-8 text-center">
+<h1 class="font-headline text-6xl md:text-8xl font-extrabold tracking-tighter text-on-surface mb-8">
+                    Central de <span class="text-primary">Conhecimento</span>
+</h1>
+<div class="max-w-3xl mx-auto relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+<div class="relative flex items-center bg-surface-container-lowest rounded-2xl p-2 border border-outline-variant/15">
+<span class="material-symbols-outlined text-outline ml-4" data-icon="search">search</span>
+<input id="search-input" class="w-full bg-transparent border-none focus:ring-0 text-lg py-4 px-4 text-on-surface placeholder:text-on-surface-variant/50 font-body outline-none" placeholder="Como podemos ajudar você hoje?" type="text"/>
+<button id="search-btn" class="bg-surface-container-highest text-primary px-6 py-3 rounded-xl font-bold hover:bg-surface-variant transition-colors mr-1">
+                            Buscar
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Area -->
+<section class="max-w-[1440px] mx-auto px-8 pb-32">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Sidebar Navigation -->
+<aside class="lg:col-span-3 space-y-8">
+<div class="bg-surface-container-low rounded-3xl p-6">
+<h3 class="font-label text-xs uppercase tracking-widest text-on-surface-variant/60 mb-6 px-4">Categorias</h3>
+<nav id="categories-sidebar" class="space-y-1">
+<!-- Dynamic categories -->
+</nav>
+</div>
+<div class="relative rounded-3xl overflow-hidden group">
+<img class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700 " loading="lazy" decoding="async" data-alt="abstract tech hardware close up with neon blue light in a dark server room environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASHtqIWL6fxlyp4jrPvDgBM_GzyYY8mKp_X7SN_Ilu2uxga0MfNuz_AQiYT0ALyWY8jL_TaN3F43oZNYr6Pfgf7saPWPdDbNbeiLO6R-J79fhZoqgdbZQcuq9LPP2LbBAS4O10DrTe20BVu72kyRBEcbx_Qfx4t458rdD7_28BozTrqblcrv0PpqtPORRcRcNGSReBYPS1vknTrKTEEHJhTRgqeSbngK9Fqr_3eopWdujMvVCGWmTIDheYbCyi5cjcct9RSB18T68"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent p-6 flex flex-col justify-end">
+<p class="font-headline font-bold text-on-surface leading-tight">Dúvidas sobre Hardware?</p>
+<p class="text-xs text-on-surface-variant mt-2">Veja nossas especificações técnicas.</p>
+</div>
+</div>
+</aside>
+<!-- Category Grid & Featured Articles -->
+<div id="main-content" class="lg:col-span-9 space-y-16">
+<!-- Dynamic content will be injected here -->
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="max-w-[1440px] mx-auto px-8 pb-32">
+<div class="relative bg-surface-container rounded-[3rem] p-12 md:p-24 overflow-hidden">
+<div class="absolute inset-0 kinetic-gradient opacity-5"></div>
+<div class="absolute -right-24 -top-24 w-96 h-96 bg-secondary/10 blur-[100px] rounded-full"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+<div class="max-w-xl">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface mb-6 tracking-tight">Ainda precisa de <span class="text-secondary">ajuda?</span></h2>
+<p class="text-xl text-on-surface-variant font-body mb-8">Nossa equipe de suporte técnico está disponível 24/7 para resolver qualquer problema que você encontrar em seus servidores.</p>
+<div class="flex flex-wrap gap-4">
+<button class="kinetic-gradient text-white px-8 py-4 rounded-2xl font-bold text-lg hover:brightness-110 transition-all flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+                                Abrir Ticket
+                            </button>
+<button class="bg-surface-container-highest text-on-surface px-8 py-4 rounded-2xl font-bold text-lg hover:bg-surface-variant transition-all">
+                                Chat ao Vivo
+                            </button>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all"></div>
+<img class="relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-full border-4 border-surface-container-highest shadow-2xl" data-alt="diverse team of professional support staff smiling in a high-tech modern office space with blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZpPZz4hfkp6Ya6TWlRXLPuZGRI2OXcX6sImXKfZFMZgWtkurxQ-JZsEJn8_hXklcmTdwmm0mRVXmwFmHabgPJmPH_SPsASZxMRtwzEGxPHYw3VCfjLWUXw9rpqKJvhH6irVu4MbT04nRkotvwOin7wHEJQDP1KDdUSopVr6K2CUA5dRbg11aT_rZRRfGWDHCKJpv4WU8YnzKKXmrOrmrGrT1Xxg1LEL017N9FH7qjjWjF08alZXlZh7lMoVG1KV83lfMG6jGe0Y4" loading="lazy" decoding="async" alt="Equipe de suporte"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Rodape -->
+<footer class="w-full bg-[#11131a] py-12 border-t border-outline-variant/10">
+    <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex flex-col gap-2">
+            <div class="text-lg font-bold text-[#ffb2bb] font-headline">
+                LOWPING
+            </div>
+            <p class="font-body text-sm text-[#c2c6d6]">
+                &copy; 2026 LOWPING. Todos os direitos reservados.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-8">
+            <a class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Termos/">Termos de Serviço</a>
+            <a class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="#">Política de Privacidade</a>
+            <a class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="https://status.lowping.com.br/" target="_blank" rel="noopener noreferrer">SLA</a>
+            <a class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Contato/">Contato</a>
+            <a class="font-body text-sm text-[#c2c6d6] hover:text-[#ffb2bb] transition-colors" href="/Admin/code.html">Admin</a>
+        </div>
+    </div>
+</footer>
+    <!-- Scripts -->
+</body></html>
+
