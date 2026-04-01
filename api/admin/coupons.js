@@ -15,9 +15,6 @@ async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  const auth = authenticateRequest(req, res, ['admin']);
-  if (!auth) return;
-
   const connectionString =
     process.env.POSTGRES_URL ||
     process.env.STORAGE_POSTGRES_URL ||
@@ -26,6 +23,12 @@ async function handler(req, res) {
   if (!connectionString) return res.status(500).json({ error: 'Serviço indisponível' });
 
   const sql = neon(connectionString);
+  let isAdmin = false;
+  if (req.headers.authorization) {
+    const auth = authenticateRequest(req, res, ['admin']);
+    if (!auth) return;
+    isAdmin = true;
+  }
 
   try {
     await sql`
@@ -45,7 +48,15 @@ async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const rows = await sql`SELECT * FROM coupons ORDER BY id DESC`;
+      const rows = isAdmin
+        ? await sql`SELECT * FROM coupons ORDER BY id DESC`
+        : await sql`
+            SELECT id, code, discount, valid_until, status
+            FROM coupons
+            WHERE status = 'active'
+              AND valid_until >= NOW()
+            ORDER BY valid_until ASC
+          `;
       return res.status(200).json(rows);
     } catch {
       return res.status(500).json({ error: 'Falha ao listar cupons' });
@@ -53,6 +64,9 @@ async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
+    const auth = authenticateRequest(req, res, ['admin']);
+    if (!auth) return;
+
     const body = parseJsonBody(req);
     if (!body) return res.status(400).json({ error: 'Corpo JSON inválido' });
 
@@ -97,6 +111,9 @@ async function handler(req, res) {
   }
 
   if (req.method === 'DELETE') {
+    const auth = authenticateRequest(req, res, ['admin']);
+    if (!auth) return;
+
     const { id } = req.query;
     if (!isSafeId(id)) return res.status(400).json({ error: 'ID inválido' });
     try {
