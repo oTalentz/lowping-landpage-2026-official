@@ -412,7 +412,15 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/admin/banners')
             .then(response => {
                 if (!response.ok) throw new Error('Falha ao carregar banners');
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Resposta não é JSON válido');
+                }
                 return response.json();
+            })
+            .catch(e => {
+                console.warn('Fallback para banners locais devido a erro:', e.message);
+                return JSON.parse(localStorage.getItem('banners') || '[]');
             })
             .then(banners => {
                 const now = new Date();

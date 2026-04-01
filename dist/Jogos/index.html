@@ -130,7 +130,7 @@
                 animation: text-shine 5s linear infinite;
             }
         </style>
-      <link rel="stylesheet" crossorigin href="/assets/style-B8DczyFH.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-Di-ZgqcI.css">
     </head>
     <body class="font-body">
         <!-- Spacer para o banner fixo -->
@@ -1461,7 +1461,15 @@
                 fetch('/api/admin/coupons')
                     .then(response => {
                         if (!response.ok) throw new Error('Falha ao carregar cupons');
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Resposta não é JSON válido');
+                        }
                         return response.json();
+                    })
+                    .catch(e => {
+                        console.warn('Fallback para cupons locais devido a erro:', e.message);
+                        return JSON.parse(localStorage.getItem('coupons') || '[]');
                     })
                     .then(coupons => {
                         const activeCoupon = coupons.find(c => c.status === 'active' || c.active);
@@ -1507,7 +1515,15 @@
                 fetch('/api/admin/banners')
                     .then(response => {
                         if (!response.ok) throw new Error('Falha ao carregar banners');
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Resposta não é JSON válido');
+                        }
                         return response.json();
+                    })
+                    .catch(e => {
+                        console.warn('Fallback para banners locais devido a erro:', e.message);
+                        return JSON.parse(localStorage.getItem('banners') || '[]');
                     })
                     .then(banners => {
                         const now = new Date();
@@ -1547,10 +1563,23 @@
                                         
                                         const copyBtn = promoBanner.querySelector('button');
                                         if (copyBtn) {
-                                            copyBtn.textContent = 'ACESSAR';
-                                            copyBtn.onclick = function() {
-                                                if(b.link_url) window.location.href = b.link_url;
-                                            };
+                                            if (b.coupon_code) {
+                                                copyBtn.textContent = 'COPIAR CUPOM';
+                                                copyBtn.onclick = function() {
+                                                    navigator.clipboard.writeText(b.coupon_code).then(() => {
+                                                        const originalText = copyBtn.textContent;
+                                                        copyBtn.textContent = 'COPIADO!';
+                                                        setTimeout(() => {
+                                                            copyBtn.textContent = originalText;
+                                                        }, 2000);
+                                                    });
+                                                };
+                                            } else {
+                                                copyBtn.textContent = 'ACESSAR';
+                                                copyBtn.onclick = function() {
+                                                    if(b.link_url) window.location.href = b.link_url;
+                                                };
+                                            }
                                         }
                                         
                                         if (b.end_date) {
