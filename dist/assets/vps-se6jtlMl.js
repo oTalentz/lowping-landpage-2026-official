@@ -1,0 +1,1 @@
+import{t as e}from"./modulepreload-polyfill-D1H0ivOT.js";/* empty css              */import{t}from"./promo-banner-manager-BioSiyoT.js";e((()=>{t(),document.addEventListener(`DOMContentLoaded`,()=>{window.PromoBannerManager&&window.PromoBannerManager.createManager(document,window.localStorage).init()})}))();

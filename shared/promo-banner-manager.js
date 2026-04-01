@@ -152,14 +152,30 @@
 
     promoBanner.style.display = 'flex';
     promoBanner.style.flexWrap = 'wrap';
-    promoBanner.style.gap = '8px';
     promoBanner.style.overflow = 'hidden';
     promoBanner.style.alignItems = 'center';
-    promoBanner.style.justifyContent = 'space-between';
-    textSpan.style.flex = '1 1 220px';
+    promoBanner.style.gap = '8px';
+    promoBanner.style.minHeight = '40px';
+    promoBanner.style.padding = '0.35rem 0.75rem';
     textSpan.style.minWidth = '0';
-    copyBtn.style.flex = '0 0 auto';
     copyBtn.style.maxWidth = '100%';
+    copyBtn.style.display = 'inline-flex';
+    copyBtn.style.alignItems = 'center';
+    copyBtn.style.justifyContent = 'center';
+    if (typeof doc.querySelector === 'function') {
+      const mainGroup = doc.querySelector('#promo-banner .promo-banner-main');
+      const metaGroup = doc.querySelector('#promo-banner .promo-banner-meta');
+      if (mainGroup) {
+        mainGroup.style.display = 'flex';
+        mainGroup.style.alignItems = 'center';
+        mainGroup.style.gap = '8px';
+      }
+      if (metaGroup) {
+        metaGroup.style.display = 'flex';
+        metaGroup.style.alignItems = 'center';
+        metaGroup.style.gap = '8px';
+      }
+    }
     textSpan.innerHTML = state.textHtml || '';
     copyBtn.textContent = state.buttonLabel || 'COPIAR';
     copyBtn.dataset.mode = state.buttonMode || '';
