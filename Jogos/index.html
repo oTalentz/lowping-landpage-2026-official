@@ -1461,7 +1461,15 @@
                 fetch('/api/admin/coupons')
                     .then(response => {
                         if (!response.ok) throw new Error('Falha ao carregar cupons');
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Resposta não é JSON válido');
+                        }
                         return response.json();
+                    })
+                    .catch(e => {
+                        console.warn('Fallback para cupons locais devido a erro:', e.message);
+                        return JSON.parse(localStorage.getItem('coupons') || '[]');
                     })
                     .then(coupons => {
                         const activeCoupon = coupons.find(c => c.status === 'active' || c.active);
