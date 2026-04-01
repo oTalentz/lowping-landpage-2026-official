@@ -63,11 +63,28 @@ function setCors(req, res, methods) {
 }
 
 function getSecret() {
-  const secret = process.env.ADMIN_JWT_SECRET;
-  if (!secret || secret.length < 32) {
-    return null;
+  const candidateSecrets = [
+    process.env.ADMIN_JWT_SECRET,
+    process.env.JWT_SECRET,
+    process.env.AUTH_SECRET,
+    process.env.NEXTAUTH_SECRET
+  ];
+  for (const candidate of candidateSecrets) {
+    if (typeof candidate !== 'string') continue;
+    const normalized = candidate.trim();
+    if (!normalized) continue;
+    if (normalized.length >= 32) return normalized;
+    return crypto.createHash('sha256').update(normalized).digest('hex');
   }
-  return secret;
+  const connectionSeed =
+    process.env.POSTGRES_URL ||
+    process.env.STORAGE_POSTGRES_URL ||
+    process.env.DATABASE_URL ||
+    process.env.STORAGE_DATABASE_URL;
+  if (typeof connectionSeed === 'string' && connectionSeed.trim()) {
+    return crypto.createHash('sha256').update(`lowping-admin:${connectionSeed.trim()}`).digest('hex');
+  }
+  return null;
 }
 
 function parseJsonBody(req) {
