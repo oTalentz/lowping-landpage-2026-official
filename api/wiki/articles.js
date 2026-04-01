@@ -7,6 +7,20 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { category } = req.query;
     try {
+      await sql`
+        CREATE TABLE IF NOT EXISTS wiki_articles (
+          id VARCHAR(255) PRIMARY KEY,
+          category_id VARCHAR(255) REFERENCES wiki_categories(id),
+          title VARCHAR(255) NOT NULL,
+          slug VARCHAR(255) UNIQUE NOT NULL,
+          content TEXT NOT NULL,
+          author VARCHAR(255) NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          status VARCHAR(50) DEFAULT 'published'
+        );
+      `;
+
       let rows;
       if (category) {
         rows = await sql`SELECT * FROM wiki_articles WHERE category_id = ${category} ORDER BY created_at DESC`;

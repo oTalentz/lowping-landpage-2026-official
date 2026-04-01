@@ -105,8 +105,8 @@ async function renderHome() {
     `;
 
     // Sort by date desc
-    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5).forEach(article => {
-        const cat = categories.find(c => c.id === article.categoryId);
+    articles.sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)).slice(0, 5).forEach(article => {
+        const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
         const icon = cat ? cat.icon : 'article';
         
         html += `
@@ -118,7 +118,7 @@ async function renderHome() {
                         </div>
                         <div>
                             <h4 class="font-headline text-lg font-bold text-on-surface">${article.title}</h4>
-                            <p class="text-sm text-on-surface-variant">${timeAgo(article.createdAt)} • Em ${cat ? cat.name : 'Geral'}</p>
+                            <p class="text-sm text-on-surface-variant">${timeAgo(article.created_at || article.createdAt)} • Em ${cat ? cat.name : 'Geral'}</p>
                         </div>
                     </div>
                     <span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
@@ -149,7 +149,7 @@ async function renderArticle(slug) {
     document.title = `${article.title} - Wiki`;
     
     const allCategories = await db.getCategories();
-    const cat = allCategories.find(c => c.id === article.categoryId);
+    const cat = allCategories.find(c => c.id === (article.category_id || article.categoryId));
 
     mainContent.innerHTML = `
         <div class="bg-surface-container-lowest p-8 rounded-[2rem] border border-outline-variant/5">
@@ -160,7 +160,7 @@ async function renderArticle(slug) {
                     <a href="?category=${cat ? cat.slug : ''}" class="hover:underline">${cat ? cat.name : 'Geral'}</a>
                 </div>
                 <h1 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface mb-4">${article.title}</h1>
-                <p class="text-on-surface-variant text-sm">${timeAgo(article.createdAt)}</p>
+                <p class="text-on-surface-variant text-sm">${timeAgo(article.created_at || article.createdAt)}</p>
             </div>
             <div class="prose prose-invert prose-p:text-on-surface-variant prose-headings:text-on-surface max-w-none font-body">
                 ${article.content}
@@ -172,22 +172,30 @@ async function renderArticle(slug) {
 async function renderCategory(slug) {
     const mainContent = document.getElementById('main-content');
     const allCategories = await db.getCategories();
-    const category = allCategories.find(c => c.slug === slug);
+    const cat = allCategories.find(c => c.slug === slug);
     
-    if (!category) {
+    if (!cat) {
         mainContent.innerHTML = `<h2 class="text-3xl font-bold text-on-surface">Categoria não encontrada</h2>`;
         return;
     }
 
-    document.title = `${category.name} - Wiki`;
+    // SEO Meta Tags update
+    document.title = `${cat.name} - Wiki`;
 
     const allArticles = await db.getArticles();
-    const articles = allArticles.filter(a => a.categoryId === category.id && a.status === 'published');
-
+    const articles = allArticles.filter(a => (a.category_id === cat.id || a.categoryId === cat.id) && a.status === 'published');
+    
     let html = `
-        <div class="mb-8">
-            <h1 class="font-headline text-4xl font-extrabold text-on-surface mb-2">${category.name}</h1>
-            <p class="text-on-surface-variant">${category.description}</p>
+        <div class="mb-12">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-4xl" data-icon="${cat.icon}">${cat.icon}</span>
+                </div>
+                <div>
+                    <h1 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface">${cat.name}</h1>
+                    <p class="text-on-surface-variant text-lg mt-2">${cat.description}</p>
+                </div>
+            </div>
         </div>
         <div class="space-y-4">
     `;
@@ -195,17 +203,17 @@ async function renderCategory(slug) {
     if (articles.length === 0) {
         html += `<p class="text-on-surface-variant">Nenhum artigo encontrado nesta categoria.</p>`;
     } else {
-        articles.forEach(article => {
+        articles.sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)).forEach(article => {
             html += `
                 <article class="group bg-surface-container-lowest p-6 rounded-2xl border-b border-transparent hover:border-primary/20 hover:bg-surface-container-low transition-all">
                     <a class="flex items-center justify-between" href="?article=${article.slug}">
                         <div class="flex items-center gap-6">
                             <div class="w-12 h-12 flex items-center justify-center bg-surface-container-high rounded-xl text-on-surface-variant group-hover:text-primary transition-colors">
-                                <span class="material-symbols-outlined">${category.icon}</span>
+                                <span class="material-symbols-outlined" data-icon="article">article</span>
                             </div>
                             <div>
                                 <h4 class="font-headline text-lg font-bold text-on-surface">${article.title}</h4>
-                                <p class="text-sm text-on-surface-variant">${timeAgo(article.createdAt)}</p>
+                                <p class="text-sm text-on-surface-variant">${timeAgo(article.created_at || article.createdAt)}</p>
                             </div>
                         </div>
                         <span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
@@ -242,7 +250,7 @@ async function renderSearch(query) {
     } else {
         const categories = await db.getCategories();
         articles.forEach(article => {
-            const cat = categories.find(c => c.id === article.categoryId);
+            const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
             const icon = cat ? cat.icon : 'article';
             html += `
                 <article class="group bg-surface-container-lowest p-6 rounded-2xl border-b border-transparent hover:border-primary/20 hover:bg-surface-container-low transition-all">

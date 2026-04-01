@@ -149,10 +149,10 @@ async function renderAdminArticles() {
     if (articles.length === 0) {
         html += `<tr><td colspan="5" class="px-6 py-8 text-center text-on-surface-variant">Nenhum artigo encontrado.</td></tr>`;
     } else {
-        articles.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).forEach(article => {
-            const cat = categories.find(c => c.id === article.categoryId);
+        articles.sort((a, b) => new Date(b.updated_at || b.updatedAt) - new Date(a.updated_at || a.updatedAt)).forEach(article => {
+            const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
             const statusColor = article.status === 'published' ? 'text-[#6cdf65]' : 'text-[#8b91a8]';
-            const date = new Date(article.updatedAt).toLocaleDateString('pt-BR');
+            const date = new Date(article.updated_at || article.updatedAt).toLocaleDateString('pt-BR');
             
             html += `
                 <tr class="hover:bg-white/5 transition-colors">
@@ -161,10 +161,10 @@ async function renderAdminArticles() {
                     <td class="px-6 py-4 font-medium text-sm ${statusColor}">${article.status === 'published' ? 'Publicado' : 'Rascunho'}</td>
                     <td class="px-6 py-4 text-[#c2c6d6] text-sm">${date}</td>
                     <td class="px-6 py-4 text-right">
-                        <button onclick="editArticle(${article.id})" class="text-[#adc6ff] hover:text-white bg-[#adc6ff]/10 p-2 rounded-lg transition-colors mr-2" title="Editar">
+                        <button onclick="editArticle('${article.id}')" class="text-[#adc6ff] hover:text-white bg-[#adc6ff]/10 p-2 rounded-lg transition-colors mr-2" title="Editar">
                             <span class="material-symbols-outlined text-[18px]">edit</span>
                         </button>
-                        <button onclick="deleteArticle(${article.id})" class="text-[#ffb4ab] hover:text-white bg-[#ffb4ab]/10 p-2 rounded-lg transition-colors" title="Excluir">
+                        <button onclick="deleteArticle('${article.id}')" class="text-[#ffb4ab] hover:text-white bg-[#ffb4ab]/10 p-2 rounded-lg transition-colors" title="Excluir">
                             <span class="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                     </td>
@@ -228,7 +228,7 @@ async function openArticleEditor(articleId = null) {
             document.getElementById('article-id').value = article.id;
             document.getElementById('article-title-input').value = article.title;
             document.getElementById('article-slug-input').value = article.slug;
-            document.getElementById('article-category-input').value = article.categoryId;
+            document.getElementById('article-category-input').value = article.category_id || article.categoryId;
             document.querySelector(`input[name="article-status"][value="${article.status}"]`).checked = true;
             quill.clipboard.dangerouslyPasteHTML(article.content);
         }
@@ -250,11 +250,13 @@ async function handleArticleSubmit(e) {
     const id = document.getElementById('article-id').value;
     const title = document.getElementById('article-title-input').value;
     const slug = document.getElementById('article-slug-input').value;
-    const categoryId = parseInt(document.getElementById('article-category-input').value);
+    const categoryId = document.getElementById('article-category-input').value;
     const status = document.querySelector('input[name="article-status"]:checked').value;
     const content = quill.root.innerHTML;
 
     let articles = await db.getArticles();
+
+    let articleToSave;
 
     if (id) {
         // Update existing
@@ -263,7 +265,7 @@ async function handleArticleSubmit(e) {
             // Save version
             saveVersion(articles[index]);
 
-            articles[index] = {
+            articleToSave = {
                 ...articles[index],
                 title, slug, categoryId, status, content,
                 updatedAt: new Date().toISOString()
@@ -272,18 +274,19 @@ async function handleArticleSubmit(e) {
         }
     } else {
         // Create new
-        const newArticle = {
-            id: Date.now(),
+        articleToSave = {
+            id: Date.now().toString(),
             title, slug, categoryId, status, content,
-            authorId: 1, // mock admin
+            authorId: '1', // mock admin
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
-        articles.push(newArticle);
         if(typeof showToast === 'function') showToast('Artigo criado com sucesso!');
     }
 
-    await db.saveArticles(articles);
+    if (articleToSave) {
+        await db.saveArticle(articleToSave);
+    }
     closeEditor();
     renderAdminArticles();
 }
@@ -306,9 +309,7 @@ window.editArticle = function(id) {
 
 window.deleteArticle = async function(id) {
     if (confirm('Tem certeza que deseja excluir este artigo?')) {
-        let articles = await db.getArticles();
-        articles = articles.filter(a => a.id !== id);
-        await db.saveArticles(articles);
+        await db.deleteArticle(id);
         if(typeof showToast === 'function') showToast('Artigo excluído com sucesso!');
         renderAdminArticles();
     }

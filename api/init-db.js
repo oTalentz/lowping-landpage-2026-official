@@ -29,9 +29,22 @@ export default async function handler(request, response) {
       CREATE TABLE IF NOT EXISTS wiki_categories (
         id VARCHAR(255) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) UNIQUE,
         description TEXT,
         icon VARCHAR(50)
       );
+    `;
+
+    // Inserir categorias padrão da Wiki
+    await sql`
+      INSERT INTO wiki_categories (id, name, slug, description, icon)
+      VALUES 
+        ('geral', 'Visão Geral', 'geral', 'Termos de serviço e guias introdutórios.', 'dashboard'),
+        ('minecraft', 'Minecraft', 'minecraft', 'Tudo sobre instalação de plugins, mods, otimização de performance.', 'sports_esports'),
+        ('vps', 'VPS Hosting', 'vps', 'Guias para Linux, Windows, configuração de firewall e administração.', 'dns'),
+        ('financeiro', 'Financeiro', 'financeiro', 'Informações sobre métodos de pagamento, renovações e faturas.', 'payments'),
+        ('seguranca', 'Segurança', 'seguranca', 'Melhores práticas para manter seu servidor seguro.', 'security')
+      ON CONFLICT (id) DO NOTHING;
     `;
 
     await sql`
