@@ -9,14 +9,26 @@ const db = {
 
     async getCategories() {
         if (this.useMock) return JSON.parse(localStorage.getItem('wiki_categories') || '[]');
-        const res = await fetch(`${API_BASE}/wiki/categories`);
-        return await res.json();
+        try {
+            const res = await fetch(`${API_BASE}/wiki/categories`);
+            if (!res.ok) throw new Error('Falha ao carregar categorias');
+            return await res.json();
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
     },
     
     async getArticles() {
         if (this.useMock) return JSON.parse(localStorage.getItem('wiki_articles') || '[]');
-        const res = await fetch(`${API_BASE}/wiki/articles`);
-        return await res.json();
+        try {
+            const res = await fetch(`${API_BASE}/wiki/articles`);
+            if (!res.ok) throw new Error('Falha ao carregar artigos');
+            return await res.json();
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
     },
 
     async saveCategories(data) {
@@ -30,11 +42,18 @@ const db = {
                 description: cat.description,
                 icon: cat.icon
             };
-            await fetch(`${API_BASE}/wiki/categories`, {
+            const res = await fetch(`${API_BASE}/wiki/categories`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('admin_token') || ''
+                },
                 body: JSON.stringify(payload)
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Erro ao salvar categoria');
+            }
         }
     },
 
@@ -59,11 +78,18 @@ const db = {
             author: art.author || art.authorId || 'Admin',
             status: art.status
         };
-        await fetch(`${API_BASE}/wiki/articles`, {
+        const res = await fetch(`${API_BASE}/wiki/articles`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('admin_token') || ''
+            },
             body: JSON.stringify(payload)
         });
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Erro ao salvar artigo');
+        }
     },
 
     async saveArticles(data) {
@@ -78,11 +104,18 @@ const db = {
                 author: art.author || art.authorId || 'Admin',
                 status: art.status
             };
-            await fetch(`${API_BASE}/wiki/articles`, {
+            const res = await fetch(`${API_BASE}/wiki/articles`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('admin_token') || ''
+                },
                 body: JSON.stringify(payload)
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Erro ao salvar artigo');
+            }
         }
     },
 
@@ -101,9 +134,16 @@ const db = {
             localStorage.setItem('wiki_articles', JSON.stringify(articles));
             return;
         }
-        await fetch(`${API_BASE}/wiki/articles?id=${id}`, {
-            method: 'DELETE'
+        const res = await fetch(`${API_BASE}/wiki/articles?id=${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': localStorage.getItem('admin_token') || ''
+            }
         });
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Erro ao excluir artigo');
+        }
     }
 };
 

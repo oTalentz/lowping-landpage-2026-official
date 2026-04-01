@@ -52,7 +52,14 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     const { id, name, slug, description, icon } = req.body;
+    
+    if (!id || !name) {
+      console.error("Dados inválidos de categoria:", { id, name });
+      return res.status(400).json({ error: 'Campos obrigatórios ausentes: id, name' });
+    }
+
     try {
+      console.log(`Salvando categoria: ${id} - ${name}`);
       await sql`
         INSERT INTO wiki_categories (id, name, slug, description, icon)
         VALUES (${id}, ${name}, ${slug || id}, ${description}, ${icon})
@@ -64,6 +71,7 @@ export default async function handler(req, res) {
       `;
       return res.status(200).json({ success: true });
     } catch (error) {
+      console.error(`Erro ao salvar categoria ${id}:`, error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -71,9 +79,11 @@ export default async function handler(req, res) {
   if (req.method === 'DELETE') {
     const { id } = req.query;
     try {
+      console.log(`Excluindo categoria: ${id}`);
       await sql`DELETE FROM wiki_categories WHERE id = ${id}`;
       return res.status(200).json({ success: true });
     } catch (error) {
+      console.error(`Erro ao excluir categoria ${id}:`, error);
       return res.status(500).json({ error: error.message });
     }
   }

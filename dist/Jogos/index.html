@@ -130,7 +130,7 @@
                 animation: text-shine 5s linear infinite;
             }
         </style>
-      <link rel="stylesheet" crossorigin href="/assets/style-kdYB91SL.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-Di-ZgqcI.css">
     </head>
     <body class="font-body">
         <!-- Spacer para o banner fixo -->
@@ -1479,7 +1479,7 @@
                         showCouponFromCache = false; // Tem banner de texto, não mostra o cupom
                         promoBanner.style.display = 'flex';
                         const textSpan = promoBanner.querySelector('span.font-label');
-                        if (textSpan) textSpan.innerHTML = activeTextBanner.title.replace(/\*\*(.*?)\*\*/g, '<span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded mx-0.5 select-all font-mono">$1</span>');
+                        if (textSpan) textSpan.innerHTML = activeTextBanner.title.replace(/\*\*(.*?)\*\*/g, '<span style="color: white; background-color: rgba(255, 178, 187, 0.2); padding: 0.125rem 0.375rem; border-radius: 0.25rem; margin: 0 0.125rem; user-select: all; font-family: monospace;">$1</span>');
                         const copyBtn = promoBanner.querySelector('button');
                         if (copyBtn) {
                             if (activeTextBanner.coupon_code) {
@@ -1615,7 +1615,7 @@
                                         promoBanner.style.display = 'flex';
                                         const textSpan = promoBanner.querySelector('span.font-label');
                                         if (textSpan) {
-                                            textSpan.innerHTML = b.title.replace(/\*\*(.*?)\*\*/g, '<span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded mx-0.5 select-all font-mono">$1</span>');
+                                            textSpan.innerHTML = b.title.replace(/\*\*(.*?)\*\*/g, '<span style="color: white; background-color: rgba(255, 178, 187, 0.2); padding: 0.125rem 0.375rem; border-radius: 0.25rem; margin: 0 0.125rem; user-select: all; font-family: monospace;">$1</span>');
                                         }
                                         
                                         const copyBtn = promoBanner.querySelector('button');

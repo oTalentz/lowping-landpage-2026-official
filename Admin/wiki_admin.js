@@ -299,11 +299,16 @@ async function handleArticleSubmit(e) {
         if(typeof showToast === 'function') showToast('Artigo criado com sucesso!');
     }
 
-    if (articleToSave) {
-        await db.saveArticle(articleToSave);
+    try {
+        if (articleToSave) {
+            await db.saveArticle(articleToSave);
+        }
+        closeEditor();
+        renderAdminArticles();
+    } catch (error) {
+        console.error("Erro ao salvar artigo:", error);
+        if(typeof showToast === 'function') showToast('Erro: ' + error.message, 'error');
     }
-    closeEditor();
-    renderAdminArticles();
 }
 
 function saveVersion(article) {
@@ -324,8 +329,13 @@ window.editArticle = function(id) {
 
 window.deleteArticle = async function(id) {
     if (confirm('Tem certeza que deseja excluir este artigo?')) {
-        await db.deleteArticle(id);
-        if(typeof showToast === 'function') showToast('Artigo excluído com sucesso!');
-        renderAdminArticles();
+        try {
+            await db.deleteArticle(id);
+            if(typeof showToast === 'function') showToast('Artigo excluído com sucesso!');
+            renderAdminArticles();
+        } catch (error) {
+            console.error("Erro ao excluir artigo:", error);
+            if(typeof showToast === 'function') showToast('Erro: ' + error.message, 'error');
+        }
     }
 }

@@ -42,10 +42,18 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     const { id, category_id, title, slug, content, author, status } = req.body;
+    
+    // Validação básica
+    if (!id || !title || !slug || !content) {
+      console.error("Dados inválidos recebidos:", { id, title, slug, contentLength: content?.length });
+      return res.status(400).json({ error: 'Campos obrigatórios ausentes: id, title, slug, content' });
+    }
+
     try {
+      console.log(`Salvando artigo: ${id} - ${title}`);
       await sql`
         INSERT INTO wiki_articles (id, category_id, title, slug, content, author, status, updated_at)
-        VALUES (${id}, ${category_id}, ${title}, ${slug}, ${content}, ${author}, ${status || 'published'}, CURRENT_TIMESTAMP)
+        VALUES (${id}, ${category_id || null}, ${title}, ${slug}, ${content}, ${author || 'Admin'}, ${status || 'published'}, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE SET 
           category_id = EXCLUDED.category_id,
           title = EXCLUDED.title,
@@ -56,6 +64,7 @@ export default async function handler(req, res) {
       `;
       return res.status(200).json({ success: true });
     } catch (error) {
+      console.error(`Erro ao salvar artigo ${id}:`, error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -63,9 +72,11 @@ export default async function handler(req, res) {
   if (req.method === 'DELETE') {
     const { id } = req.query;
     try {
+      console.log(`Excluindo artigo: ${id}`);
       await sql`DELETE FROM wiki_articles WHERE id = ${id}`;
       return res.status(200).json({ success: true });
     } catch (error) {
+      console.error(`Erro ao excluir artigo ${id}:`, error);
       return res.status(500).json({ error: error.message });
     }
   }
