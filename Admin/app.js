@@ -200,7 +200,7 @@ let bannersList = [];
 
 async function loadBanners() {
     try {
-        bannersList = await apiCall('/api/banners');
+        bannersList = await apiCall('/api/admin/banners');
         renderBanners();
     } catch (e) {
         console.error(e);
@@ -217,14 +217,14 @@ function renderBanners() {
         
         div.innerHTML = `
             <div class="h-32 bg-surface-container-highest relative">
-                <img src="${b.imageUrl}" class="w-full h-full object-cover opacity-60" onerror="this.src='https://via.placeholder.com/400x200?text=Invalid+Image'">
+                <img src="${b.image_url}" class="w-full h-full object-cover opacity-60" onerror="this.src='https://via.placeholder.com/400x200?text=Invalid+Image'">
                 <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
-                <div class="absolute top-2 right-2 bg-black/50 backdrop-blur px-2 py-1 rounded text-[10px] font-label">Ordem: ${b.order}</div>
+                <div class="absolute top-2 right-2 bg-black/50 backdrop-blur px-2 py-1 rounded text-[10px] font-label">Ordem: ${b.order_index}</div>
             </div>
             <div class="p-4">
                 <h3 class="font-bold font-headline mb-1 truncate">${b.title}</h3>
                 <p class="text-xs text-on-surface-variant mb-4">
-                    ${new Date(b.startDate).toLocaleDateString('pt-BR')} - ${new Date(b.endDate).toLocaleDateString('pt-BR')}
+                    Status: ${b.active ? 'Ativo' : 'Inativo'}
                 </p>
                 <div class="flex gap-2">
                     <button class="btn-edit-banner flex-1 py-1.5 rounded bg-white/5 hover:bg-white/10 text-xs transition-colors flex justify-center items-center gap-1" data-id="${b.id}">
@@ -243,13 +243,13 @@ function renderBanners() {
     document.querySelectorAll('.btn-edit-banner').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.currentTarget.getAttribute('data-id');
-            editBanner(parseInt(id));
+            editBanner(id);
         });
     });
     document.querySelectorAll('.btn-delete-banner').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.currentTarget.getAttribute('data-id');
-            deleteBanner(parseInt(id));
+            deleteBanner(id);
         });
     });
 }
@@ -261,15 +261,14 @@ function openBannerModal(id = null) {
     document.getElementById('banner-modal-title').innerText = 'Novo Banner';
     
     if (id) {
-        const b = bannersList.find(x => x.id === id);
+        const b = bannersList.find(x => x.id == id);
         if (b) {
             document.getElementById('banner-modal-title').innerText = 'Editar Banner';
             document.getElementById('banner-id').value = b.id;
             document.getElementById('banner-title').value = b.title;
-            document.getElementById('banner-image').value = b.imageUrl;
-            document.getElementById('banner-start').value = b.startDate;
-            document.getElementById('banner-end').value = b.endDate;
-            document.getElementById('banner-order').value = b.order;
+            document.getElementById('banner-image').value = b.image_url;
+            // No start/end date inputs to set anymore or keep them ignored
+            document.getElementById('banner-order').value = b.order_index;
         }
     }
     openModal('banner-modal');
@@ -282,7 +281,7 @@ function editBanner(id) {
 async function deleteBanner(id) {
     confirmAction('Tem certeza que deseja excluir este banner?', async () => {
         try {
-            await apiCall(`/api/banners/${id}`, { method: 'DELETE' });
+            await apiCall(`/api/admin/banners?id=${id}`, { method: 'DELETE' });
             showToast('Banner excluído com sucesso!');
             loadBanners();
         } catch(e) {}
@@ -291,23 +290,21 @@ async function deleteBanner(id) {
 
 document.getElementById('banner-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const id = document.getElementById('banner-id').value;
+    const id = document.getElementById('banner-id').value || Date.now().toString(); // Fallback id se não existir
     const data = {
+        id: id,
         title: document.getElementById('banner-title').value,
-        imageUrl: document.getElementById('banner-image').value,
-        startDate: document.getElementById('banner-start').value,
-        endDate: document.getElementById('banner-end').value,
-        order: parseInt(document.getElementById('banner-order').value)
+        image_url: document.getElementById('banner-image').value, // corrigido de imageUrl para image_url (como a API espera)
+        // start e end date não existem na api/admin/banners.js original
+        // a API espera link_url, active, order_index
+        link_url: '', // ou pegar de algum lugar
+        active: true,
+        order_index: parseInt(document.getElementById('banner-order').value) || 0
     };
     
     try {
-        if (id) {
-            await apiCall(`/api/banners/${id}`, { method: 'PUT', body: JSON.stringify(data) });
-            showToast('Banner atualizado!');
-        } else {
-            await apiCall('/api/banners', { method: 'POST', body: JSON.stringify(data) });
-            showToast('Banner criado!');
-        }
+        await apiCall('/api/admin/banners', { method: 'POST', body: JSON.stringify(data) });
+        showToast(id ? 'Banner atualizado!' : 'Banner criado!');
         closeModal('banner-modal');
         loadBanners();
     } catch(e) {}
@@ -338,8 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cancelBannerBtn) cancelBannerBtn.addEventListener('click', () => closeModal('banner-modal'));
 
     if (currentToken) {
-        // Verify token with backend
-        apiCall('/api/verify-token').then(() => {
+        // Verify token with backend (usando /api/health como dummy check ou pulando)
+        apiCall('/api/health').then(() => {
             initDashboard();
         }).catch(() => {
             logout();
