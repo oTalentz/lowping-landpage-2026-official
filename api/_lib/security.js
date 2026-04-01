@@ -70,7 +70,8 @@ function toDerivedSecret(seed) {
 }
 
 function getSecret(secretSeed = '') {
-  const seeded = toDerivedSecret(`lowping-admin:${secretSeed}`);
+  const normalizedSeed = typeof secretSeed === 'string' ? secretSeed.trim() : '';
+  const seeded = normalizedSeed ? toDerivedSecret(`lowping-admin:${normalizedSeed}`) : null;
   if (seeded) return seeded;
   const candidateSecrets = [
     process.env.ADMIN_JWT_SECRET,
