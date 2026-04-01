@@ -130,7 +130,7 @@
                 animation: text-shine 5s linear infinite;
             }
         </style>
-      <link rel="stylesheet" crossorigin href="/assets/style-Di-ZgqcI.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-kdYB91SL.css">
     </head>
     <body class="font-body">
         <!-- Spacer para o banner fixo -->
@@ -139,7 +139,8 @@
         <!-- Banner Promocional -->
         <header
             id="promo-banner"
-            class="fixed top-0 w-full z-[60] h-10 hidden justify-center items-center gap-3 px-4 bg-[#11131a] bg-gradient-to-r from-[#11131a] via-[#1c1e26] to-[#11131a] border-b border-[#ffb2bb]/10"
+            class="fixed top-0 w-full z-[60] h-10 flex justify-center items-center gap-3 px-4 bg-[#11131a] bg-gradient-to-r from-[#11131a] via-[#1c1e26] to-[#11131a] border-b border-[#ffb2bb]/10"
+            style="display: none;"
         >
             <div class="flex items-center gap-2">
                 <span
@@ -1214,7 +1215,8 @@
                     }
                     function tick() {
                         const banner = document.getElementById("promo-banner");
-                        if (!banner || banner.style.display === 'none') {
+                        if (!banner) return; // Stop timer if banner is removed from DOM
+                        if (banner.style.display === 'none') {
                             setTimeout(tick, 1000);
                             return;
                         }
@@ -1456,8 +1458,70 @@
     <script>
         // Sync com Admin Panel (Cupons e Banners)
         document.addEventListener('DOMContentLoaded', () => {
+            const promoBanner = document.getElementById('promo-banner');
+            
+            // 1. Aplicação imediata de cache unificada (Banners tem prioridade sobre Cupons)
+            try {
+                let showCouponFromCache = true;
+                
+                // Verifica banners em cache primeiro
+                const cachedBannersStr = localStorage.getItem('banners');
+                if (cachedBannersStr) {
+                    const banners = JSON.parse(cachedBannersStr);
+                    const now = new Date();
+                    const activeTextBanner = banners.find(b => 
+                        b.active && !b.image_url && 
+                        (!b.start_date || new Date(b.start_date) <= now) && 
+                        (!b.end_date || new Date(b.end_date) >= now)
+                    );
+                    
+                    if (activeTextBanner && promoBanner) {
+                        showCouponFromCache = false; // Tem banner de texto, não mostra o cupom
+                        promoBanner.style.display = 'flex';
+                        const textSpan = promoBanner.querySelector('span.font-label');
+                        if (textSpan) textSpan.innerHTML = activeTextBanner.title.replace(/\*\*(.*?)\*\*/g, '<span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded mx-0.5 select-all font-mono">$1</span>');
+                        const copyBtn = promoBanner.querySelector('button');
+                        if (copyBtn) {
+                            if (activeTextBanner.coupon_code) {
+                                copyBtn.textContent = 'COPIAR CUPOM';
+                            } else {
+                                copyBtn.textContent = 'ACESSAR';
+                            }
+                        }
+                    }
+                }
+                
+                // Se não tem banner de texto, verifica cupons em cache
+                if (showCouponFromCache) {
+                    const cachedCouponsStr = localStorage.getItem('coupons');
+                    if (cachedCouponsStr) {
+                        const cachedCoupons = JSON.parse(cachedCouponsStr);
+                        const activeCached = cachedCoupons.find(c => c.status === 'active' || c.active);
+                        if (activeCached && promoBanner) {
+                            promoBanner.style.display = 'flex';
+                            const textSpan = promoBanner.querySelector('span.font-label');
+                            if (textSpan) {
+                                textSpan.innerHTML = `CUPOM DE ${activeCached.discount}% OFF: <span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded ml-0.5 select-all font-mono">${activeCached.code}</span>`;
+                            }
+                            const copyBtn = promoBanner.querySelector('button');
+                            if (copyBtn) {
+                                copyBtn.onclick = function() {
+                                    navigator.clipboard.writeText(activeCached.code);
+                                    const originalText = this.textContent;
+                                    this.textContent = 'COPIADO!';
+                                    setTimeout(() => this.textContent = originalText, 2000);
+                                };
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('Erro ao ler cache:', err);
+            }
+
             // --- Cupons ---
             try {
+                // 2. Sincronização em background
                 fetch('/api/admin/coupons')
                     .then(response => {
                         if (!response.ok) throw new Error('Falha ao carregar cupons');
@@ -1467,13 +1531,9 @@
                         }
                         return response.json();
                     })
-                    .catch(e => {
-                        console.warn('Fallback para cupons locais devido a erro:', e.message);
-                        return JSON.parse(localStorage.getItem('coupons') || '[]');
-                    })
                     .then(coupons => {
+                        localStorage.setItem('coupons', JSON.stringify(coupons));
                         const activeCoupon = coupons.find(c => c.status === 'active' || c.active);
-                        const promoBanner = document.getElementById('promo-banner');
                         
                         if (activeCoupon) {
                             if (promoBanner) {
@@ -1499,10 +1559,7 @@
                         }
                     })
                     .catch(e => {
-                        console.error('Erro ao sincronizar cupons:', e);
-                        // Fallback: hide banner on error
-                        const promoBanner = document.getElementById('promo-banner');
-                        if (promoBanner) promoBanner.style.display = 'none';
+                        console.warn('Fallback para cupons locais devido a erro:', e.message);
                     });
             } catch (e) {
                 console.error('Erro ao buscar cupons:', e);
@@ -1558,7 +1615,7 @@
                                         promoBanner.style.display = 'flex';
                                         const textSpan = promoBanner.querySelector('span.font-label');
                                         if (textSpan) {
-                                            textSpan.innerHTML = b.title;
+                                            textSpan.innerHTML = b.title.replace(/\*\*(.*?)\*\*/g, '<span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded mx-0.5 select-all font-mono">$1</span>');
                                         }
                                         
                                         const copyBtn = promoBanner.querySelector('button');

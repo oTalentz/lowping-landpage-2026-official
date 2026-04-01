@@ -99,6 +99,41 @@ function confirmAction(message, onConfirm) {
 }
 window.confirmAction = confirmAction;
 
+// Date Helpers
+function parseDateToSave(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+        let year = parseInt(parts[2], 10);
+        year = year < 100 ? 2000 + year : year;
+        return `${year}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+    return dateStr;
+}
+
+function formatDateToShow(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        let year = parts[0].slice(-2);
+        return `${parts[2].slice(0, 2)}/${parts[1]}/${year}`; // handle potential time string
+    }
+    if (dateStr.includes('T')) {
+        const d = new Date(dateStr);
+        if (!isNaN(d)) {
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`;
+        }
+    }
+    return dateStr;
+}
+
+function maskDate(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 7);
+    e.target.value = v;
+}
+
 // API Helpers
 async function apiCall(url, options = {}) {
     const headers = {
@@ -272,9 +307,8 @@ function openBannerModal(id = null) {
             document.getElementById('banner-id').value = b.id;
             document.getElementById('banner-title').value = b.title || '';
             document.getElementById('banner-image').value = b.image_url || '';
-            document.getElementById('banner-start').value = b.start_date || '';
-            document.getElementById('banner-end').value = b.end_date || '';
-            document.getElementById('banner-link').value = b.link_url || '';
+            document.getElementById('banner-start').value = formatDateToShow(b.start_date) || '';
+            document.getElementById('banner-end').value = formatDateToShow(b.end_date) || '';
             document.getElementById('banner-coupon').value = b.coupon_code || '';
             document.getElementById('banner-order').value = b.order_index || 1;
         }
@@ -303,9 +337,8 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
         id: id,
         title: document.getElementById('banner-title').value,
         image_url: document.getElementById('banner-image').value,
-        start_date: document.getElementById('banner-start').value,
-        end_date: document.getElementById('banner-end').value,
-        link_url: document.getElementById('banner-link').value,
+        start_date: parseDateToSave(document.getElementById('banner-start').value),
+        end_date: parseDateToSave(document.getElementById('banner-end').value),
         coupon_code: document.getElementById('banner-coupon').value,
         active: true,
         order_index: parseInt(document.getElementById('banner-order').value) || 0
@@ -342,6 +375,12 @@ function initApp() {
     
     const cancelBannerBtn = document.getElementById('btn-cancel-banner');
     if (cancelBannerBtn) cancelBannerBtn.addEventListener('click', () => closeModal('banner-modal'));
+
+    const bannerStartInput = document.getElementById('banner-start');
+    if (bannerStartInput) bannerStartInput.addEventListener('input', maskDate);
+    
+    const bannerEndInput = document.getElementById('banner-end');
+    if (bannerEndInput) bannerEndInput.addEventListener('input', maskDate);
 
     if (currentToken) {
         // Verify token with backend (usando /api/health como dummy check ou pulando)

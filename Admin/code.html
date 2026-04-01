@@ -233,10 +233,6 @@
                     <p class="text-[10px] text-on-surface-variant mt-1">Insira uma URL de imagem para simular o upload.</p>
                 </div>
                 <div>
-                    <label class="block text-xs text-on-surface-variant mb-1">Link de Destino</label>
-                    <input type="url" id="banner-link" placeholder="https://..." class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
-                </div>
-                <div>
                     <label class="block text-xs text-on-surface-variant mb-1">Cupom (Opcional)</label>
                     <input type="text" id="banner-coupon" placeholder="PROMO20" class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
                     <p class="text-[10px] text-on-surface-variant mt-1">Se preenchido, o botão do banner copiará este cupom.</p>
@@ -244,11 +240,11 @@
                 <div class="flex gap-4">
                     <div class="flex-1">
                         <label class="block text-xs text-on-surface-variant mb-1">Início</label>
-                        <input type="date" id="banner-start" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                        <input type="text" id="banner-start" placeholder="DD/MM/YY" maxlength="8" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
                     </div>
                     <div class="flex-1">
                         <label class="block text-xs text-on-surface-variant mb-1">Fim</label>
-                        <input type="date" id="banner-end" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
+                        <input type="text" id="banner-end" placeholder="DD/MM/YY" maxlength="8" required class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-secondary">
                     </div>
                 </div>
                 <div>
