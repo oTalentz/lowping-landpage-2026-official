@@ -74,6 +74,7 @@ async function renderCategoriesSidebar() {
     `;
     
     categories.forEach(cat => {
+        if (cat.slug === 'geral' || cat.name.toLowerCase() === 'visão geral') return;
         html += `
             <a class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="?category=${cat.slug}">
                 <span class="material-symbols-outlined text-xl" data-icon="${cat.icon}">${cat.icon}</span>
