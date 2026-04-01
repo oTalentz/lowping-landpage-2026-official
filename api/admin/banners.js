@@ -13,9 +13,13 @@ export default async function handler(req, res) {
           image_url TEXT,
           link_url TEXT,
           active BOOLEAN DEFAULT true,
-          order_index INTEGER DEFAULT 0
+          order_index INTEGER DEFAULT 0,
+          start_date TEXT,
+          end_date TEXT
         );
       `;
+      try { await sql`ALTER TABLE banners ADD COLUMN start_date TEXT`; } catch (e) {}
+      try { await sql`ALTER TABLE banners ADD COLUMN end_date TEXT`; } catch (e) {}
       const rows = await sql`SELECT * FROM banners ORDER BY order_index ASC`;
       return res.status(200).json(rows);
     } catch (error) {
@@ -24,7 +28,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { id, title, image_url, link_url, active, order_index } = req.body;
+    const { id, title, image_url, link_url, active, order_index, start_date, end_date } = req.body;
     try {
       await sql`
         CREATE TABLE IF NOT EXISTS banners (
@@ -33,19 +37,25 @@ export default async function handler(req, res) {
           image_url TEXT,
           link_url TEXT,
           active BOOLEAN DEFAULT true,
-          order_index INTEGER DEFAULT 0
+          order_index INTEGER DEFAULT 0,
+          start_date TEXT,
+          end_date TEXT
         );
       `;
+      try { await sql`ALTER TABLE banners ADD COLUMN start_date TEXT`; } catch (e) {}
+      try { await sql`ALTER TABLE banners ADD COLUMN end_date TEXT`; } catch (e) {}
       
       await sql`
-        INSERT INTO banners (id, title, image_url, link_url, active, order_index)
-        VALUES (${id}, ${title}, ${image_url || ''}, ${link_url || ''}, ${active !== undefined ? active : true}, ${order_index || 0})
+        INSERT INTO banners (id, title, image_url, link_url, active, order_index, start_date, end_date)
+        VALUES (${id}, ${title}, ${image_url || ''}, ${link_url || ''}, ${active !== undefined ? active : true}, ${order_index || 0}, ${start_date || null}, ${end_date || null})
         ON CONFLICT (id) DO UPDATE SET 
           title = EXCLUDED.title,
           image_url = EXCLUDED.image_url,
           link_url = EXCLUDED.link_url,
           active = EXCLUDED.active,
-          order_index = EXCLUDED.order_index;
+          order_index = EXCLUDED.order_index,
+          start_date = EXCLUDED.start_date,
+          end_date = EXCLUDED.end_date;
       `;
       return res.status(200).json({ success: true });
     } catch (error) {

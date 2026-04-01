@@ -1095,11 +1095,7 @@
                 (function () {
                     const KEY = "mh_promo_end_30d";
                     const DURATION = 30 * 24 * 3600; // 30 dias em segundos
-                    let endTime = parseInt(localStorage.getItem(KEY), 10);
-                    if (!endTime || endTime < Math.floor(Date.now() / 1000)) {
-                        endTime = Math.floor(Date.now() / 1000) + DURATION;
-                        localStorage.setItem(KEY, endTime);
-                    }
+                    
                     function pad(n) {
                         return String(n).padStart(2, "0");
                     }
@@ -1108,6 +1104,15 @@
                         if (!banner || banner.style.display === 'none') {
                             setTimeout(tick, 1000);
                             return;
+                        }
+                        
+                        let endTime = window.promoBannerEndTime;
+                        if (!endTime) {
+                            endTime = parseInt(localStorage.getItem(KEY), 10);
+                            if (!endTime || endTime < Math.floor(Date.now() / 1000)) {
+                                endTime = Math.floor(Date.now() / 1000) + DURATION;
+                                localStorage.setItem(KEY, endTime);
+                            }
                         }
                         
                         const rem = endTime - Math.floor(Date.now() / 1000);
@@ -1215,23 +1220,53 @@
                         return response.json();
                     })
                     .then(banners => {
-                        const activeBanners = banners.filter(b => b.active).sort((a, b) => a.order_index - b.order_index);
+                        const now = new Date();
+                        const activeBanners = banners.filter(b => {
+                            if (!b.active) return false;
+                            if (b.start_date && new Date(b.start_date) > now) return false;
+                            if (b.end_date && new Date(b.end_date) < now) return false;
+                            return true;
+                        }).sort((a, b) => a.order_index - b.order_index);
 
                         const container = document.getElementById('dynamic-banners-container');
-                        if (activeBanners.length > 0 && container) {
+                        if (activeBanners.length > 0) {
                             activeBanners.forEach(b => {
                                 if (b.image_url) {
-                                    const a = document.createElement('a');
-                                    a.href = b.link_url || '#';
-                                    a.className = 'block w-full mb-4 transition-transform hover:scale-[1.01]';
-                                    
-                                    const img = document.createElement('img');
-                                    img.src = b.image_url;
-                                    img.alt = b.title;
-                                    img.className = 'w-full h-auto rounded-2xl shadow-2xl object-cover max-h-48 md:max-h-64 border border-outline-variant/20';
-                                    
-                                    a.appendChild(img);
-                                    container.appendChild(a);
+                                    if (container) {
+                                        const a = document.createElement('a');
+                                        a.href = b.link_url || '#';
+                                        a.className = 'block w-full mb-4 transition-transform hover:scale-[1.01]';
+                                        
+                                        const img = document.createElement('img');
+                                        img.src = b.image_url;
+                                        img.alt = b.title;
+                                        img.className = 'w-full h-auto rounded-2xl shadow-2xl object-cover max-h-48 md:max-h-64 border border-outline-variant/20';
+                                        
+                                        a.appendChild(img);
+                                        container.appendChild(a);
+                                    }
+                                } else {
+                                    // Text Banner (replaces promo-banner)
+                                    const promoBanner = document.getElementById('promo-banner');
+                                    if (promoBanner) {
+                                        promoBanner.style.display = 'flex';
+                                        const textSpan = promoBanner.querySelector('span.font-label');
+                                        if (textSpan) {
+                                            textSpan.innerHTML = b.title;
+                                        }
+                                        
+                                        const copyBtn = promoBanner.querySelector('button');
+                                        if (copyBtn) {
+                                            copyBtn.textContent = 'ACESSAR';
+                                            copyBtn.onclick = function() {
+                                                if(b.link_url) window.location.href = b.link_url;
+                                            };
+                                        }
+                                        
+                                        if (b.end_date) {
+                                            window.promoBannerEndTime = new Date(b.end_date).getTime() / 1000;
+                                        }
+                                    }
                                 }
                             });
                         }

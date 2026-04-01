@@ -47,6 +47,62 @@
   <link rel="stylesheet" crossorigin href="/assets/style-B8DczyFH.css">
 </head>
 <body class="font-body">
+<header
+    id="promo-banner"
+    class="fixed top-0 w-full z-[60] h-10 hidden justify-center items-center gap-3 px-4 bg-[#11131a] bg-gradient-to-r from-[#11131a] via-[#1c1e26] to-[#11131a] border-b border-[#ffb2bb]/10"
+>
+    <div class="flex items-center gap-2">
+        <span
+            class="material-symbols-outlined text-[#ffb2bb]"
+            style="
+                font-variation-settings: &quot;FILL&quot; 1;
+                font-size: 16px;
+            "
+            >redeem</span
+        >
+        <span
+            class="font-label uppercase tracking-widest text-[10px] sm:text-xs font-bold text-[#ffb2bb]"
+            >CUPOM DE 15% OFF: <span class="text-white bg-[#ffb2bb]/20 px-1.5 py-0.5 rounded ml-0.5 select-all font-mono">LOWPING15</span></span
+        >
+    </div>
+    <div class="flex items-center gap-2 ml-3">
+        <div class="flex items-center gap-1 font-label text-xs">
+            <span
+                id="timer-d"
+                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                >30</span
+            >
+            <span class="text-[#adc6ff] font-bold text-[10px] mr-1"
+                >d</span
+            >
+            <span
+                id="timer-h"
+                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                >00</span
+            >
+            <span class="text-[#adc6ff] font-bold">:</span
+            >
+            <span
+                id="timer-m"
+                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                >00</span
+            >
+            <span class="text-[#adc6ff] font-bold">:</span
+            >
+            <span
+                id="timer-s"
+                class="bg-[#282a31] text-[#adc6ff] px-1.5 py-0.5 rounded font-bold tabular-nums"
+                >00</span
+            >
+        </div>
+        <button
+            onclick="navigator.clipboard.writeText('LOWPING15'); const btn = this; const originalText = btn.textContent; btn.textContent = 'COPIADO!'; setTimeout(() => btn.textContent = originalText, 2000);"
+            class="bg-[#ffb2bb] text-[#670022] px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter hover:brightness-110 transition-all active:scale-95"
+        >
+            Copiar
+        </button>
+    </div>
+</header>
 <nav class="sticky top-0 z-50 w-full bg-[#11131a]/80 backdrop-blur-sm transition-all duration-300 border-b border-white/5" id="main-nav">
 <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
 <a href="/Jogos/" class="text-2xl font-black text-[#ffb2bb] tracking-tighter font-headline hover:opacity-80 transition-opacity">LOWPING</a>
@@ -375,32 +431,113 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(banners => {
-                const activeBanners = banners.filter(b => b.active).sort((a, b) => a.order_index - b.order_index);
+                const now = new Date();
+                        const activeBanners = banners.filter(b => {
+                            if (!b.active) return false;
+                            if (b.start_date && new Date(b.start_date) > now) return false;
+                            if (b.end_date && new Date(b.end_date) < now) return false;
+                            return true;
+                        }).sort((a, b) => a.order_index - b.order_index);
 
                 const container = document.getElementById('dynamic-banners-container');
-                if (activeBanners.length > 0 && container) {
-                    activeBanners.forEach(b => {
-                        if (b.image_url) {
-                            const a = document.createElement('a');
-                            a.href = b.link_url || '#';
-                            a.className = 'block w-full mb-4 transition-transform hover:scale-[1.01]';
-                            
-                            const img = document.createElement('img');
-                            img.src = b.image_url;
-                            img.alt = b.title;
-                            img.className = 'w-full h-auto rounded-2xl shadow-2xl object-cover max-h-48 md:max-h-64 border border-outline-variant/20';
-                            
-                            a.appendChild(img);
-                            container.appendChild(a);
+                        if (activeBanners.length > 0) {
+                            activeBanners.forEach(b => {
+                                if (b.image_url) {
+                                    if (container) {
+                                        const a = document.createElement('a');
+                                        a.href = b.link_url || '#';
+                                        a.className = 'block w-full mb-4 transition-transform hover:scale-[1.01]';
+                                        
+                                        const img = document.createElement('img');
+                                        img.src = b.image_url;
+                                        img.alt = b.title;
+                                        img.className = 'w-full h-auto rounded-2xl shadow-2xl object-cover max-h-48 md:max-h-64 border border-outline-variant/20';
+                                        
+                                        a.appendChild(img);
+                                        container.appendChild(a);
+                                    }
+                                } else {
+                                    // Text Banner (replaces promo-banner)
+                                    const promoBanner = document.getElementById('promo-banner');
+                                    if (promoBanner) {
+                                        promoBanner.style.display = 'flex';
+                                        const textSpan = promoBanner.querySelector('span.font-label');
+                                        if (textSpan) {
+                                            textSpan.innerHTML = b.title;
+                                        }
+                                        
+                                        const copyBtn = promoBanner.querySelector('button');
+                                        if (copyBtn) {
+                                            copyBtn.textContent = 'ACESSAR';
+                                            copyBtn.onclick = function() {
+                                                if(b.link_url) window.location.href = b.link_url;
+                                            };
+                                        }
+                                        
+                                        if (b.end_date) {
+                                            window.promoBannerEndTime = new Date(b.end_date).getTime() / 1000;
+                                        }
+                                    }
+                                }
+                            });
                         }
-                    });
-                }
             })
             .catch(e => console.error('Erro ao sincronizar banners:', e));
     } catch (e) {
         console.error('Erro ao buscar banners:', e);
     }
 });
+
+        // Countdown timer do banner promocional
+        (function () {
+            const KEY = "mh_promo_end_30d";
+            const DURATION = 30 * 24 * 3600; // 30 dias em segundos
+            
+            function pad(n) {
+                return String(n).padStart(2, "0");
+            }
+            function tick() {
+                const banner = document.getElementById("promo-banner");
+                if (!banner || banner.style.display === 'none') {
+                    setTimeout(tick, 1000);
+                    return;
+                }
+                
+                let endTime = window.promoBannerEndTime;
+                if (!endTime) {
+                    endTime = parseInt(localStorage.getItem(KEY), 10);
+                    if (!endTime || endTime < Math.floor(Date.now() / 1000)) {
+                        endTime = Math.floor(Date.now() / 1000) + DURATION;
+                        localStorage.setItem(KEY, endTime);
+                    }
+                }
+                
+                const rem = endTime - Math.floor(Date.now() / 1000);
+                if (rem <= 0) {
+                    ["timer-d", "timer-h", "timer-m", "timer-s"].forEach(
+                        (id) => {
+                            const el = document.getElementById(id);
+                            if(el) el.textContent = "00";
+                        }
+                    );
+                    return;
+                }
+                
+                const d = Math.floor(rem / (24 * 3600));
+                const h = Math.floor((rem % (24 * 3600)) / 3600);
+                const m = Math.floor((rem % 3600) / 60);
+                const s = rem % 60;
+
+                const elD = document.getElementById("timer-d");
+                if(elD) elD.textContent = pad(d);
+                
+                document.getElementById("timer-h").textContent = pad(h);
+                document.getElementById("timer-m").textContent = pad(m);
+                document.getElementById("timer-s").textContent = pad(s);
+                setTimeout(tick, 1000);
+            }
+            tick();
+        })();
 </script>
 </body></html>
 

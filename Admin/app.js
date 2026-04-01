@@ -265,10 +265,12 @@ function openBannerModal(id = null) {
         if (b) {
             document.getElementById('banner-modal-title').innerText = 'Editar Banner';
             document.getElementById('banner-id').value = b.id;
-            document.getElementById('banner-title').value = b.title;
-            document.getElementById('banner-image').value = b.image_url;
-            // No start/end date inputs to set anymore or keep them ignored
-            document.getElementById('banner-order').value = b.order_index;
+            document.getElementById('banner-title').value = b.title || '';
+            document.getElementById('banner-image').value = b.image_url || '';
+            document.getElementById('banner-start').value = b.start_date || '';
+            document.getElementById('banner-end').value = b.end_date || '';
+            document.getElementById('banner-link').value = b.link_url || '';
+            document.getElementById('banner-order').value = b.order_index || 1;
         }
     }
     openModal('banner-modal');
@@ -294,10 +296,10 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
     const data = {
         id: id,
         title: document.getElementById('banner-title').value,
-        image_url: document.getElementById('banner-image').value, // corrigido de imageUrl para image_url (como a API espera)
-        // start e end date não existem na api/admin/banners.js original
-        // a API espera link_url, active, order_index
-        link_url: '', // ou pegar de algum lugar
+        image_url: document.getElementById('banner-image').value,
+        start_date: document.getElementById('banner-start').value,
+        end_date: document.getElementById('banner-end').value,
+        link_url: document.getElementById('banner-link').value,
         active: true,
         order_index: parseInt(document.getElementById('banner-order').value) || 0
     };
