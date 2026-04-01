@@ -24,9 +24,15 @@ export default async function handler(req, res) {
           author VARCHAR(255) NOT NULL,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-          status VARCHAR(50) DEFAULT 'published'
+          status VARCHAR(50) DEFAULT 'published',
+          featured BOOLEAN DEFAULT FALSE
         );
       `;
+      try {
+        await sql`ALTER TABLE wiki_articles ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;`;
+      } catch (e) {
+        console.log("Column featured already exists or error adding it:", e.message);
+      }
 
       let rows;
       if (category) {
@@ -41,7 +47,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { id, category_id, title, slug, content, author, status } = req.body;
+    const { id, category_id, title, slug, content, author, status, featured } = req.body;
     
     // Validação básica
     if (!id || !title || !slug || !content) {
@@ -52,14 +58,15 @@ export default async function handler(req, res) {
     try {
       console.log(`Salvando artigo: ${id} - ${title}`);
       await sql`
-        INSERT INTO wiki_articles (id, category_id, title, slug, content, author, status, updated_at)
-        VALUES (${id}, ${category_id || null}, ${title}, ${slug}, ${content}, ${author || 'Admin'}, ${status || 'published'}, CURRENT_TIMESTAMP)
+        INSERT INTO wiki_articles (id, category_id, title, slug, content, author, status, featured, updated_at)
+        VALUES (${id}, ${category_id || null}, ${title}, ${slug}, ${content}, ${author || 'Admin'}, ${status || 'published'}, ${featured || false}, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE SET 
           category_id = EXCLUDED.category_id,
           title = EXCLUDED.title,
           slug = EXCLUDED.slug,
           content = EXCLUDED.content,
           status = EXCLUDED.status,
+          featured = EXCLUDED.featured,
           updated_at = CURRENT_TIMESTAMP;
       `;
       return res.status(200).json({ success: true });

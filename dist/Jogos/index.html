@@ -130,7 +130,7 @@
                 animation: text-shine 5s linear infinite;
             }
         </style>
-      <link rel="stylesheet" crossorigin href="/assets/style-Di-ZgqcI.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-ZdpWcq85.css">
     </head>
     <body class="font-body">
         <!-- Spacer para o banner fixo -->
@@ -1214,6 +1214,10 @@
                         return String(n).padStart(2, "0");
                     }
                     function tick() {
+                        if (document.hidden) {
+                            setTimeout(tick, 1000);
+                            return;
+                        }
                         const banner = document.getElementById("promo-banner");
                         if (!banner) return; // Stop timer if banner is removed from DOM
                         if (banner.style.display === 'none') {

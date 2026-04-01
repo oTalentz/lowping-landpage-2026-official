@@ -64,7 +64,15 @@ async function renderCategoriesSidebar() {
     if (!sidebar) return;
 
     const categories = await db.getCategories();
-    let html = '';
+    
+    // Add "Visão Geral" as the first link
+    let html = `
+        <a class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="index.html">
+            <span class="material-symbols-outlined text-xl" data-icon="grid_view">grid_view</span>
+            Visão Geral
+        </a>
+    `;
+    
     categories.forEach(cat => {
         html += `
             <a class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="?category=${cat.slug}">
@@ -110,33 +118,39 @@ async function renderHome() {
         <!-- Featured Articles -->
         <div>
             <div class="flex items-center justify-between mb-8">
-                <h2 class="font-headline text-3xl font-bold text-on-surface">Artigos Recentes</h2>
+                <h2 class="font-headline text-3xl font-bold text-on-surface">Artigos em Destaque</h2>
             </div>
             <div class="space-y-4">
     `;
 
-    // Sort by date desc
-    articles.sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)).slice(0, 5).forEach(article => {
-        const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
-        const icon = cat ? cat.icon : 'article';
-        
-        html += `
-            <article class="group bg-surface-container-lowest p-6 rounded-2xl border-b border-transparent hover:border-primary/20 hover:bg-surface-container-low transition-all">
-                <a class="flex items-center justify-between" href="?article=${article.slug}">
-                    <div class="flex items-center gap-6">
-                        <div class="w-12 h-12 flex items-center justify-center bg-surface-container-high rounded-xl text-on-surface-variant group-hover:text-primary transition-colors">
-                            <span class="material-symbols-outlined" data-icon="${icon}">${icon}</span>
+    // Filter featured articles and sort by date desc
+    const featuredArticles = articles.filter(a => a.featured === true || a.featured === 'true');
+    
+    if (featuredArticles.length === 0) {
+        html += `<p class="text-on-surface-variant">Nenhum artigo em destaque no momento.</p>`;
+    } else {
+        featuredArticles.sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)).slice(0, 5).forEach(article => {
+            const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
+            const icon = cat ? cat.icon : 'article';
+            
+            html += `
+                <article class="group bg-surface-container-lowest p-6 rounded-2xl border-b border-transparent hover:border-primary/20 hover:bg-surface-container-low transition-all">
+                    <a class="flex items-center justify-between" href="?article=${article.slug}">
+                        <div class="flex items-center gap-6">
+                            <div class="w-12 h-12 flex items-center justify-center bg-surface-container-high rounded-xl text-on-surface-variant group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined" data-icon="${icon}">${icon}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-headline text-lg font-bold text-on-surface">${article.title}</h4>
+                                <p class="text-sm text-on-surface-variant">${timeAgo(article.created_at || article.createdAt)} • Em ${cat ? cat.name : 'Geral'}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-headline text-lg font-bold text-on-surface">${article.title}</h4>
-                            <p class="text-sm text-on-surface-variant">${timeAgo(article.created_at || article.createdAt)} • Em ${cat ? cat.name : 'Geral'}</p>
-                        </div>
-                    </div>
-                    <span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
-                </a>
-            </article>
-        `;
-    });
+                        <span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+                    </a>
+                </article>
+            `;
+        });
+    }
 
     html += `
             </div>

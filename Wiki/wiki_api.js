@@ -76,7 +76,8 @@ const db = {
             slug: art.slug,
             content: art.content,
             author: art.author || art.authorId || 'Admin',
-            status: art.status
+            status: art.status,
+            featured: art.featured || false
         };
         const res = await fetch(`${API_BASE}/wiki/articles`, {
             method: 'POST',

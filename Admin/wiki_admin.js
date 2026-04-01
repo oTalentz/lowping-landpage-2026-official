@@ -233,6 +233,8 @@ async function openArticleEditor(articleId = null) {
     
     document.getElementById('article-form').reset();
     document.getElementById('article-id').value = '';
+    const featuredCheckbox = document.getElementById('wiki-article-featured');
+    if (featuredCheckbox) featuredCheckbox.checked = false;
     quill.root.innerHTML = '';
 
     if (articleId) {
@@ -245,6 +247,7 @@ async function openArticleEditor(articleId = null) {
             document.getElementById('article-slug-input').value = article.slug;
             document.getElementById('article-category-input').value = article.category_id || article.categoryId;
             document.querySelector(`input[name="article-status"][value="${article.status}"]`).checked = true;
+            if (featuredCheckbox) featuredCheckbox.checked = article.featured || false;
             quill.clipboard.dangerouslyPasteHTML(article.content);
         }
     } else {
@@ -266,7 +269,8 @@ async function handleArticleSubmit(e) {
     const title = document.getElementById('article-title-input').value;
     const slug = document.getElementById('article-slug-input').value;
     const categoryId = document.getElementById('article-category-input').value;
-    const status = document.querySelector('input[name="article-status"]:checked').value;
+    const status = document.querySelector('input[name="article-status"]:checked') ? document.querySelector('input[name="article-status"]:checked').value : 'published';
+    const featured = document.getElementById('wiki-article-featured') ? document.getElementById('wiki-article-featured').checked : false;
     const content = quill.root.innerHTML;
 
     let articles = await db.getArticles();
@@ -282,7 +286,7 @@ async function handleArticleSubmit(e) {
 
             articleToSave = {
                 ...articles[index],
-                title, slug, categoryId, status, content,
+                title, slug, categoryId, status, content, featured,
                 updatedAt: new Date().toISOString()
             };
             if(typeof showToast === 'function') showToast('Artigo atualizado com sucesso!');
@@ -291,7 +295,7 @@ async function handleArticleSubmit(e) {
         // Create new
         articleToSave = {
             id: Date.now().toString(),
-            title, slug, categoryId, status, content,
+            title, slug, categoryId, status, content, featured,
             authorId: '1', // mock admin
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()

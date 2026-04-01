@@ -612,6 +612,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return String(n).padStart(2, "0");
             }
             function tick() {
+                        if (document.hidden) {
+                            setTimeout(tick, 1000);
+                            return;
+                        }
                         const banner = document.getElementById("promo-banner");
                         if (!banner) return; // Stop timer if banner is removed from DOM
                         if (banner.style.display === 'none') {
