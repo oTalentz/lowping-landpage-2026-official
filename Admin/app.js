@@ -31,12 +31,14 @@ function showToast(message, type = 'success') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+window.showToast = showToast;
 
 function switchView(viewId) {
     document.getElementById('login-view').classList.add('hidden-view');
     document.getElementById('dashboard-view').classList.add('hidden-view');
     document.getElementById(viewId).classList.remove('hidden-view');
 }
+window.switchView = switchView;
 
 function showSection(section) {
     // Hide all
@@ -77,20 +79,24 @@ function showSection(section) {
         activeMobNav.querySelector('span').style.fontVariationSettings = "'FILL' 1";
     }
 }
+window.showSection = showSection;
 
 function openModal(modalId) {
     document.getElementById(modalId).classList.remove('hidden-view');
 }
+window.openModal = openModal;
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden-view');
 }
+window.closeModal = closeModal;
 
 function confirmAction(message, onConfirm) {
     if(confirm(message)) {
         onConfirm();
     }
 }
+window.confirmAction = confirmAction;
 
 // API Helpers
 async function apiCall(url, options = {}) {
@@ -270,6 +276,7 @@ function openBannerModal(id = null) {
             document.getElementById('banner-start').value = b.start_date || '';
             document.getElementById('banner-end').value = b.end_date || '';
             document.getElementById('banner-link').value = b.link_url || '';
+            document.getElementById('banner-coupon').value = b.coupon_code || '';
             document.getElementById('banner-order').value = b.order_index || 1;
         }
     }
@@ -300,6 +307,7 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
         start_date: document.getElementById('banner-start').value,
         end_date: document.getElementById('banner-end').value,
         link_url: document.getElementById('banner-link').value,
+        coupon_code: document.getElementById('banner-coupon').value,
         active: true,
         order_index: parseInt(document.getElementById('banner-order').value) || 0
     };
@@ -313,7 +321,7 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
 });
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
     // Add event listeners for static elements
     const returnHomeBtn = document.getElementById('btn-return-home');
     if (returnHomeBtn) returnHomeBtn.addEventListener('click', returnToHome);
@@ -346,4 +354,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         initDashboard();
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}

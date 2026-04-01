@@ -452,10 +452,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                         
                                         const copyBtn = promoBanner.querySelector('button');
                                         if (copyBtn) {
-                                            copyBtn.textContent = 'ACESSAR';
-                                            copyBtn.onclick = function() {
-                                                if(b.link_url) window.location.href = b.link_url;
-                                            };
+                                            if (b.coupon_code) {
+                                                copyBtn.textContent = 'COPIAR CUPOM';
+                                                copyBtn.onclick = function() {
+                                                    navigator.clipboard.writeText(b.coupon_code).then(() => {
+                                                        const originalText = copyBtn.textContent;
+                                                        copyBtn.textContent = 'COPIADO!';
+                                                        setTimeout(() => {
+                                                            copyBtn.textContent = originalText;
+                                                        }, 2000);
+                                                    });
+                                                };
+                                            } else {
+                                                copyBtn.textContent = 'ACESSAR';
+                                                copyBtn.onclick = function() {
+                                                    if(b.link_url) window.location.href = b.link_url;
+                                                };
+                                            }
                                         }
                                         
                                         if (b.end_date) {

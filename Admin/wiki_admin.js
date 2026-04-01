@@ -1,7 +1,7 @@
 let quill;
 let currentWikiSection = 'articles';
 
-document.addEventListener('DOMContentLoaded', () => {
+function initWikiAdmin() {
     initQuill();
 
     // Event listeners for Navigation
@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
         navWiki.addEventListener('click', (e) => {
             e.preventDefault();
             // showSection is a global function from app.js
-            if (typeof showSection === 'function') {
+            if (typeof window.showSection === 'function') {
+                window.showSection('wiki');
+                showWikiSection('articles');
+            } else if (typeof showSection === 'function') {
                 showSection('wiki');
                 showWikiSection('articles');
             }
@@ -21,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mobNavWiki) {
         mobNavWiki.addEventListener('click', (e) => {
             e.preventDefault();
-            if (typeof showSection === 'function') {
+            if (typeof window.showSection === 'function') {
+                window.showSection('wiki');
+                showWikiSection('articles');
+            } else if (typeof showSection === 'function') {
                 showSection('wiki');
                 showWikiSection('articles');
             }
@@ -31,11 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Also bind banners just in case they are not bound in app.js
     document.getElementById('nav-banners')?.addEventListener('click', (e) => {
         e.preventDefault();
-        showSection('banners');
+        if (typeof window.showSection === 'function') window.showSection('banners');
+        else if (typeof showSection === 'function') showSection('banners');
     });
     document.getElementById('mob-nav-banners')?.addEventListener('click', (e) => {
         e.preventDefault();
-        showSection('banners');
+        if (typeof window.showSection === 'function') window.showSection('banners');
+        else if (typeof showSection === 'function') showSection('banners');
     });
 
     // Wiki inner navigation
@@ -73,11 +81,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentWikiSection === 'articles') {
                 openArticleEditor();
             } else {
-                showToast('Criação de categorias em breve.', 'error');
+                if (typeof window.showToast === 'function') window.showToast('Criação de categorias em breve.', 'error');
+                else if (typeof showToast === 'function') showToast('Criação de categorias em breve.', 'error');
             }
         });
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWikiAdmin);
+} else {
+    initWikiAdmin();
+}
 
 function initQuill() {
     quill = new Quill('#quill-editor', {

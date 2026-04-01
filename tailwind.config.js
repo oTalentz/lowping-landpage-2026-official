@@ -8,6 +8,10 @@ module.exports = {
     "./Wiki/**/*.{html,js}",
     "./Admin/**/*.{html,js}",
     "./Parceiros/**/*.html",
+    "./Contato/**/*.html",
+    "./Privacidade/**/*.html",
+    "./Termos/**/*.html",
+    "./Cupom/**/*.html",
     "./*.js"
   ],
   theme: {
