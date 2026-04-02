@@ -36,11 +36,16 @@ async function handler(req, res) {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         status VARCHAR(50) DEFAULT 'published',
-        featured BOOLEAN DEFAULT FALSE
+        featured BOOLEAN DEFAULT FALSE,
+        featured_order INTEGER
       );
     `;
     try {
       await sql`ALTER TABLE wiki_articles ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;`;
+    } catch {
+    }
+    try {
+      await sql`ALTER TABLE wiki_articles ADD COLUMN IF NOT EXISTS featured_order INTEGER;`;
     } catch {
     }
   } catch {
@@ -77,6 +82,10 @@ async function handler(req, res) {
     const author = typeof body.author === 'string' && body.author.length <= 120 ? body.author : 'Admin';
     const status = body.status === 'draft' ? 'draft' : 'published';
     const featured = Boolean(body.featured);
+    const parsedFeaturedOrder = Number.parseInt(body.featured_order, 10);
+    const featuredOrder = featured && Number.isFinite(parsedFeaturedOrder) && parsedFeaturedOrder > 0 && parsedFeaturedOrder <= 100000
+      ? parsedFeaturedOrder
+      : null;
 
     if (!isSafeId(id) || !isSafeId(slug) || title.length < 3 || title.length > 180 || content.length < 10 || content.length > 200000) {
       return res.status(400).json({ error: 'Campos obrigatórios inválidos' });
@@ -87,8 +96,8 @@ async function handler(req, res) {
 
     try {
       await sql`
-        INSERT INTO wiki_articles (id, category_id, title, slug, content, author, status, featured, updated_at)
-        VALUES (${id}, ${categoryId || null}, ${title}, ${slug}, ${content}, ${author}, ${status}, ${featured}, CURRENT_TIMESTAMP)
+        INSERT INTO wiki_articles (id, category_id, title, slug, content, author, status, featured, featured_order, updated_at)
+        VALUES (${id}, ${categoryId || null}, ${title}, ${slug}, ${content}, ${author}, ${status}, ${featured}, ${featuredOrder}, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE SET
           category_id = EXCLUDED.category_id,
           title = EXCLUDED.title,
@@ -96,6 +105,7 @@ async function handler(req, res) {
           content = EXCLUDED.content,
           status = EXCLUDED.status,
           featured = EXCLUDED.featured,
+          featured_order = EXCLUDED.featured_order,
           updated_at = CURRENT_TIMESTAMP;
       `;
       return res.status(200).json({ success: true });

@@ -149,6 +149,25 @@ function sanitizeArticleHtml(content) {
     return template.innerHTML;
 }
 
+function isArticleFeatured(article) {
+    return article && (article.featured === true || article.featured === 'true');
+}
+
+function getFeaturedOrder(article) {
+    const parsed = Number.parseInt(article?.featured_order ?? article?.featuredOrder, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : Number.MAX_SAFE_INTEGER;
+}
+
+function getSortedFeaturedArticles(articles) {
+    return (Array.isArray(articles) ? articles : [])
+        .filter((article) => isArticleFeatured(article))
+        .sort((a, b) => {
+            const orderDiff = getFeaturedOrder(a) - getFeaturedOrder(b);
+            if (orderDiff !== 0) return orderDiff;
+            return new Date(b.updated_at || b.updatedAt) - new Date(a.updated_at || a.updatedAt);
+        });
+}
+
 function initWikiAdmin() {
     initQuill();
 
@@ -315,6 +334,7 @@ async function renderAdminArticles() {
     const articles = await db.getArticles();
     const categories = await db.getCategories();
     const contentArea = document.getElementById('wiki-content-area');
+    const featuredArticles = getSortedFeaturedArticles(articles);
 
     let html = `
         <div class="bg-surface-container-lowest rounded-2xl border border-white/10 overflow-hidden w-full overflow-x-auto">
@@ -359,7 +379,78 @@ async function renderAdminArticles() {
     }
 
     html += `</tbody></table></div>`;
+
+    html += `
+        <div class="mt-6 bg-surface-container-lowest rounded-2xl border border-white/10 p-6">
+            <div class="flex items-center justify-between gap-3 mb-4">
+                <h3 class="text-lg font-bold font-headline text-white">Ordem dos Artigos em Destaque</h3>
+                <span class="text-xs text-[#8b91a8]">Use os botões para mover para cima/baixo</span>
+            </div>
+            <div class="space-y-2">
+    `;
+
+    if (featuredArticles.length === 0) {
+        html += `<p class="text-sm text-[#8b91a8]">Nenhum artigo marcado como destaque.</p>`;
+    } else {
+        featuredArticles.forEach((article, index) => {
+            const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
+            const isFirst = index === 0;
+            const isLast = index === featuredArticles.length - 1;
+            html += `
+                <div class="flex items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-white truncate">${article.title}</p>
+                        <p class="text-xs text-[#8b91a8]">${cat ? cat.name : 'Sem categoria'} • posição ${index + 1}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="moveFeaturedArticle('${article.id}', 'up')" ${isFirst ? 'disabled' : ''} class="text-[#adc6ff] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed bg-[#adc6ff]/10 p-2 rounded-lg transition-colors" title="Mover para cima">
+                            <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+                        </button>
+                        <button onclick="moveFeaturedArticle('${article.id}', 'down')" ${isLast ? 'disabled' : ''} class="text-[#adc6ff] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed bg-[#adc6ff]/10 p-2 rounded-lg transition-colors" title="Mover para baixo">
+                            <span class="material-symbols-outlined text-[18px]">arrow_downward</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    html += `
+            </div>
+        </div>
+    `;
     contentArea.innerHTML = html;
+}
+
+window.moveFeaturedArticle = async function(articleId, direction) {
+    const allArticles = await db.getArticles();
+    const featured = getSortedFeaturedArticles(allArticles);
+    const currentIndex = featured.findIndex((article) => article.id === articleId);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= featured.length) return;
+
+    const temp = featured[currentIndex];
+    featured[currentIndex] = featured[targetIndex];
+    featured[targetIndex] = temp;
+
+    try {
+        for (let i = 0; i < featured.length; i++) {
+            const article = featured[i];
+            await db.saveArticle({
+                ...article,
+                categoryId: article.categoryId || article.category_id,
+                featured: true,
+                featuredOrder: i + 1
+            });
+        }
+        if (typeof showToast === 'function') showToast('Ordem dos destaques atualizada com sucesso!');
+        renderAdminArticles();
+    } catch (error) {
+        console.error('Erro ao reordenar destaques:', error);
+        if (typeof showToast === 'function') showToast('Erro ao reordenar destaques.', 'error');
+    }
 }
 
 async function renderAdminCategories() {
@@ -470,6 +561,8 @@ async function handleArticleSubmit(e) {
     }
 
     let articles = await db.getArticles();
+    const featuredArticles = getSortedFeaturedArticles(articles.filter((article) => article.id !== id));
+    const nextFeaturedOrder = featuredArticles.length + 1;
 
     let articleToSave;
 
@@ -484,6 +577,7 @@ async function handleArticleSubmit(e) {
         articleToSave = {
             ...articles[index],
             title, slug, categoryId, status, content, featured,
+            featuredOrder: featured ? getFeaturedOrder(articles[index]) === Number.MAX_SAFE_INTEGER ? nextFeaturedOrder : getFeaturedOrder(articles[index]) : null,
             updatedAt: new Date().toISOString()
         };
         if(typeof showToast === 'function') showToast('Artigo atualizado com sucesso!');
@@ -491,6 +585,7 @@ async function handleArticleSubmit(e) {
         articleToSave = {
             id: Date.now().toString(),
             title, slug, categoryId, status, content, featured,
+            featuredOrder: featured ? nextFeaturedOrder : null,
             authorId: '1', // mock admin
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()

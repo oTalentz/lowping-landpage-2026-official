@@ -95,6 +95,11 @@ function asText(value) {
     return typeof value === 'string' ? value : '';
 }
 
+function getFeaturedOrder(article) {
+    const parsed = Number.parseInt(article?.featured_order ?? article?.featuredOrder, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : Number.MAX_SAFE_INTEGER;
+}
+
 function sanitizeUrl(value) {
     const url = asText(value).trim();
     if (!url) return '';
@@ -307,13 +312,20 @@ async function renderHome() {
             <div class="space-y-4">
     `;
 
-    // Filter featured articles and sort by date desc
+    // Filter featured articles and sort by custom order
     const featuredArticles = articles.filter(a => a.featured === true || a.featured === 'true');
     
     if (featuredArticles.length === 0) {
         html += `<p class="text-on-surface-variant">Nenhum artigo em destaque no momento.</p>`;
     } else {
-        featuredArticles.sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)).slice(0, 5).forEach(article => {
+        featuredArticles
+            .sort((a, b) => {
+                const orderDiff = getFeaturedOrder(a) - getFeaturedOrder(b);
+                if (orderDiff !== 0) return orderDiff;
+                return new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt);
+            })
+            .slice(0, 5)
+            .forEach(article => {
             const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
             const icon = cat ? asText(cat.icon) : 'article';
             
@@ -333,7 +345,7 @@ async function renderHome() {
                     </a>
                 </article>
             `;
-        });
+            });
     }
 
     html += `

@@ -124,7 +124,8 @@ const db = {
             content: art.content,
             author: art.author || art.authorId || 'Admin',
             status: art.status,
-            featured: art.featured || false
+            featured: art.featured || false,
+            featured_order: Number.isFinite(Number(art.featuredOrder ?? art.featured_order)) ? Number(art.featuredOrder ?? art.featured_order) : null
         };
         const res = await fetch(`${API_BASE}/wiki/articles`, {
             method: 'POST',
@@ -152,7 +153,9 @@ const db = {
                 slug: art.slug,
                 content: art.content,
                 author: art.author || art.authorId || 'Admin',
-                status: art.status
+                status: art.status,
+                featured: art.featured || false,
+                featured_order: Number.isFinite(Number(art.featuredOrder ?? art.featured_order)) ? Number(art.featuredOrder ?? art.featured_order) : null
             };
             const res = await fetch(`${API_BASE}/wiki/articles`, {
                 method: 'POST',
