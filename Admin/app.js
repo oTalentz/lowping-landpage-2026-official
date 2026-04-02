@@ -434,10 +434,6 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
     const isEditing = Boolean(existingId);
     const id = existingId || Date.now().toString();
     const imageUrl = document.getElementById('banner-image').value.trim();
-    if (imageUrl && !isSafeImageUrl(imageUrl)) {
-        showToast('Se preencher a imagem, informe uma URL válida (http/https ou enviada pelo upload).', 'error');
-        return;
-    }
     if (isBannerImageUploadInProgress) {
         showToast('Aguarde a conclusão do upload da imagem.', 'error');
         return;

@@ -91,14 +91,15 @@ async function handler(req, res) {
     if (!isSafeId(id) || title.length < 2 || title.length > 160) {
       return res.status(400).json({ error: 'Dados inválidos do banner' });
     }
-    if (!isSafeUrl(imageUrl) || !isSafeUrl(linkUrl)) {
+    if (!isSafeUrl(linkUrl)) {
       return res.status(400).json({ error: 'URL inválida no banner' });
     }
+    const normalizedImageUrl = isSafeUrl(imageUrl) ? imageUrl : '';
 
     try {
       await sql`
         INSERT INTO banners (id, title, image_url, link_url, active, order_index, start_date, end_date, coupon_code)
-        VALUES (${id}, ${title}, ${imageUrl || ''}, ${linkUrl || ''}, ${active}, ${orderIndex}, ${startDate}, ${endDate}, ${couponCode})
+        VALUES (${id}, ${title}, ${normalizedImageUrl}, ${linkUrl || ''}, ${active}, ${orderIndex}, ${startDate}, ${endDate}, ${couponCode})
         ON CONFLICT (id) DO UPDATE SET
           title = EXCLUDED.title,
           image_url = EXCLUDED.image_url,
