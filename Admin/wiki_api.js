@@ -3,16 +3,34 @@
 
 const API_BASE = '/api';
 
+function getStoredArray(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+function getAuthHeader() {
+    const raw = localStorage.getItem('admin_token');
+    if (!raw) return '';
+    return `Bearer ${raw.replace(/^Bearer\s+/i, '')}`;
+}
+
 const db = {
     // Flag temporária para fallback se o backend falhar
     useMock: false, 
 
     async getCategories() {
-        if (this.useMock) return JSON.parse(localStorage.getItem('wiki_categories') || '[]');
+        if (this.useMock) return getStoredArray('wiki_categories');
         try {
             const res = await fetch(`${API_BASE}/wiki/categories`);
             if (!res.ok) throw new Error('Falha ao carregar categorias');
-            return await res.json();
+            const data = await res.json();
+            return Array.isArray(data) ? data : [];
         } catch (err) {
             console.error(err);
             return [];
@@ -20,11 +38,12 @@ const db = {
     },
     
     async getArticles() {
-        if (this.useMock) return JSON.parse(localStorage.getItem('wiki_articles') || '[]');
+        if (this.useMock) return getStoredArray('wiki_articles');
         try {
             const res = await fetch(`${API_BASE}/wiki/articles`);
             if (!res.ok) throw new Error('Falha ao carregar artigos');
-            return await res.json();
+            const data = await res.json();
+            return Array.isArray(data) ? data : [];
         } catch (err) {
             console.error(err);
             return [];
@@ -46,7 +65,7 @@ const db = {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
+                    'Authorization': getAuthHeader()
                 },
                 body: JSON.stringify(payload)
             });
@@ -59,7 +78,7 @@ const db = {
 
     async saveArticle(art) {
         if (this.useMock) {
-            let articles = JSON.parse(localStorage.getItem('wiki_articles') || '[]');
+            let articles = getStoredArray('wiki_articles');
             const index = articles.findIndex(a => a.id === art.id);
             if (index !== -1) {
                 articles[index] = art;
@@ -83,7 +102,7 @@ const db = {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
+                'Authorization': getAuthHeader()
             },
             body: JSON.stringify(payload)
         });
@@ -109,7 +128,7 @@ const db = {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
+                    'Authorization': getAuthHeader()
                 },
                 body: JSON.stringify(payload)
             });
@@ -122,7 +141,7 @@ const db = {
 
     // Versões ainda em localStorage por enquanto (para não complicar o DB demais agora)
     async getVersions() {
-        return JSON.parse(localStorage.getItem('wiki_versions') || '[]');
+        return getStoredArray('wiki_versions');
     },
     async saveVersions(data) {
         localStorage.setItem('wiki_versions', JSON.stringify(data));
@@ -130,7 +149,7 @@ const db = {
 
     async deleteArticle(id) {
         if (this.useMock) {
-            let articles = JSON.parse(localStorage.getItem('wiki_articles') || '[]');
+            let articles = getStoredArray('wiki_articles');
             articles = articles.filter(a => a.id !== id);
             localStorage.setItem('wiki_articles', JSON.stringify(articles));
             return;
@@ -138,7 +157,7 @@ const db = {
         const res = await fetch(`${API_BASE}/wiki/articles?id=${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': localStorage.getItem('admin_token') ? `Bearer ${localStorage.getItem('admin_token').replace(/^Bearer\s+/i, '')}` : ''
+                'Authorization': getAuthHeader()
             }
         });
         if (!res.ok) {

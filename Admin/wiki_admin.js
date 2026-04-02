@@ -1,5 +1,61 @@
 let quill;
 let currentWikiSection = 'articles';
+const MAX_TITLE_LENGTH = 180;
+const MAX_SLUG_LENGTH = 80;
+const MAX_CONTENT_LENGTH = 200000;
+
+function sanitizeEditorUrl(value) {
+    if (typeof value !== 'string') return '';
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('/') || trimmed.startsWith('#') || trimmed.startsWith('?')) return trimmed;
+    try {
+        const parsed = new URL(trimmed, window.location.origin);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '';
+        if (parsed.hostname.toLowerCase() === 'via.placeholder.com') return '';
+        return parsed.href;
+    } catch {
+        return '';
+    }
+}
+
+function sanitizeArticleHtml(content) {
+    const template = document.createElement('template');
+    template.innerHTML = typeof content === 'string' ? content : '';
+
+    const blockedTags = ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'textarea', 'select', 'meta', 'link'];
+    blockedTags.forEach((tag) => {
+        template.content.querySelectorAll(tag).forEach((el) => el.remove());
+    });
+
+    template.content.querySelectorAll('*').forEach((el) => {
+        [...el.attributes].forEach((attr) => {
+            const name = attr.name.toLowerCase();
+            if (name.startsWith('on') || name === 'style' || name === 'srcset') {
+                el.removeAttribute(attr.name);
+                return;
+            }
+            if (name === 'href' || name === 'src') {
+                const safeUrl = sanitizeEditorUrl(attr.value);
+                if (!safeUrl) {
+                    if (name === 'src' && el.tagName === 'IMG') {
+                        el.remove();
+                    } else {
+                        el.removeAttribute(attr.name);
+                    }
+                    return;
+                }
+                el.setAttribute(attr.name, safeUrl);
+                if (name === 'href') {
+                    el.setAttribute('target', '_blank');
+                    el.setAttribute('rel', 'noopener noreferrer');
+                }
+            }
+        });
+    });
+
+    return template.innerHTML;
+}
 
 function initWikiAdmin() {
     initQuill();
@@ -113,6 +169,15 @@ function initQuill() {
                 ['clean']
             ]
         }
+    });
+    quill.root.addEventListener('paste', (event) => {
+        const html = event.clipboardData?.getData('text/html');
+        if (!html) return;
+        event.preventDefault();
+        const sanitized = sanitizeArticleHtml(html);
+        const selection = quill.getSelection(true);
+        const index = selection && Number.isInteger(selection.index) ? selection.index : quill.getLength();
+        quill.clipboard.dangerouslyPasteHTML(index, sanitized, 'user');
     });
 }
 
@@ -246,9 +311,10 @@ async function openArticleEditor(articleId = null) {
             document.getElementById('article-title-input').value = article.title;
             document.getElementById('article-slug-input').value = article.slug;
             document.getElementById('article-category-input').value = article.category_id || article.categoryId;
-            document.querySelector(`input[name="article-status"][value="${article.status}"]`).checked = true;
+            const statusInput = document.querySelector(`input[name="article-status"][value="${article.status}"]`);
+            if (statusInput) statusInput.checked = true;
             if (featuredCheckbox) featuredCheckbox.checked = article.featured || false;
-            quill.clipboard.dangerouslyPasteHTML(article.content);
+            quill.clipboard.dangerouslyPasteHTML(sanitizeArticleHtml(article.content));
         }
     } else {
         titleEl.innerText = 'Novo Artigo';
@@ -264,35 +330,55 @@ window.closeEditor = function() {
 async function handleArticleSubmit(e) {
     e.preventDefault();
     
-    // Assuming currentUser logic is skipped or mocked to admin here
     const id = document.getElementById('article-id').value;
-    const title = document.getElementById('article-title-input').value;
-    const slug = document.getElementById('article-slug-input').value;
-    const categoryId = document.getElementById('article-category-input').value;
+    const title = document.getElementById('article-title-input').value.trim();
+    const slug = document.getElementById('article-slug-input').value.trim().toLowerCase();
+    const categoryId = document.getElementById('article-category-input').value.trim();
     const status = document.querySelector('input[name="article-status"]:checked') ? document.querySelector('input[name="article-status"]:checked').value : 'published';
     const featured = document.getElementById('wiki-article-featured') ? document.getElementById('wiki-article-featured').checked : false;
-    const content = quill.root.innerHTML;
+    const content = sanitizeArticleHtml(quill.root.innerHTML.trim());
+    const contentText = quill.getText().trim();
+
+    if (!title || title.length < 3 || title.length > MAX_TITLE_LENGTH) {
+        if (typeof showToast === 'function') showToast(`Título inválido. Use entre 3 e ${MAX_TITLE_LENGTH} caracteres.`, 'error');
+        return;
+    }
+    if (!slug || !/^[a-z0-9-]+$/.test(slug) || slug.length > MAX_SLUG_LENGTH) {
+        if (typeof showToast === 'function') showToast(`Slug inválido. Use apenas letras minúsculas, números e hífen (máx. ${MAX_SLUG_LENGTH}).`, 'error');
+        return;
+    }
+    if (!categoryId) {
+        if (typeof showToast === 'function') showToast('Selecione uma categoria.', 'error');
+        return;
+    }
+    if (!contentText || contentText.length < 10) {
+        if (typeof showToast === 'function') showToast('Conteúdo muito curto. Escreva pelo menos 10 caracteres.', 'error');
+        return;
+    }
+    if (content.length > MAX_CONTENT_LENGTH) {
+        if (typeof showToast === 'function') showToast('Conteúdo muito grande para salvar. Reduza imagens/HTML incorporado.', 'error');
+        return;
+    }
 
     let articles = await db.getArticles();
 
     let articleToSave;
 
     if (id) {
-        // Update existing
         const index = articles.findIndex(a => a.id == id);
-        if (index !== -1) {
-            // Save version
-            saveVersion(articles[index]);
-
-            articleToSave = {
-                ...articles[index],
-                title, slug, categoryId, status, content, featured,
-                updatedAt: new Date().toISOString()
-            };
-            if(typeof showToast === 'function') showToast('Artigo atualizado com sucesso!');
+        if (index === -1) {
+            if (typeof showToast === 'function') showToast('Artigo não encontrado para atualização.', 'error');
+            return;
         }
+        await saveVersion(articles[index]);
+
+        articleToSave = {
+            ...articles[index],
+            title, slug, categoryId, status, content, featured,
+            updatedAt: new Date().toISOString()
+        };
+        if(typeof showToast === 'function') showToast('Artigo atualizado com sucesso!');
     } else {
-        // Create new
         articleToSave = {
             id: Date.now().toString(),
             title, slug, categoryId, status, content, featured,
@@ -315,8 +401,9 @@ async function handleArticleSubmit(e) {
     }
 }
 
-function saveVersion(article) {
-    const versions = db.getVersions();
+async function saveVersion(article) {
+    const existingVersions = await db.getVersions();
+    const versions = Array.isArray(existingVersions) ? existingVersions : [];
     versions.push({
         id: Date.now(),
         articleId: article.id,
@@ -324,7 +411,7 @@ function saveVersion(article) {
         savedAt: new Date().toISOString(),
         savedBy: 1
     });
-    db.saveVersions(versions);
+    await db.saveVersions(versions);
 }
 
 window.editArticle = function(id) {

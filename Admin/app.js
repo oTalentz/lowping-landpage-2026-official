@@ -258,7 +258,7 @@ function renderBanners() {
         
         div.innerHTML = `
             <div class="h-32 bg-surface-container-highest relative">
-                <img src="${b.image_url}" class="w-full h-full object-cover opacity-60" onerror="this.src='https://via.placeholder.com/400x200?text=Invalid+Image'">
+                <img src="${b.image_url}" class="w-full h-full object-cover opacity-60" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%23202630%22/%3E%3Ctext x=%22200%22 y=%22104%22 fill=%22%23c2c6d6%22 font-family=%22Arial%22 font-size=%2220%22 text-anchor=%22middle%22%3EImagem indispon%C3%ADvel%3C/text%3E%3C/svg%3E'">
                 <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
                 <div class="absolute top-2 right-2 bg-black/50 backdrop-blur px-2 py-1 rounded text-[10px] font-label">Ordem: ${b.order_index}</div>
             </div>
