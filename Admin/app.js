@@ -237,6 +237,101 @@ async function initDashboard() {
 
 // --- Banners Logic ---
 let bannersList = [];
+const BANNER_ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const BANNER_MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+let isBannerImageUploadInProgress = false;
+
+function isSafeImageUrl(value) {
+    if (typeof value !== 'string') return false;
+    const trimmed = value.trim();
+    if (!trimmed) return false;
+    if (trimmed.startsWith('//')) return false;
+    if (trimmed.startsWith('/') || trimmed.startsWith('#') || trimmed.startsWith('?')) return true;
+    try {
+        const parsed = new URL(trimmed, window.location.origin);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return false;
+        if (parsed.hostname.toLowerCase() === 'via.placeholder.com') return false;
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function validateBannerImageFile(file) {
+    if (!file) return 'Nenhum arquivo selecionado.';
+    if (!BANNER_ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        return 'Formato não suportado. Use JPG, PNG, WEBP ou GIF.';
+    }
+    if (!Number.isFinite(file.size) || file.size <= 0) return 'Arquivo inválido.';
+    if (file.size > BANNER_MAX_IMAGE_BYTES) {
+        return `Arquivo excede o limite de ${Math.floor(BANNER_MAX_IMAGE_BYTES / (1024 * 1024))}MB.`;
+    }
+    return '';
+}
+
+function readBannerFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            if (typeof reader.result !== 'string') {
+                reject(new Error('Falha ao processar arquivo.'));
+                return;
+            }
+            resolve(reader.result);
+        };
+        reader.onerror = () => reject(new Error('Falha ao ler arquivo.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function setBannerUploadStatus(message, isError = false) {
+    const statusEl = document.getElementById('banner-image-upload-status');
+    if (!statusEl) return;
+    statusEl.textContent = message || '';
+    statusEl.classList.remove('text-error', 'text-tertiary', 'text-on-surface-variant');
+    if (!message) {
+        statusEl.classList.add('text-on-surface-variant');
+        return;
+    }
+    statusEl.classList.add(isError ? 'text-error' : 'text-tertiary');
+}
+
+async function uploadBannerImageFile(file) {
+    const validationError = validateBannerImageFile(file);
+    if (validationError) throw new Error(validationError);
+    if (isBannerImageUploadInProgress) throw new Error('Aguarde o upload atual terminar.');
+
+    const authHeader = currentToken ? (currentToken.startsWith('Bearer ') ? currentToken : `Bearer ${currentToken}`) : '';
+    if (!authHeader) throw new Error('Faça login novamente para enviar imagens.');
+
+    isBannerImageUploadInProgress = true;
+    setBannerUploadStatus('Enviando imagem...');
+    try {
+        const dataUrl = await readBannerFileAsDataUrl(file);
+        const dataBase64 = dataUrl.split(',')[1] || '';
+        if (!dataBase64) throw new Error('Não foi possível codificar a imagem.');
+        const response = await fetch('/api/wiki/images', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
+            },
+            body: JSON.stringify({
+                fileName: file.name,
+                mimeType: file.type,
+                dataBase64
+            })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'Erro ao enviar imagem.');
+        const imageInput = document.getElementById('banner-image');
+        if (imageInput) imageInput.value = payload.url || '';
+        setBannerUploadStatus('Upload concluído com sucesso.');
+        showToast('Imagem enviada com sucesso!');
+    } finally {
+        isBannerImageUploadInProgress = false;
+    }
+}
 
 async function loadBanners() {
     try {
@@ -298,6 +393,7 @@ function openBannerModal(id = null) {
     form.reset();
     document.getElementById('banner-id').value = '';
     document.getElementById('banner-modal-title').innerText = 'Novo Banner';
+    setBannerUploadStatus('');
     
     if (id) {
         const b = bannersList.find(x => x.id == id);
@@ -331,21 +427,32 @@ async function deleteBanner(id) {
 
 document.getElementById('banner-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const id = document.getElementById('banner-id').value || Date.now().toString(); // Fallback id se não existir
+    const existingId = document.getElementById('banner-id').value.trim();
+    const isEditing = Boolean(existingId);
+    const id = existingId || Date.now().toString();
+    const imageUrl = document.getElementById('banner-image').value.trim();
+    if (!imageUrl || !isSafeImageUrl(imageUrl)) {
+        showToast('Informe uma imagem válida (URL http/https ou enviada pelo upload).', 'error');
+        return;
+    }
+    if (isBannerImageUploadInProgress) {
+        showToast('Aguarde a conclusão do upload da imagem.', 'error');
+        return;
+    }
     const data = {
         id: id,
-        title: document.getElementById('banner-title').value,
-        image_url: document.getElementById('banner-image').value,
+        title: document.getElementById('banner-title').value.trim(),
+        image_url: imageUrl,
         start_date: parseDateToSave(document.getElementById('banner-start').value),
         end_date: parseDateToSave(document.getElementById('banner-end').value),
-        coupon_code: document.getElementById('banner-coupon').value,
+        coupon_code: document.getElementById('banner-coupon').value.trim(),
         active: true,
         order_index: parseInt(document.getElementById('banner-order').value) || 0
     };
     
     try {
         await apiCall('/api/admin/banners', { method: 'POST', body: JSON.stringify(data) });
-        showToast(id ? 'Banner atualizado!' : 'Banner criado!');
+        showToast(isEditing ? 'Banner atualizado!' : 'Banner criado!');
         closeModal('banner-modal');
         loadBanners();
     } catch(e) {}
@@ -380,6 +487,22 @@ function initApp() {
     
     const bannerEndInput = document.getElementById('banner-end');
     if (bannerEndInput) bannerEndInput.addEventListener('input', maskDate);
+
+    const bannerImageFileInput = document.getElementById('banner-image-file');
+    if (bannerImageFileInput) {
+        bannerImageFileInput.addEventListener('change', async (event) => {
+            const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+            if (!file) return;
+            try {
+                await uploadBannerImageFile(file);
+            } catch (error) {
+                setBannerUploadStatus(error.message || 'Falha no upload da imagem.', true);
+                showToast(error.message || 'Falha no upload da imagem.', 'error');
+            } finally {
+                event.target.value = '';
+            }
+        });
+    }
 
     if (currentToken) {
         // Verify token with backend (usando /api/health como dummy check ou pulando)

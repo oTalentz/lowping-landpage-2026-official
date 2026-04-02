@@ -147,6 +147,27 @@ const db = {
         localStorage.setItem('wiki_versions', JSON.stringify(data));
     },
 
+    async uploadImage({ fileName, mimeType, dataBase64 }) {
+        if (this.useMock) {
+            const id = `mock-${Date.now()}`;
+            const payload = `data:${mimeType};base64,${dataBase64}`;
+            return { success: true, id, url: payload, mimeType, sizeBytes: Math.floor((dataBase64.length * 3) / 4) };
+        }
+        const res = await fetch(`${API_BASE}/wiki/images`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': getAuthHeader()
+            },
+            body: JSON.stringify({ fileName, mimeType, dataBase64 })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            throw new Error(data.error || 'Erro ao enviar imagem');
+        }
+        return data;
+    },
+
     async deleteArticle(id) {
         if (this.useMock) {
             let articles = getStoredArray('wiki_articles');

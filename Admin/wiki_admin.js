@@ -3,6 +3,98 @@ let currentWikiSection = 'articles';
 const MAX_TITLE_LENGTH = 180;
 const MAX_SLUG_LENGTH = 80;
 const MAX_CONTENT_LENGTH = 200000;
+const ALLOWED_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_IMAGE_UPLOAD_BYTES = 5 * 1024 * 1024;
+let isQuillImageUploadInProgress = false;
+
+function validateImageFile(file) {
+    if (!file) return 'Nenhum arquivo selecionado.';
+    if (!ALLOWED_IMAGE_MIME_TYPES.includes(file.type)) {
+        return 'Formato não suportado. Use JPG, PNG, WEBP ou GIF.';
+    }
+    if (!Number.isFinite(file.size) || file.size <= 0) {
+        return 'Arquivo inválido.';
+    }
+    if (file.size > MAX_IMAGE_UPLOAD_BYTES) {
+        return `Arquivo excede o limite de ${Math.floor(MAX_IMAGE_UPLOAD_BYTES / (1024 * 1024))}MB.`;
+    }
+    return '';
+}
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            if (typeof reader.result !== 'string') {
+                reject(new Error('Falha ao processar arquivo.'));
+                return;
+            }
+            resolve(reader.result);
+        };
+        reader.onerror = () => reject(new Error('Falha ao ler arquivo.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function insertImageAtCursor(url) {
+    if (!quill || !url) return;
+    const safeUrl = sanitizeEditorUrl(url);
+    if (!safeUrl) throw new Error('URL de imagem inválida após upload.');
+    const selection = quill.getSelection(true);
+    const index = selection && Number.isInteger(selection.index) ? selection.index : quill.getLength();
+    quill.insertEmbed(index, 'image', safeUrl, 'user');
+    quill.setSelection(index + 1, 0, 'user');
+}
+
+async function uploadImageForEditor(file) {
+    const validationError = validateImageFile(file);
+    if (validationError) {
+        if (typeof showToast === 'function') showToast(validationError, 'error');
+        return;
+    }
+    if (!db || typeof db.uploadImage !== 'function') {
+        if (typeof showToast === 'function') showToast('Upload de imagem não está disponível.', 'error');
+        return;
+    }
+    if (isQuillImageUploadInProgress) {
+        if (typeof showToast === 'function') showToast('Aguarde o upload atual terminar.', 'error');
+        return;
+    }
+
+    isQuillImageUploadInProgress = true;
+    try {
+        if (typeof showToast === 'function') showToast('Enviando imagem...');
+        const dataUrl = await readFileAsDataUrl(file);
+        const base64 = dataUrl.split(',')[1] || '';
+        if (!base64) throw new Error('Não foi possível codificar a imagem.');
+        const response = await db.uploadImage({
+            fileName: file.name,
+            mimeType: file.type,
+            dataBase64: base64
+        });
+        if (!response || typeof response.url !== 'string') {
+            throw new Error('Resposta inválida do upload.');
+        }
+        insertImageAtCursor(response.url);
+        if (typeof showToast === 'function') showToast('Imagem enviada com sucesso!');
+    } catch (error) {
+        if (typeof showToast === 'function') showToast(error.message || 'Falha no upload da imagem.', 'error');
+    } finally {
+        isQuillImageUploadInProgress = false;
+    }
+}
+
+function openImageFilePicker() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = ALLOWED_IMAGE_MIME_TYPES.join(',');
+    input.onchange = async () => {
+        const file = input.files && input.files[0] ? input.files[0] : null;
+        if (!file) return;
+        await uploadImageForEditor(file);
+    };
+    input.click();
+}
 
 function sanitizeEditorUrl(value) {
     if (typeof value !== 'string') return '';
@@ -155,22 +247,35 @@ function initQuill() {
         theme: 'snow',
         placeholder: 'Escreva o conteúdo do artigo aqui...',
         modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote', 'code-block'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'script': 'sub'}, { 'script': 'super' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                [{ 'direction': 'rtl' }],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'align': [] }],
-                ['link', 'image', 'video'],
-                ['clean']
-            ]
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ],
+                handlers: {
+                    image: () => {
+                        openImageFilePicker();
+                    }
+                }
+            }
         }
     });
     quill.root.addEventListener('paste', (event) => {
+        const imageFile = event.clipboardData?.files ? [...event.clipboardData.files].find((file) => file.type.startsWith('image/')) : null;
+        if (imageFile) {
+            event.preventDefault();
+            uploadImageForEditor(imageFile);
+            return;
+        }
         const html = event.clipboardData?.getData('text/html');
         if (!html) return;
         event.preventDefault();

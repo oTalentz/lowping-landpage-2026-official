@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:perf": "node test-perf.js",
     "test:banner": "node --test tests/promo-banner-manager.test.js tests/promo-banner-manager.integration.test.js",
-    "test": "npm run test:banner"
+    "test:wiki-images": "node --test tests/wiki-image-upload.test.js",
+    "test": "npm run test:banner && npm run test:wiki-images"
   },
   "keywords": [],
   "author": "",

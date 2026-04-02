@@ -256,9 +256,18 @@ function isSafeId(value, maxLength = 80) {
 
 function isSafeUrl(value) {
   if (!value) return true;
+  if (typeof value !== 'string') return false;
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  if (trimmed.startsWith('//')) return false;
+  if (trimmed.startsWith('/') || trimmed.startsWith('#') || trimmed.startsWith('?')) {
+    return true;
+  }
   try {
-    const parsed = new URL(value);
-    return parsed.protocol === 'https:' || parsed.protocol === 'http:';
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return false;
+    if (parsed.hostname.toLowerCase() === 'via.placeholder.com') return false;
+    return true;
   } catch {
     return false;
   }
