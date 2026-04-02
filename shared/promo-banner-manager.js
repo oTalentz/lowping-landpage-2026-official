@@ -155,9 +155,7 @@
     promoBanner.style.overflow = 'hidden';
     promoBanner.style.alignItems = 'center';
     promoBanner.style.justifyContent = 'center';
-    promoBanner.style.gap = '8px';
     promoBanner.style.minHeight = '40px';
-    promoBanner.style.padding = '0.35rem 0.75rem';
     textSpan.style.minWidth = '0';
     copyBtn.style.maxWidth = '100%';
     copyBtn.style.display = 'inline-flex';
@@ -170,12 +168,10 @@
         mainGroup.style.display = 'flex';
         mainGroup.style.alignItems = 'center';
         mainGroup.style.justifyContent = 'center';
-        mainGroup.style.gap = '8px';
       }
       if (metaGroup) {
         metaGroup.style.display = 'flex';
         metaGroup.style.alignItems = 'center';
-        metaGroup.style.gap = '8px';
       }
     }
     textSpan.innerHTML = state.textHtml || '';
