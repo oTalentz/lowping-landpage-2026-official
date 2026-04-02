@@ -77,6 +77,52 @@
                 filter: grayscale(0) brightness(1.2);
                 transform: scale(1.05);
             }
+            .partners-marquee {
+                width: 100%;
+                overflow: hidden;
+                mask-image: linear-gradient(
+                    to right,
+                    transparent 0%,
+                    #000 8%,
+                    #000 92%,
+                    transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                    to right,
+                    transparent 0%,
+                    #000 8%,
+                    #000 92%,
+                    transparent 100%
+                );
+            }
+            .partners-marquee-track {
+                display: flex;
+                align-items: flex-start;
+                width: -moz-max-content;
+                width: max-content;
+                gap: 4rem;
+                animation: partners-scroll var(--partners-duration, 36s) linear infinite;
+                will-change: transform;
+            }
+            @media (min-width: 768px) {
+                .partners-marquee-track {
+                    gap: 6rem;
+                }
+            }
+            @keyframes partners-scroll {
+                from {
+                    transform: translate3d(0, 0, 0);
+                }
+                to {
+                    transform: translate3d(calc(-1 * var(--partners-loop-width, 0px)), 0, 0);
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .partners-marquee-track {
+                    animation: none;
+                    transform: none;
+                }
+            }
             .kinetic-gradient { background: linear-gradient(135deg, #ffb2bb 0%, #9e0038 100%); }
             .text-glow-secondary {
                 text-shadow: 0 0 30px rgba(255, 178, 187, 0.45);
@@ -215,10 +261,10 @@
                 }
             }
         </style>
-      <script type="module" crossorigin src="/assets/vps-KxhIrHlz.js"></script>
+      <script type="module" crossorigin src="/assets/vps-D4oleJn8.js"></script>
       <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-BRIdl15F.js">
       <link rel="modulepreload" crossorigin href="/assets/promo-banner-manager-D92HkLg5.js">
-      <link rel="stylesheet" crossorigin href="/assets/style-Cv-4HkPj.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-Cp59AkXI.css">
     </head>
     <body
         class="bg-background text-on-surface font-body selection:bg-secondary/30"
@@ -563,9 +609,8 @@
                     >
                         Parceiros de Confiança &amp; Principais Clientes
                     </h3>
-                    <div
-                        class="flex flex-wrap justify-center items-center gap-16 md:gap-24 w-full"
-                    >
+                    <div class="partners-marquee">
+                        <div class="partners-marquee-track" data-partners-track>
                         <a
                             href="https://discord.gg/bonfire"
                             target="_blank"
@@ -741,6 +786,7 @@
                             <p class="font-label text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest">
                                 Mais em breve...
                             </p>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -1412,6 +1458,39 @@
             // Menu Mobile Toggle
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
+            const getPartnerTracks = () => document.querySelectorAll('[data-partners-track]');
+            const updatePartnerTrackMetrics = (track) => {
+                const loopWidth = track.scrollWidth / 2;
+                track.style.setProperty('--partners-loop-width', `${loopWidth}px`);
+                const duration = Math.max(loopWidth / 90, 20);
+                track.style.setProperty('--partners-duration', `${duration}s`);
+            };
+            const initPartnerMarquee = () => {
+                getPartnerTracks().forEach((track) => {
+                    if (track.dataset.marqueeReady === 'true') return;
+                    const originals = Array.from(track.children);
+                    if (!originals.length) return;
+                    originals.forEach((item) => {
+                        const clone = item.cloneNode(true);
+                        clone.setAttribute('aria-hidden', 'true');
+                        if (clone.matches('a')) clone.setAttribute('tabindex', '-1');
+                        clone.querySelectorAll('a').forEach((link) => link.setAttribute('tabindex', '-1'));
+                        track.appendChild(clone);
+                    });
+                    track.dataset.marqueeReady = 'true';
+                    updatePartnerTrackMetrics(track);
+                });
+            };
+            let partnerResizeFrame = 0;
+            const handlePartnerResize = () => {
+                if (partnerResizeFrame) cancelAnimationFrame(partnerResizeFrame);
+                partnerResizeFrame = requestAnimationFrame(() => {
+                    getPartnerTracks().forEach((track) => {
+                        if (track.dataset.marqueeReady === 'true') updatePartnerTrackMetrics(track);
+                    });
+                    partnerResizeFrame = 0;
+                });
+            };
             if (mobileMenuBtn && mobileMenu) {
                 mobileMenuBtn.addEventListener('click', () => {
                     const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
@@ -1424,6 +1503,7 @@
             }
 
             document.addEventListener('DOMContentLoaded', () => {
+                initPartnerMarquee();
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -1438,6 +1518,7 @@
                     observer.observe(el);
                 });
             });
+            window.addEventListener('resize', handlePartnerResize, { passive: true });
         </script>
     
 </body>

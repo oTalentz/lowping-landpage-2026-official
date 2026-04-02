@@ -1,5 +1,35 @@
 // Global State
 let currentToken = localStorage.getItem('admin_token');
+const ADMIN_VALID_SECTIONS = new Set(['banners', 'wiki']);
+
+function getRouteStateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const sectionParam = params.get('section');
+    const wikiParam = params.get('wiki');
+    return {
+        section: ADMIN_VALID_SECTIONS.has(sectionParam) ? sectionParam : 'banners',
+        wikiSection: wikiParam === 'categories' ? 'categories' : 'articles'
+    };
+}
+
+function updateRouteState(nextState = {}) {
+    const params = new URLSearchParams(window.location.search);
+    const current = getRouteStateFromUrl();
+    const section = ADMIN_VALID_SECTIONS.has(nextState.section) ? nextState.section : current.section;
+    const wikiSection = nextState.wikiSection === 'categories' ? 'categories' : 'articles';
+
+    params.set('section', section);
+    if (section === 'wiki') {
+        params.set('wiki', wikiSection);
+    } else {
+        params.delete('wiki');
+    }
+
+    const query = params.toString();
+    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash || ''}`;
+    window.history.replaceState({}, '', nextUrl);
+}
+window.getRouteStateFromUrl = getRouteStateFromUrl;
 
 function returnToHome() {
     // Reset global state tied to dashboard (not token, just view state if needed, or redirect)
@@ -41,7 +71,10 @@ function switchView(viewId) {
 }
 window.switchView = switchView;
 
-function showSection(section) {
+function showSection(section, options = {}) {
+    const { syncUrl = true } = options;
+    const normalizedSection = ADMIN_VALID_SECTIONS.has(section) ? section : 'banners';
+
     // Hide all
     const sectionBanners = document.getElementById('section-banners');
     if (sectionBanners) sectionBanners.classList.add('hidden-view');
@@ -49,7 +82,7 @@ function showSection(section) {
     if (sectionWiki) sectionWiki.classList.add('hidden-view');
     
     // Show active
-    const activeSection = document.getElementById(`section-${section}`);
+    const activeSection = document.getElementById(`section-${normalizedSection}`);
     if (activeSection) activeSection.classList.remove('hidden-view');
     
     // Update nav styles
@@ -59,7 +92,7 @@ function showSection(section) {
         el.querySelector('span').style.fontVariationSettings = "'FILL' 0";
     });
     
-    const activeNav = document.getElementById(`nav-${section}`);
+    const activeNav = document.getElementById(`nav-${normalizedSection}`);
     if (activeNav) {
         activeNav.classList.remove('text-[#c2c6d6]', 'opacity-70');
         activeNav.classList.add('text-[#ffb2bb]', 'bg-white/5', 'border-r-2', 'border-[#ffb2bb]');
@@ -73,11 +106,19 @@ function showSection(section) {
         el.querySelector('span').style.fontVariationSettings = "'FILL' 0";
     });
 
-    const activeMobNav = document.getElementById(`mob-nav-${section}`);
+    const activeMobNav = document.getElementById(`mob-nav-${normalizedSection}`);
     if (activeMobNav) {
         activeMobNav.classList.remove('text-[#c2c6d6]', 'opacity-70');
         activeMobNav.classList.add('text-[#ffb2bb]');
         activeMobNav.querySelector('span').style.fontVariationSettings = "'FILL' 1";
+    }
+
+    if (syncUrl) {
+        const route = getRouteStateFromUrl();
+        updateRouteState({
+            section: normalizedSection,
+            wikiSection: route.wikiSection
+        });
     }
 }
 window.showSection = showSection;
@@ -231,7 +272,13 @@ async function initDashboard() {
         return;
     }
     switchView('dashboard-view');
-    showSection('banners');
+    const route = getRouteStateFromUrl();
+    showSection(route.section, { syncUrl: false });
+    if (route.section === 'wiki' && typeof window.showWikiSection === 'function') {
+        window.showWikiSection(route.wikiSection, { syncUrl: false });
+    } else {
+        updateRouteState({ section: route.section, wikiSection: route.wikiSection });
+    }
     await loadBanners();
 }
 

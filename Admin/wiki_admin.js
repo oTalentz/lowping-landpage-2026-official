@@ -168,6 +168,37 @@ function getSortedFeaturedArticles(articles) {
         });
 }
 
+function getWikiSectionFromUrl() {
+    if (typeof window.getRouteStateFromUrl === 'function') {
+        const route = window.getRouteStateFromUrl();
+        return route.wikiSection === 'categories' ? 'categories' : 'articles';
+    }
+    const params = new URLSearchParams(window.location.search);
+    return params.get('wiki') === 'categories' ? 'categories' : 'articles';
+}
+
+function syncWikiSectionToUrl(section) {
+    if (typeof window.getRouteStateFromUrl === 'function') {
+        const route = window.getRouteStateFromUrl();
+        const safeSection = section === 'categories' ? 'categories' : route.wikiSection;
+        if (typeof window.history?.replaceState === 'function') {
+            const params = new URLSearchParams(window.location.search);
+            params.set('section', 'wiki');
+            params.set('wiki', safeSection);
+            const query = params.toString();
+            const nextUrl = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash || ''}`;
+            window.history.replaceState({}, '', nextUrl);
+        }
+        return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set('section', 'wiki');
+    params.set('wiki', section === 'categories' ? 'categories' : 'articles');
+    const query = params.toString();
+    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash || ''}`;
+    window.history.replaceState({}, '', nextUrl);
+}
+
 function initWikiAdmin() {
     initQuill();
 
@@ -179,10 +210,10 @@ function initWikiAdmin() {
             // showSection is a global function from app.js
             if (typeof window.showSection === 'function') {
                 window.showSection('wiki');
-                showWikiSection('articles');
+                showWikiSection(getWikiSectionFromUrl());
             } else if (typeof showSection === 'function') {
                 showSection('wiki');
-                showWikiSection('articles');
+                showWikiSection(getWikiSectionFromUrl());
             }
         });
     }
@@ -193,10 +224,10 @@ function initWikiAdmin() {
             e.preventDefault();
             if (typeof window.showSection === 'function') {
                 window.showSection('wiki');
-                showWikiSection('articles');
+                showWikiSection(getWikiSectionFromUrl());
             } else if (typeof showSection === 'function') {
                 showSection('wiki');
-                showWikiSection('articles');
+                showWikiSection(getWikiSectionFromUrl());
             }
         });
     }
@@ -305,30 +336,37 @@ function initQuill() {
     });
 }
 
-function showWikiSection(section) {
+function showWikiSection(section, options = {}) {
+    const { syncUrl = true } = options;
+    const normalizedSection = section === 'categories' ? 'categories' : 'articles';
     currentWikiSection = section;
     const title = document.getElementById('wiki-section-title');
     const createBtnText = document.getElementById('btn-new-wiki-text');
 
     const btnArticles = document.getElementById('btn-wiki-articles');
     const btnCategories = document.getElementById('btn-wiki-categories');
+    if (!title || !createBtnText || !btnArticles || !btnCategories) return;
 
     // Reset styles
     btnArticles.className = 'px-4 py-2 rounded-xl text-[#c2c6d6] hover:bg-white/5 font-medium text-sm transition-colors border border-transparent';
     btnCategories.className = 'px-4 py-2 rounded-xl text-[#c2c6d6] hover:bg-white/5 font-medium text-sm transition-colors border border-transparent';
 
-    if (section === 'articles') {
+    if (normalizedSection === 'articles') {
         title.innerText = 'Wiki - Artigos';
         createBtnText.innerText = 'Novo Artigo';
         btnArticles.className = 'px-4 py-2 rounded-xl text-[#adc6ff] bg-white/5 font-medium text-sm transition-colors border border-[#adc6ff]/20';
         renderAdminArticles();
-    } else if (section === 'categories') {
+    } else if (normalizedSection === 'categories') {
         title.innerText = 'Wiki - Categorias';
         createBtnText.innerText = 'Nova Categoria';
         btnCategories.className = 'px-4 py-2 rounded-xl text-[#adc6ff] bg-white/5 font-medium text-sm transition-colors border border-[#adc6ff]/20';
         renderAdminCategories();
     }
+
+    currentWikiSection = normalizedSection;
+    if (syncUrl) syncWikiSectionToUrl(normalizedSection);
 }
+window.showWikiSection = showWikiSection;
 
 async function renderAdminArticles() {
     const articles = await db.getArticles();
