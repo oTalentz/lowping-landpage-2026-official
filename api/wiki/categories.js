@@ -44,19 +44,17 @@ async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const count = await sql`SELECT COUNT(*)::int AS count FROM wiki_categories`;
-      if (parseInt(count[0].count) === 0) {
-        await sql`
-          INSERT INTO wiki_categories (id, name, slug, description, icon)
-          VALUES
-            ('geral', 'Visão Geral', 'geral', 'Dúvidas frequentes, termos de serviço e guias introdutórios para novos usuários.', 'dashboard'),
-            ('minecraft', 'Minecraft', 'minecraft', 'Tudo sobre instalação de plugins, mods, otimização de performance e gestão de mundos.', 'sports_esports'),
-            ('vps', 'VPS Hosting', 'vps', 'Guias para Linux, Windows, configuração de firewall e administração avançada de servidores.', 'dns'),
-            ('financeiro', 'Financeiro', 'financeiro', 'Informações sobre métodos de pagamento, renovações, faturas e políticas de reembolso.', 'payments'),
-            ('seguranca', 'Segurança', 'seguranca', 'Melhores práticas para manter seu servidor seguro.', 'security')
-          ON CONFLICT (id) DO NOTHING;
-        `;
-      }
+      await sql`
+        INSERT INTO wiki_categories (id, name, slug, description, icon)
+        VALUES
+          ('geral', 'Visão Geral', 'geral', 'Dúvidas frequentes, termos de serviço e guias introdutórios para novos usuários.', 'dashboard'),
+          ('minecraft', 'Minecraft', 'minecraft', 'Tudo sobre instalação de plugins, mods, otimização de performance e gestão de mundos.', 'sports_esports'),
+          ('vps', 'VPS Hosting', 'vps', 'Guias para Linux, Windows, configuração de firewall e administração avançada de servidores.', 'dns'),
+          ('financeiro', 'Financeiro', 'financeiro', 'Informações sobre métodos de pagamento, renovações, faturas e políticas de reembolso.', 'payments'),
+          ('seguranca', 'Segurança', 'seguranca', 'Melhores práticas para manter seu servidor seguro.', 'security'),
+          ('painel', 'Painel', 'painel', 'Guias de uso do painel de controle, criação de servidor, backup e ações rápidas.', 'tune')
+        ON CONFLICT (id) DO NOTHING;
+      `;
 
       const rows = await sql`SELECT * FROM wiki_categories ORDER BY name ASC`;
       return res.status(200).json(rows);

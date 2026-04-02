@@ -31,7 +31,7 @@ import{t as e}from"./modulepreload-polyfill-D1H0ivOT.js";/* empty css           
         `)}),e.innerHTML=a}async function u(){let i=document.getElementById(`main-content`);if(!i)return;let[a,o]=await Promise.all([db.getCategories(),db.getArticles()]),s=n(a),c=n(o).filter(e=>e&&e.status===`published`),l=`
         <!-- Category Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-    `;s.slice(0,4).forEach((e,n)=>{let i=[`primary`,`secondary`,`tertiary`,`outline`],a=i[n%i.length];l+=`
+    `;s.slice(0,5).forEach((e,n)=>{let i=[`primary`,`secondary`,`tertiary`,`outline`],a=i[n%i.length];l+=`
             <div class="bg-surface-container-low p-8 rounded-[2rem] hover:bg-surface-container-high transition-all duration-300 group border border-outline-variant/5">
                 <div class="w-14 h-14 rounded-2xl bg-${a}/10 flex items-center justify-center text-${a===`outline`?`on-surface`:a} mb-6 group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined text-3xl" data-icon="${t(r(e.icon))}">${t(r(e.icon))}</span>

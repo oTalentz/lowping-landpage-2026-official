@@ -281,7 +281,7 @@ async function renderHome() {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
     `;
 
-    categories.slice(0, 4).forEach((cat, index) => {
+    categories.slice(0, 5).forEach((cat, index) => {
         const colors = ['primary', 'secondary', 'tertiary', 'outline'];
         const color = colors[index % colors.length];
         

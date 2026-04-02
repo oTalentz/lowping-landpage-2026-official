@@ -6,7 +6,8 @@ const defaultCategories = [
     { id: 2, slug: 'minecraft', name: 'Minecraft', icon: 'sports_esports', description: 'Tudo sobre instalação de plugins, mods, otimização de performance.' },
     { id: 3, slug: 'vps', name: 'VPS Hosting', icon: 'dns', description: 'Guias para Linux, Windows, configuração de firewall e administração.' },
     { id: 4, slug: 'financeiro', name: 'Faturamento', icon: 'payments', description: 'Informações sobre métodos de pagamento, renovações e faturas.' },
-    { id: 5, slug: 'seguranca', name: 'Segurança', icon: 'security', description: 'Melhores práticas para manter seu servidor seguro.' }
+    { id: 5, slug: 'seguranca', name: 'Segurança', icon: 'security', description: 'Melhores práticas para manter seu servidor seguro.' },
+    { id: 6, slug: 'painel', name: 'Painel', icon: 'tune', description: 'Guias de uso do painel de controle, criação de servidor, backup e ações rápidas.' }
 ];
 
 const defaultArticles = [

@@ -70,7 +70,8 @@ async function handler(request, response) {
         ('minecraft', 'Minecraft', 'minecraft', 'Tudo sobre instalação de plugins, mods, otimização de performance.', 'sports_esports'),
         ('vps', 'VPS Hosting', 'vps', 'Guias para Linux, Windows, configuração de firewall e administração.', 'dns'),
         ('financeiro', 'Financeiro', 'financeiro', 'Informações sobre métodos de pagamento, renovações e faturas.', 'payments'),
-        ('seguranca', 'Segurança', 'seguranca', 'Melhores práticas para manter seu servidor seguro.', 'security')
+        ('seguranca', 'Segurança', 'seguranca', 'Melhores práticas para manter seu servidor seguro.', 'security'),
+        ('painel', 'Painel', 'painel', 'Guias de uso do painel de controle, criação de servidor, backup e ações rápidas.', 'tune')
       ON CONFLICT (id) DO NOTHING;
     `;
 
