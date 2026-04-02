@@ -5,6 +5,7 @@ module.exports = defineConfig({
     rollupOptions: {
       input: {
         main: 'index.html',
+        admin: 'admin/index.html',
         vps: 'Vps/index.html',
         wiki: 'Wiki/index.html',
         admin_code: 'Admin/code.html',

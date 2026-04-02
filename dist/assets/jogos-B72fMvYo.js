@@ -1,0 +1,1 @@
+import{t as e}from"./modulepreload-polyfill-BRIdl15F.js";/* empty css              */import{t}from"./promo-banner-manager-CUh1HeiT.js";e((()=>{t(),document.addEventListener(`DOMContentLoaded`,()=>{window.PromoBannerManager&&window.PromoBannerManager.createManager(document,window.localStorage).init()})}))();
