@@ -426,6 +426,10 @@ async function openArticleEditor(articleId = null) {
     }
 
     modal.classList.remove('hidden-view');
+    modal.scrollTop = 0;
+    const modalPanel = modal.firstElementChild;
+    if (modalPanel) modalPanel.scrollTop = 0;
+    quill.setSelection(0, 0, 'silent');
 }
 
 window.closeEditor = function() {
