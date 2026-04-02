@@ -36,7 +36,6 @@ async function handler(req, res) {
       CREATE TABLE IF NOT EXISTS banners (
         id VARCHAR(255) PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
-        image_url TEXT,
         link_url TEXT,
         active BOOLEAN DEFAULT true,
         order_index INTEGER DEFAULT 0,
@@ -49,6 +48,7 @@ async function handler(req, res) {
       await sql`ALTER TABLE banners ADD COLUMN IF NOT EXISTS start_date TEXT`;
       await sql`ALTER TABLE banners ADD COLUMN IF NOT EXISTS end_date TEXT`;
       await sql`ALTER TABLE banners ADD COLUMN IF NOT EXISTS coupon_code TEXT`;
+      await sql`ALTER TABLE banners DROP COLUMN IF EXISTS image_url`;
     } catch {
     }
   } catch {
@@ -60,7 +60,7 @@ async function handler(req, res) {
       const rows = isAdmin
         ? await sql`SELECT * FROM banners ORDER BY order_index ASC`
         : await sql`
-            SELECT id, title, image_url, link_url, active, order_index, start_date, end_date, coupon_code
+            SELECT id, title, link_url, active, order_index, start_date, end_date, coupon_code
             FROM banners
             WHERE active = TRUE
             ORDER BY order_index ASC
@@ -80,7 +80,6 @@ async function handler(req, res) {
 
     const id = typeof body.id === 'string' ? body.id.trim() : '';
     const title = typeof body.title === 'string' ? body.title.trim() : '';
-    const imageUrl = typeof body.image_url === 'string' ? body.image_url.trim() : '';
     const linkUrl = typeof body.link_url === 'string' ? body.link_url.trim() : '';
     const active = body.active === undefined ? true : Boolean(body.active);
     const orderIndex = Number.isFinite(Number(body.order_index)) ? Math.max(0, Math.min(9999, Number(body.order_index))) : 0;
@@ -94,15 +93,12 @@ async function handler(req, res) {
     if (!isSafeUrl(linkUrl)) {
       return res.status(400).json({ error: 'URL inválida no banner' });
     }
-    const normalizedImageUrl = isSafeUrl(imageUrl) ? imageUrl : '';
-
     try {
       await sql`
-        INSERT INTO banners (id, title, image_url, link_url, active, order_index, start_date, end_date, coupon_code)
-        VALUES (${id}, ${title}, ${normalizedImageUrl}, ${linkUrl || ''}, ${active}, ${orderIndex}, ${startDate}, ${endDate}, ${couponCode})
+        INSERT INTO banners (id, title, link_url, active, order_index, start_date, end_date, coupon_code)
+        VALUES (${id}, ${title}, ${linkUrl || ''}, ${active}, ${orderIndex}, ${startDate}, ${endDate}, ${couponCode})
         ON CONFLICT (id) DO UPDATE SET
           title = EXCLUDED.title,
-          image_url = EXCLUDED.image_url,
           link_url = EXCLUDED.link_url,
           active = EXCLUDED.active,
           order_index = EXCLUDED.order_index,

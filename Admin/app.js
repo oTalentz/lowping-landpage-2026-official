@@ -237,101 +237,6 @@ async function initDashboard() {
 
 // --- Banners Logic ---
 let bannersList = [];
-const BANNER_ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const BANNER_MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-let isBannerImageUploadInProgress = false;
-
-function isSafeImageUrl(value) {
-    if (typeof value !== 'string') return false;
-    const trimmed = value.trim();
-    if (!trimmed) return false;
-    if (trimmed.startsWith('//')) return false;
-    if (trimmed.startsWith('/') || trimmed.startsWith('#') || trimmed.startsWith('?')) return true;
-    try {
-        const parsed = new URL(trimmed, window.location.origin);
-        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return false;
-        if (parsed.hostname.toLowerCase() === 'via.placeholder.com') return false;
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-function validateBannerImageFile(file) {
-    if (!file) return 'Nenhum arquivo selecionado.';
-    if (!BANNER_ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        return 'Formato não suportado. Use JPG, PNG, WEBP ou GIF.';
-    }
-    if (!Number.isFinite(file.size) || file.size <= 0) return 'Arquivo inválido.';
-    if (file.size > BANNER_MAX_IMAGE_BYTES) {
-        return `Arquivo excede o limite de ${Math.floor(BANNER_MAX_IMAGE_BYTES / (1024 * 1024))}MB.`;
-    }
-    return '';
-}
-
-function readBannerFileAsDataUrl(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            if (typeof reader.result !== 'string') {
-                reject(new Error('Falha ao processar arquivo.'));
-                return;
-            }
-            resolve(reader.result);
-        };
-        reader.onerror = () => reject(new Error('Falha ao ler arquivo.'));
-        reader.readAsDataURL(file);
-    });
-}
-
-function setBannerUploadStatus(message, isError = false) {
-    const statusEl = document.getElementById('banner-image-upload-status');
-    if (!statusEl) return;
-    statusEl.textContent = message || '';
-    statusEl.classList.remove('text-error', 'text-tertiary', 'text-on-surface-variant');
-    if (!message) {
-        statusEl.classList.add('text-on-surface-variant');
-        return;
-    }
-    statusEl.classList.add(isError ? 'text-error' : 'text-tertiary');
-}
-
-async function uploadBannerImageFile(file) {
-    const validationError = validateBannerImageFile(file);
-    if (validationError) throw new Error(validationError);
-    if (isBannerImageUploadInProgress) throw new Error('Aguarde o upload atual terminar.');
-
-    const authHeader = currentToken ? (currentToken.startsWith('Bearer ') ? currentToken : `Bearer ${currentToken}`) : '';
-    if (!authHeader) throw new Error('Faça login novamente para enviar imagens.');
-
-    isBannerImageUploadInProgress = true;
-    setBannerUploadStatus('Enviando imagem...');
-    try {
-        const dataUrl = await readBannerFileAsDataUrl(file);
-        const dataBase64 = dataUrl.split(',')[1] || '';
-        if (!dataBase64) throw new Error('Não foi possível codificar a imagem.');
-        const response = await fetch('/api/wiki/images', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authHeader
-            },
-            body: JSON.stringify({
-                fileName: file.name,
-                mimeType: file.type,
-                dataBase64
-            })
-        });
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(payload.error || 'Erro ao enviar imagem.');
-        const imageInput = document.getElementById('banner-image');
-        if (imageInput) imageInput.value = payload.url || '';
-        setBannerUploadStatus('Upload concluído com sucesso.');
-        showToast('Imagem enviada com sucesso!');
-    } finally {
-        isBannerImageUploadInProgress = false;
-    }
-}
 
 async function loadBanners() {
     try {
@@ -349,18 +254,11 @@ function renderBanners() {
     
     bannersList.forEach(b => {
         const div = document.createElement('div');
-        div.className = 'bg-surface-container-low rounded-xl overflow-hidden border border-white/5 relative group';
-        const bannerPreviewUrl = isSafeImageUrl(b.image_url || '')
-            ? b.image_url
-            : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%23202630%22/%3E%3Ctext x=%22200%22 y=%22104%22 fill=%22%23c2c6d6%22 font-family=%22Arial%22 font-size=%2220%22 text-anchor=%22middle%22%3EBanner sem imagem%3C/text%3E%3C/svg%3E';
+        div.className = 'bg-surface-container-low rounded-xl border border-white/5 relative group';
         
         div.innerHTML = `
-            <div class="h-32 bg-surface-container-highest relative">
-                <img src="${bannerPreviewUrl}" class="w-full h-full object-cover opacity-60" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%23202630%22/%3E%3Ctext x=%22200%22 y=%22104%22 fill=%22%23c2c6d6%22 font-family=%22Arial%22 font-size=%2220%22 text-anchor=%22middle%22%3EImagem indispon%C3%ADvel%3C/text%3E%3C/svg%3E'">
-                <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
-                <div class="absolute top-2 right-2 bg-black/50 backdrop-blur px-2 py-1 rounded text-[10px] font-label">Ordem: ${b.order_index}</div>
-            </div>
             <div class="p-4">
+                <div class="mb-3 inline-flex bg-black/30 backdrop-blur px-2 py-1 rounded text-[10px] font-label">Ordem: ${b.order_index}</div>
                 <h3 class="font-bold font-headline mb-1 truncate">${b.title}</h3>
                 <p class="text-xs text-on-surface-variant mb-4">
                     Status: ${b.active ? 'Ativo' : 'Inativo'}
@@ -396,7 +294,6 @@ function openBannerModal(id = null) {
     form.reset();
     document.getElementById('banner-id').value = '';
     document.getElementById('banner-modal-title').innerText = 'Novo Banner';
-    setBannerUploadStatus('');
     
     if (id) {
         const b = bannersList.find(x => x.id == id);
@@ -404,7 +301,6 @@ function openBannerModal(id = null) {
             document.getElementById('banner-modal-title').innerText = 'Editar Banner';
             document.getElementById('banner-id').value = b.id;
             document.getElementById('banner-title').value = b.title || '';
-            document.getElementById('banner-image').value = b.image_url || '';
             document.getElementById('banner-start').value = formatDateToShow(b.start_date) || '';
             document.getElementById('banner-end').value = formatDateToShow(b.end_date) || '';
             document.getElementById('banner-coupon').value = b.coupon_code || '';
@@ -433,15 +329,9 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
     const existingId = document.getElementById('banner-id').value.trim();
     const isEditing = Boolean(existingId);
     const id = existingId || Date.now().toString();
-    const imageUrl = document.getElementById('banner-image').value.trim();
-    if (isBannerImageUploadInProgress) {
-        showToast('Aguarde a conclusão do upload da imagem.', 'error');
-        return;
-    }
     const data = {
         id: id,
         title: document.getElementById('banner-title').value.trim(),
-        image_url: imageUrl,
         start_date: parseDateToSave(document.getElementById('banner-start').value),
         end_date: parseDateToSave(document.getElementById('banner-end').value),
         coupon_code: document.getElementById('banner-coupon').value.trim(),
@@ -486,22 +376,6 @@ function initApp() {
     
     const bannerEndInput = document.getElementById('banner-end');
     if (bannerEndInput) bannerEndInput.addEventListener('input', maskDate);
-
-    const bannerImageFileInput = document.getElementById('banner-image-file');
-    if (bannerImageFileInput) {
-        bannerImageFileInput.addEventListener('change', async (event) => {
-            const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
-            if (!file) return;
-            try {
-                await uploadBannerImageFile(file);
-            } catch (error) {
-                setBannerUploadStatus(error.message || 'Falha no upload da imagem.', true);
-                showToast(error.message || 'Falha no upload da imagem.', 'error');
-            } finally {
-                event.target.value = '';
-            }
-        });
-    }
 
     if (currentToken) {
         // Verify token with backend (usando /api/health como dummy check ou pulando)

@@ -36,7 +36,6 @@ function createDocument() {
     'promo-banner': { ...createElement(), offsetHeight: 44 },
     'promo-banner-text': createElement(),
     'promo-banner-action': createElement(),
-    'dynamic-banners-container': createElement(),
     'promo-banner-spacer': createElement(),
     'main-nav': createElement()
   };
@@ -59,7 +58,7 @@ test('resolveState prioriza banner de texto sobre cupom ativo', () => {
   const state = resolveState(
     [
       { id: 'b1', title: 'PROMO **MEGA10**', active: true, order_index: 1, start_date: null, end_date: null },
-      { id: 'b2', title: 'Imagem', image_url: 'https://cdn.local/img.png', active: true, order_index: 2 }
+      { id: 'b2', title: 'Promo secundária', active: true, order_index: 2 }
     ],
     [{ id: 'c1', code: 'LOWPING20', discount: 20, active: true }],
     now
@@ -68,7 +67,6 @@ test('resolveState prioriza banner de texto sobre cupom ativo', () => {
   assert.equal(state.kind, 'text-banner');
   assert.equal(state.buttonLabel, 'ACESSAR');
   assert.match(state.textHtml, /promo-inline-highlight/);
-  assert.equal(state.imageBanners.length, 1);
 });
 
 test('manager mantém banner visível entre navegações usando cache local', () => {

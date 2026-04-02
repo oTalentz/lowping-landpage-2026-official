@@ -33,7 +33,6 @@ function createDocument() {
     'promo-banner': { ...createNode(), offsetHeight: 40 },
     'promo-banner-text': createNode(),
     'promo-banner-action': createNode(),
-    'dynamic-banners-container': createNode(),
     'promo-banner-spacer': createNode(),
     'main-nav': createNode()
   };
@@ -68,7 +67,7 @@ test('integração: mantém banner em navegação e atualiza após sync remoto',
     return {
       ok: true,
       headers: { get: () => 'application/json' },
-      json: async () => [{ id: 'b-image', title: 'Banner Image', image_url: 'https://cdn/banner.webp', active: true, order_index: 1 }]
+      json: async () => []
     };
   };
 
@@ -85,5 +84,4 @@ test('integração: mantém banner em navegação e atualiza após sync remoto',
 
   await vpsManager.syncRemote();
   assert.match(vpsDoc._elements['promo-banner-text'].innerHTML, /REMOTO20/);
-  assert.equal(vpsDoc._elements['dynamic-banners-container'].children.length, 1);
 });

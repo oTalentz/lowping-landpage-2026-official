@@ -59,16 +59,10 @@
 
   function pickActiveTextBanner(banners, now) {
     if (!Array.isArray(banners)) return null;
-    return banners
-      .filter((banner) => banner && banner.active && !banner.image_url && isActiveByDate(banner.start_date, banner.end_date, now))
-      .sort((a, b) => (Number(a.order_index) || 0) - (Number(b.order_index) || 0))[0] || null;
-  }
-
-  function pickActiveImageBanners(banners, now) {
-    if (!Array.isArray(banners)) return [];
-    return banners
-      .filter((banner) => banner && banner.active && banner.image_url && isActiveByDate(banner.start_date, banner.end_date, now))
+    const sorted = banners
+      .filter((banner) => banner && banner.active && isActiveByDate(banner.start_date, banner.end_date, now))
       .sort((a, b) => (Number(a.order_index) || 0) - (Number(b.order_index) || 0));
+    return sorted[0] || null;
   }
 
   function pickActiveCoupon(coupons, now) {
@@ -100,7 +94,6 @@
 
   function resolveState(banners, coupons, now) {
     const textBanner = pickActiveTextBanner(banners, now);
-    const imageBanners = pickActiveImageBanners(banners, now);
     const coupon = pickActiveCoupon(coupons, now);
 
     if (textBanner) {
@@ -110,8 +103,7 @@
         buttonLabel: textBanner.coupon_code ? 'COPIAR CUPOM' : 'ACESSAR',
         buttonMode: textBanner.coupon_code ? 'copy' : 'link',
         buttonValue: textBanner.coupon_code || textBanner.link_url || '',
-        endDate: textBanner.end_date || null,
-        imageBanners
+        endDate: textBanner.end_date || null
       };
     }
 
@@ -122,8 +114,7 @@
         buttonLabel: 'COPIAR CUPOM',
         buttonMode: 'copy',
         buttonValue: coupon.code || '',
-        endDate: coupon.valid_until || null,
-        imageBanners
+        endDate: coupon.valid_until || null
       };
     }
 
@@ -133,8 +124,7 @@
       buttonLabel: '',
       buttonMode: '',
       buttonValue: '',
-      endDate: null,
-      imageBanners
+      endDate: null
     };
   }
 
@@ -203,25 +193,6 @@
     syncLayoutOffset(doc, promoBanner.offsetHeight || 40);
   }
 
-  function applyImageBanners(state, doc) {
-    const container = doc.getElementById('dynamic-banners-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    const banners = Array.isArray(state?.imageBanners) ? state.imageBanners : [];
-    banners.forEach((banner) => {
-      const link = doc.createElement('a');
-      link.href = banner.link_url || '#';
-      link.className = 'promo-image-item';
-      const img = doc.createElement('img');
-      img.src = banner.image_url;
-      img.alt = banner.title || 'Banner promocional';
-      img.className = 'promo-image';
-      link.appendChild(img);
-      container.appendChild(link);
-    });
-  }
-
   async function fetchJson(url) {
     const response = await global.fetch(url, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -264,7 +235,6 @@
         fallbackState.kind !== 'none';
       const state = computed.kind === 'none' && fallbackIsRecent ? fallbackState : computed;
       applyPromoState(state, doc);
-      applyImageBanners(state, doc);
       writeState(storage, state);
       return state;
     }

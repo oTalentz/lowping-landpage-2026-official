@@ -105,12 +105,15 @@ async function handler(request, response) {
       CREATE TABLE IF NOT EXISTS banners (
         id VARCHAR(255) PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
-        image_url TEXT NOT NULL,
         link_url TEXT,
         active BOOLEAN DEFAULT true,
         order_index INTEGER DEFAULT 0
       );
     `;
+    try {
+      await sql`ALTER TABLE banners DROP COLUMN IF EXISTS image_url;`;
+    } catch {
+    }
 
     return response.status(200).json({ success: true });
   } catch {
