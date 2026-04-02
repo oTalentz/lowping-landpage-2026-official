@@ -350,10 +350,13 @@ function renderBanners() {
     bannersList.forEach(b => {
         const div = document.createElement('div');
         div.className = 'bg-surface-container-low rounded-xl overflow-hidden border border-white/5 relative group';
+        const bannerPreviewUrl = isSafeImageUrl(b.image_url || '')
+            ? b.image_url
+            : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%23202630%22/%3E%3Ctext x=%22200%22 y=%22104%22 fill=%22%23c2c6d6%22 font-family=%22Arial%22 font-size=%2220%22 text-anchor=%22middle%22%3EBanner sem imagem%3C/text%3E%3C/svg%3E';
         
         div.innerHTML = `
             <div class="h-32 bg-surface-container-highest relative">
-                <img src="${b.image_url}" class="w-full h-full object-cover opacity-60" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%23202630%22/%3E%3Ctext x=%22200%22 y=%22104%22 fill=%22%23c2c6d6%22 font-family=%22Arial%22 font-size=%2220%22 text-anchor=%22middle%22%3EImagem indispon%C3%ADvel%3C/text%3E%3C/svg%3E'">
+                <img src="${bannerPreviewUrl}" class="w-full h-full object-cover opacity-60" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22%3E%3Crect width=%22400%22 height=%22200%22 fill=%22%23202630%22/%3E%3Ctext x=%22200%22 y=%22104%22 fill=%22%23c2c6d6%22 font-family=%22Arial%22 font-size=%2220%22 text-anchor=%22middle%22%3EImagem indispon%C3%ADvel%3C/text%3E%3C/svg%3E'">
                 <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
                 <div class="absolute top-2 right-2 bg-black/50 backdrop-blur px-2 py-1 rounded text-[10px] font-label">Ordem: ${b.order_index}</div>
             </div>
@@ -431,8 +434,8 @@ document.getElementById('banner-form').addEventListener('submit', async (e) => {
     const isEditing = Boolean(existingId);
     const id = existingId || Date.now().toString();
     const imageUrl = document.getElementById('banner-image').value.trim();
-    if (!imageUrl || !isSafeImageUrl(imageUrl)) {
-        showToast('Informe uma imagem válida (URL http/https ou enviada pelo upload).', 'error');
+    if (imageUrl && !isSafeImageUrl(imageUrl)) {
+        showToast('Se preencher a imagem, informe uma URL válida (http/https ou enviada pelo upload).', 'error');
         return;
     }
     if (isBannerImageUploadInProgress) {

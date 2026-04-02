@@ -91,7 +91,7 @@ async function handler(req, res) {
     if (!isSafeId(id) || title.length < 2 || title.length > 160) {
       return res.status(400).json({ error: 'Dados inválidos do banner' });
     }
-    if (!imageUrl || !isSafeUrl(imageUrl) || !isSafeUrl(linkUrl)) {
+    if (!isSafeUrl(imageUrl) || !isSafeUrl(linkUrl)) {
       return res.status(400).json({ error: 'URL inválida no banner' });
     }
 
