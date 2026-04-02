@@ -58,7 +58,11 @@ async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const rows = isAdmin
-        ? await sql`SELECT * FROM banners ORDER BY order_index ASC`
+        ? await sql`
+            SELECT id, title, link_url, active, order_index, start_date, end_date, coupon_code
+            FROM banners
+            ORDER BY order_index ASC
+          `
         : await sql`
             SELECT id, title, link_url, active, order_index, start_date, end_date, coupon_code
             FROM banners

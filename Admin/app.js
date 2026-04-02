@@ -240,7 +240,19 @@ let bannersList = [];
 
 async function loadBanners() {
     try {
-        bannersList = await apiCall('/api/admin/banners');
+        const payload = await apiCall('/api/admin/banners');
+        bannersList = Array.isArray(payload)
+            ? payload.map((banner) => ({
+                id: banner?.id || '',
+                title: banner?.title || '',
+                link_url: banner?.link_url || '',
+                active: Boolean(banner?.active),
+                order_index: Number.isFinite(Number(banner?.order_index)) ? Number(banner.order_index) : 0,
+                start_date: banner?.start_date || null,
+                end_date: banner?.end_date || null,
+                coupon_code: banner?.coupon_code || ''
+            }))
+            : [];
         localStorage.setItem('banners', JSON.stringify(bannersList));
         renderBanners();
     } catch (e) {
