@@ -1,5 +1,8 @@
 let quill;
 let currentWikiSection = 'articles';
+let featuredOrderState = [];
+let featuredOrderIsSaving = false;
+let featuredDragSourceId = '';
 const MAX_TITLE_LENGTH = 180;
 const MAX_SLUG_LENGTH = 80;
 const MAX_CONTENT_LENGTH = 200000;
@@ -166,6 +169,106 @@ function getSortedFeaturedArticles(articles) {
             if (orderDiff !== 0) return orderDiff;
             return new Date(b.updated_at || b.updatedAt) - new Date(a.updated_at || a.updatedAt);
         });
+}
+
+function reorderFeaturedArticlesById(featuredArticles, sourceId, targetId) {
+    if (!Array.isArray(featuredArticles) || !sourceId || !targetId || sourceId === targetId) return featuredArticles;
+    const sourceIndex = featuredArticles.findIndex((article) => article.id === sourceId);
+    const targetIndex = featuredArticles.findIndex((article) => article.id === targetId);
+    if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return featuredArticles;
+    const next = [...featuredArticles];
+    const [moved] = next.splice(sourceIndex, 1);
+    next.splice(targetIndex, 0, moved);
+    return next;
+}
+
+async function persistFeaturedOrder(featuredArticles) {
+    if (!Array.isArray(featuredArticles) || featuredArticles.length === 0) return true;
+    if (featuredOrderIsSaving) return false;
+    featuredOrderIsSaving = true;
+    try {
+        const updates = featuredArticles
+            .map((article, index) => ({ article, nextOrder: index + 1 }))
+            .filter(({ article, nextOrder }) => getFeaturedOrder(article) !== nextOrder || !isArticleFeatured(article));
+
+        if (updates.length > 0) {
+            await Promise.all(
+                updates.map(({ article, nextOrder }) => db.saveArticle({
+                    ...article,
+                    categoryId: article.categoryId || article.category_id,
+                    featured: true,
+                    featuredOrder: nextOrder
+                }))
+            );
+        }
+        return true;
+    } catch (error) {
+        console.error('Erro ao reordenar destaques:', error);
+        if (typeof showToast === 'function') showToast('Erro ao reordenar destaques.', 'error');
+        return false;
+    } finally {
+        featuredOrderIsSaving = false;
+    }
+}
+
+function updateFeaturedDropMarker(container, targetItem) {
+    container.querySelectorAll('[data-featured-id]').forEach((item) => {
+        item.classList.remove('ring-1', 'ring-[#adc6ff]/50', 'border-[#adc6ff]/40');
+    });
+    if (!targetItem) return;
+    targetItem.classList.add('ring-1', 'ring-[#adc6ff]/50', 'border-[#adc6ff]/40');
+}
+
+function bindFeaturedDragAndDrop() {
+    const list = document.getElementById('featured-order-list');
+    if (!list || list.dataset.ddBound === 'true') return;
+    list.dataset.ddBound = 'true';
+
+    list.addEventListener('dragstart', (event) => {
+        const item = event.target instanceof Element ? event.target.closest('[data-featured-id]') : null;
+        if (!item) return;
+        featuredDragSourceId = item.dataset.featuredId || '';
+        item.classList.add('opacity-60');
+        if (event.dataTransfer) {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', featuredDragSourceId);
+        }
+    });
+
+    list.addEventListener('dragend', (event) => {
+        const item = event.target instanceof Element ? event.target.closest('[data-featured-id]') : null;
+        if (item) item.classList.remove('opacity-60');
+        featuredDragSourceId = '';
+        updateFeaturedDropMarker(list, null);
+    });
+
+    list.addEventListener('dragover', (event) => {
+        if (!featuredDragSourceId) return;
+        const targetItem = event.target instanceof Element ? event.target.closest('[data-featured-id]') : null;
+        if (!targetItem) return;
+        if ((targetItem.dataset.featuredId || '') === featuredDragSourceId) return;
+        event.preventDefault();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+        updateFeaturedDropMarker(list, targetItem);
+    });
+
+    list.addEventListener('drop', async (event) => {
+        event.preventDefault();
+        const targetItem = event.target instanceof Element ? event.target.closest('[data-featured-id]') : null;
+        const sourceId = featuredDragSourceId || (event.dataTransfer ? event.dataTransfer.getData('text/plain') : '');
+        const targetId = targetItem ? (targetItem.dataset.featuredId || '') : '';
+        updateFeaturedDropMarker(list, null);
+        if (!sourceId || !targetId || sourceId === targetId) return;
+        if (featuredOrderIsSaving) return;
+
+        const reordered = reorderFeaturedArticlesById(featuredOrderState, sourceId, targetId);
+        if (reordered === featuredOrderState) return;
+        const success = await persistFeaturedOrder(reordered);
+        if (!success) return;
+        featuredOrderState = reordered;
+        if (typeof showToast === 'function') showToast('Ordem dos destaques atualizada com sucesso!');
+        renderAdminArticles();
+    });
 }
 
 function getWikiSectionFromUrl() {
@@ -422,23 +525,28 @@ async function renderAdminArticles() {
         <div class="mt-6 bg-surface-container-lowest rounded-2xl border border-white/10 p-6">
             <div class="flex items-center justify-between gap-3 mb-4">
                 <h3 class="text-lg font-bold font-headline text-white">Ordem dos Artigos em Destaque</h3>
-                <span class="text-xs text-[#8b91a8]">Use os botões para mover para cima/baixo</span>
+                <span class="text-xs text-[#8b91a8]">Arraste e solte para reordenar</span>
             </div>
-            <div class="space-y-2">
+            <div id="featured-order-list" class="space-y-2">
     `;
 
     if (featuredArticles.length === 0) {
+        featuredOrderState = [];
         html += `<p class="text-sm text-[#8b91a8]">Nenhum artigo marcado como destaque.</p>`;
     } else {
+        featuredOrderState = [...featuredArticles];
         featuredArticles.forEach((article, index) => {
             const cat = categories.find(c => c.id === (article.category_id || article.categoryId));
             const isFirst = index === 0;
             const isLast = index === featuredArticles.length - 1;
             html += `
-                <div class="flex items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-                    <div class="min-w-0">
+                <div data-featured-id="${article.id}" draggable="true" class="flex items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3 cursor-grab active:cursor-grabbing select-none transition-all">
+                    <div class="min-w-0 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[#8b91a8] text-[18px]">drag_indicator</span>
+                        <div class="min-w-0">
                         <p class="text-sm font-semibold text-white truncate">${article.title}</p>
                         <p class="text-xs text-[#8b91a8]">${cat ? cat.name : 'Sem categoria'} • posição ${index + 1}</p>
+                        </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
                         <button onclick="moveFeaturedArticle('${article.id}', 'up')" ${isFirst ? 'disabled' : ''} class="text-[#adc6ff] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed bg-[#adc6ff]/10 p-2 rounded-lg transition-colors" title="Mover para cima">
@@ -458,11 +566,12 @@ async function renderAdminArticles() {
         </div>
     `;
     contentArea.innerHTML = html;
+    bindFeaturedDragAndDrop();
 }
 
 window.moveFeaturedArticle = async function(articleId, direction) {
-    const allArticles = await db.getArticles();
-    const featured = getSortedFeaturedArticles(allArticles);
+    if (featuredOrderIsSaving) return;
+    const featured = featuredOrderState.length > 0 ? [...featuredOrderState] : getSortedFeaturedArticles(await db.getArticles());
     const currentIndex = featured.findIndex((article) => article.id === articleId);
     if (currentIndex === -1) return;
 
@@ -473,22 +582,11 @@ window.moveFeaturedArticle = async function(articleId, direction) {
     featured[currentIndex] = featured[targetIndex];
     featured[targetIndex] = temp;
 
-    try {
-        for (let i = 0; i < featured.length; i++) {
-            const article = featured[i];
-            await db.saveArticle({
-                ...article,
-                categoryId: article.categoryId || article.category_id,
-                featured: true,
-                featuredOrder: i + 1
-            });
-        }
-        if (typeof showToast === 'function') showToast('Ordem dos destaques atualizada com sucesso!');
-        renderAdminArticles();
-    } catch (error) {
-        console.error('Erro ao reordenar destaques:', error);
-        if (typeof showToast === 'function') showToast('Erro ao reordenar destaques.', 'error');
-    }
+    const success = await persistFeaturedOrder(featured);
+    if (!success) return;
+    featuredOrderState = featured;
+    if (typeof showToast === 'function') showToast('Ordem dos destaques atualizada com sucesso!');
+    renderAdminArticles();
 }
 
 async function renderAdminCategories() {
