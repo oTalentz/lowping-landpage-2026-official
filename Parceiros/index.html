@@ -28,6 +28,36 @@
         .partner-logo {
             @apply opacity-30 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 hover:brightness-125 cursor-pointer;
         }
+        .partners-marquee {
+            width: 100%;
+            overflow: hidden;
+        }
+        .partners-marquee-track {
+            display: flex;
+            width: max-content;
+            animation: partners-scroll 28s linear infinite;
+            will-change: transform;
+        }
+        .partners-marquee-group {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding-right: 2rem;
+        }
+        @media (min-width: 768px) {
+            .partners-marquee-group {
+                gap: 3rem;
+                padding-right: 3rem;
+            }
+        }
+        @keyframes partners-scroll {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
         .promo-inline-highlight {
             color: #fff;
             background-color: rgba(255, 178, 187, 0.2);
@@ -435,7 +465,9 @@
 <div class="max-w-7xl mx-auto px-8">
 <div class="flex flex-col items-center">
 <h3 class="font-label text-xs font-bold text-on-surface-variant/80 uppercase tracking-[0.4em] mb-10">Parceiros de Confiança &amp; Principais Clientes</h3>
-<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 md:gap-12 w-full items-center justify-items-center">
+<div class="partners-marquee">
+<div class="partners-marquee-track">
+<div class="partners-marquee-group">
 <img alt="Logo 1" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+1'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
 <img alt="Logo 2" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+2'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
 <img alt="Logo 3" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+3'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
@@ -444,6 +476,18 @@
 <img alt="Logo 6" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+6'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
 <img alt="Logo 7" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+7'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
 <img alt="Logo 8" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+8'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+</div>
+<div class="partners-marquee-group" aria-hidden="true">
+<img alt="Logo 1" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+1'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 2" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+2'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 3" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+3'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 4" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+4'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 5" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+5'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 6" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+6'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 7" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+7'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+<img alt="Logo 8" class="partner-logo h-8 object-contain " loading="lazy" decoding="async" onerror="this.src='https://placehold.co/120x40/1a1c24/8c909f?text=PARTNER+8'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXF_p3S9X2G6Xq-Z5I-9Y8K0O-vQ6A9y1J2S3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8"/>
+</div>
+</div>
 </div>
 </div>
 </div>

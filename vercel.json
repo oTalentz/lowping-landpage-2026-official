@@ -19,6 +19,38 @@
     {
       "source": "/admin/code/",
       "destination": "/Admin/code.html"
+    },
+    {
+      "source": "/privacidade",
+      "destination": "/Privacidade/index.html"
+    },
+    {
+      "source": "/privacidade/",
+      "destination": "/Privacidade/index.html"
+    },
+    {
+      "source": "/politica-de-privacidade",
+      "destination": "/Privacidade/index.html"
+    },
+    {
+      "source": "/politica-de-privacidade/",
+      "destination": "/Privacidade/index.html"
+    },
+    {
+      "source": "/termos",
+      "destination": "/Termos/index.html"
+    },
+    {
+      "source": "/termos/",
+      "destination": "/Termos/index.html"
+    },
+    {
+      "source": "/contato",
+      "destination": "/Contato/index.html"
+    },
+    {
+      "source": "/contato/",
+      "destination": "/Contato/index.html"
     }
   ]
 }
