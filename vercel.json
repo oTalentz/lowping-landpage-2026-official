@@ -6,28 +6,48 @@
   "redirects": [
     {
       "source": "/Admin",
-      "destination": "/admin",
-      "permanent": true
+      "destination": "/privacidade",
+      "permanent": false
     },
     {
       "source": "/Admin/",
-      "destination": "/admin/",
-      "permanent": true
+      "destination": "/privacidade",
+      "permanent": false
     },
     {
       "source": "/Admin/code",
-      "destination": "/admin/code",
-      "permanent": true
+      "destination": "/privacidade",
+      "permanent": false
     },
     {
       "source": "/Admin/code/",
-      "destination": "/admin/code/",
-      "permanent": true
+      "destination": "/privacidade",
+      "permanent": false
+    },
+    {
+      "source": "/admin",
+      "destination": "/privacidade",
+      "permanent": false
+    },
+    {
+      "source": "/admin/",
+      "destination": "/privacidade",
+      "permanent": false
+    },
+    {
+      "source": "/admin/code",
+      "destination": "/privacidade",
+      "permanent": false
+    },
+    {
+      "source": "/admin/code/",
+      "destination": "/privacidade",
+      "permanent": false
     }
   ],
   "headers": [
     {
-      "source": "/admin(.*)",
+      "source": "/amd(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -75,19 +95,19 @@
   ],
   "rewrites": [
     {
-      "source": "/admin",
+      "source": "/amd",
       "destination": "/Admin/index.html"
     },
     {
-      "source": "/admin/",
+      "source": "/amd/",
       "destination": "/Admin/index.html"
     },
     {
-      "source": "/admin/code",
+      "source": "/amd/code",
       "destination": "/Admin/code.html"
     },
     {
-      "source": "/admin/code/",
+      "source": "/amd/code/",
       "destination": "/Admin/code.html"
     },
     {
