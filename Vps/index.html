@@ -1649,10 +1649,12 @@
                 const cards = Array.from(cardsWrapper.querySelectorAll('[data-vps-pro-card]'));
                 if (!cards.length) return;
                 const visibleCards = 4;
+                const pageStep = visibleCards;
                 let startIndex = 0;
                 let isAnimating = false;
                 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 const isDesktop = () => window.innerWidth >= 1024;
+                const getMaxStart = () => Math.floor(Math.max(cards.length - 1, 0) / pageStep) * pageStep;
                 const clearInlineMotion = (card) => {
                     card.style.opacity = '';
                     card.style.transform = '';
@@ -1662,7 +1664,7 @@
                     return index >= startIndex && index < startIndex + visibleCards;
                 });
                 const render = () => {
-                    const maxStart = Math.max(cards.length - visibleCards, 0);
+                    const maxStart = getMaxStart();
                     if (startIndex > maxStart) startIndex = maxStart;
                     cards.forEach((card, index) => {
                         clearInlineMotion(card);
@@ -1685,8 +1687,8 @@
                     );
                 const navigate = async (direction) => {
                     if (!isDesktop() || isAnimating) return;
-                    const maxStart = Math.max(cards.length - visibleCards, 0);
-                    const nextStart = Math.min(Math.max(startIndex + direction, 0), maxStart);
+                    const maxStart = getMaxStart();
+                    const nextStart = Math.min(Math.max(startIndex + direction * pageStep, 0), maxStart);
                     if (nextStart === startIndex) return;
                     if (prefersReducedMotion) {
                         startIndex = nextStart;
