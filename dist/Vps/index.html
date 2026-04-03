@@ -261,10 +261,10 @@
                 }
             }
         </style>
-      <script type="module" crossorigin src="/assets/vps-DTf-iNFT.js"></script>
+      <script type="module" crossorigin src="/assets/vps-CA-Ksau5.js"></script>
       <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-BRIdl15F.js">
       <link rel="modulepreload" crossorigin href="/assets/promo-banner-manager-D92HkLg5.js">
-      <link rel="stylesheet" crossorigin href="/assets/style-JlXmNJXg.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-BVuOw6Ao.css">
     </head>
     <body
         class="bg-background text-on-surface font-body selection:bg-secondary/30"
@@ -814,15 +814,37 @@
                                 Global &#8226; Localização: Brasil-SP
                             </p>
                         </div>
-                        <div
-                            class="hidden md:block h-px flex-1 mx-12 bg-gradient-to-r from-white/10 to-transparent"
-                        ></div>
+                        <div class="hidden lg:flex items-center gap-4 flex-1 ml-12">
+                            <div
+                                class="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent"
+                            ></div>
+                            <div class="flex items-center gap-2" id="vps-pro-controls">
+                                <button
+                                    class="h-10 w-10 rounded-lg border border-white/10 bg-surface-container-lowest hover:bg-surface-container-highest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                    id="vps-pro-prev"
+                                    type="button"
+                                    aria-label="Voltar planos VPS PRO"
+                                >
+                                    <span class="material-symbols-outlined text-on-surface-variant">chevron_left</span>
+                                </button>
+                                <button
+                                    class="h-10 w-10 rounded-lg border border-white/10 bg-surface-container-lowest hover:bg-surface-container-highest transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                    id="vps-pro-next"
+                                    type="button"
+                                    aria-label="Avançar planos VPS PRO"
+                                >
+                                    <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                        id="vps-pro-cards"
                     >
                         <!-- Inicial -->
                         <div
+                            data-vps-pro-card
                             class="bg-surface-container-lowest p-8 rounded-xl border border-white/5 hover:scale-[1.02] transition-transform duration-300 flex flex-col"
                         >
                             <div class="font-label text-secondary text-sm mb-6">
@@ -878,6 +900,7 @@
 
                         <!-- Performance (popular) -->
                         <div
+                            data-vps-pro-card
                             class="bg-surface-container-highest p-8 rounded-xl border-2 border-secondary/20 relative shadow-2xl shadow-secondary/5 hover:scale-[1.02] transition-transform duration-300 flex flex-col"
                         >
                             <div
@@ -938,6 +961,7 @@
 
                         <!-- Ultimate -->
                         <div
+                            data-vps-pro-card
                             class="bg-surface-container-lowest p-8 rounded-xl border border-white/5 hover:scale-[1.02] transition-transform duration-300 flex flex-col"
                         >
                             <div class="font-label text-secondary text-sm mb-6">
@@ -993,6 +1017,7 @@
 
                         <!-- Advanced -->
                         <div
+                            data-vps-pro-card
                             class="bg-surface-container-lowest p-8 rounded-xl border border-white/5 hover:scale-[1.02] transition-transform duration-300 flex flex-col"
                         >
                             <div class="font-label text-secondary text-sm mb-6">
@@ -1044,6 +1069,7 @@
 
                         <!-- Enterprise -->
                         <div
+                            data-vps-pro-card
                             class="bg-surface-container-lowest p-8 rounded-xl border border-white/5 hover:scale-[1.02] transition-transform duration-300 flex flex-col"
                         >
                             <div class="font-label text-secondary text-sm mb-6">
@@ -1572,6 +1598,43 @@
                     partnerResizeFrame = 0;
                 });
             };
+            const initVpsProCarousel = () => {
+                const cardsWrapper = document.getElementById('vps-pro-cards');
+                const prevButton = document.getElementById('vps-pro-prev');
+                const nextButton = document.getElementById('vps-pro-next');
+                if (!cardsWrapper || !prevButton || !nextButton) return;
+                const cards = Array.from(cardsWrapper.querySelectorAll('[data-vps-pro-card]'));
+                if (!cards.length) return;
+                const visibleCards = 4;
+                let startIndex = 0;
+                const isDesktop = () => window.innerWidth >= 1024;
+                const render = () => {
+                    const maxStart = Math.max(cards.length - visibleCards, 0);
+                    if (startIndex > maxStart) startIndex = maxStart;
+                    cards.forEach((card, index) => {
+                        card.classList.remove('hidden');
+                        if (isDesktop() && (index < startIndex || index >= startIndex + visibleCards)) {
+                            card.classList.add('hidden');
+                        }
+                    });
+                    const desktopEnabled = isDesktop() && maxStart > 0;
+                    prevButton.disabled = !desktopEnabled || startIndex === 0;
+                    nextButton.disabled = !desktopEnabled || startIndex === maxStart;
+                };
+                prevButton.addEventListener('click', () => {
+                    if (!isDesktop()) return;
+                    startIndex = Math.max(startIndex - 1, 0);
+                    render();
+                });
+                nextButton.addEventListener('click', () => {
+                    if (!isDesktop()) return;
+                    const maxStart = Math.max(cards.length - visibleCards, 0);
+                    startIndex = Math.min(startIndex + 1, maxStart);
+                    render();
+                });
+                window.addEventListener('resize', render, { passive: true });
+                render();
+            };
             if (mobileMenuBtn && mobileMenu) {
                 mobileMenuBtn.addEventListener('click', () => {
                     const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
@@ -1585,6 +1648,7 @@
 
             document.addEventListener('DOMContentLoaded', () => {
                 initPartnerMarquee();
+                initVpsProCarousel();
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
