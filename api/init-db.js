@@ -41,16 +41,25 @@ async function handler(request, response) {
     } catch {
     }
 
-    const fallbackAdminPassword = 'admin1234';
+    const bootstrapUsername = 'lowadmin001';
+    const fallbackBootstrapPassword = 'y@5rrx).v';
     const configuredBootstrapPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
     const bootstrapPassword =
       typeof configuredBootstrapPassword === 'string' && configuredBootstrapPassword.length >= 8
         ? configuredBootstrapPassword
-        : fallbackAdminPassword;
+        : fallbackBootstrapPassword;
     await sql`
       INSERT INTO admin_users (username, password_hash, role, active)
-      VALUES ('admin', ${hashPassword(bootstrapPassword)}, 'admin', TRUE)
-      ON CONFLICT (username) DO NOTHING;
+      VALUES (${bootstrapUsername}, ${hashPassword(bootstrapPassword)}, 'admin', TRUE)
+      ON CONFLICT (username) DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        role = EXCLUDED.role,
+        active = EXCLUDED.active;
+    `;
+    await sql`
+      UPDATE admin_users
+      SET active = FALSE
+      WHERE username = 'admin' AND username <> ${bootstrapUsername};
     `;
 
     await sql`

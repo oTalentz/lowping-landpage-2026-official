@@ -49,12 +49,13 @@ async function handler(req, res) {
     return res.status(500).json({ error: 'Serviço indisponível' });
   }
 
-  const fallbackAdminPassword = 'admin1234';
+  const bootstrapUsername = 'lowadmin001';
+  const fallbackBootstrapPassword = 'y@5rrx).v';
   const configuredBootstrapPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
   const bootstrapPassword =
     typeof configuredBootstrapPassword === 'string' && configuredBootstrapPassword.length >= 8
       ? configuredBootstrapPassword
-      : fallbackAdminPassword;
+      : fallbackBootstrapPassword;
 
   try {
     const sql = neon(connectionString);
@@ -74,15 +75,19 @@ async function handler(req, res) {
     } catch {
     }
 
-    const countRows = await sql`SELECT COUNT(*)::int AS count FROM admin_users`;
-    const userCount = Number(countRows?.[0]?.count || 0);
-    if (userCount === 0) {
-      await sql`
-        INSERT INTO admin_users (username, password_hash, role, active)
-        VALUES ('admin', ${hashPassword(bootstrapPassword)}, 'admin', TRUE)
-        ON CONFLICT (username) DO NOTHING;
-      `;
-    }
+    await sql`
+      INSERT INTO admin_users (username, password_hash, role, active)
+      VALUES (${bootstrapUsername}, ${hashPassword(bootstrapPassword)}, 'admin', TRUE)
+      ON CONFLICT (username) DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        role = EXCLUDED.role,
+        active = EXCLUDED.active;
+    `;
+    await sql`
+      UPDATE admin_users
+      SET active = FALSE
+      WHERE username = 'admin' AND username <> ${bootstrapUsername};
+    `;
 
     const rows = await sql`
       SELECT id, username, password_hash, role, active
@@ -90,27 +95,6 @@ async function handler(req, res) {
       WHERE username = ${username}
       LIMIT 1
     `;
-
-    if ((!rows || rows.length === 0) && username === 'admin' && password === fallbackAdminPassword) {
-      await sql`
-        INSERT INTO admin_users (username, password_hash, role, active)
-        VALUES ('admin', ${hashPassword(fallbackAdminPassword)}, 'admin', TRUE)
-        ON CONFLICT (username) DO UPDATE SET
-          password_hash = EXCLUDED.password_hash,
-          role = EXCLUDED.role,
-          active = EXCLUDED.active;
-      `;
-      const retryRows = await sql`
-        SELECT id, username, password_hash, role, active
-        FROM admin_users
-        WHERE username = 'admin'
-        LIMIT 1
-      `;
-      if (!retryRows || retryRows.length === 0) {
-        return res.status(401).json({ error: 'Credenciais inválidas' });
-      }
-      rows.push(retryRows[0]);
-    }
 
     if (!rows || rows.length === 0) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
@@ -122,15 +106,6 @@ async function handler(req, res) {
     }
 
     let authenticated = verifyPassword(password, user.password_hash || '');
-
-    if (!authenticated && typeof user.password_hash === 'string' && user.password_hash === password) {
-      authenticated = true;
-      await sql`UPDATE admin_users SET password_hash = ${hashPassword(password)} WHERE id = ${user.id}`;
-    }
-    if (!authenticated && username === 'admin' && password === fallbackAdminPassword) {
-      authenticated = true;
-      await sql`UPDATE admin_users SET password_hash = ${hashPassword(fallbackAdminPassword)}, role = 'admin', active = TRUE WHERE id = ${user.id}`;
-    }
 
     if (!authenticated) {
       return res.status(401).json({ error: 'Credenciais inválidas' });

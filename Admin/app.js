@@ -1,6 +1,37 @@
-// Global State
-let currentToken = localStorage.getItem('admin_token');
+const SESSION_TOKEN_KEY = 'admin_token';
+const SESSION_EXP_KEY = 'admin_token_exp';
+const migratedStoredToken = localStorage.getItem(SESSION_TOKEN_KEY);
+if (migratedStoredToken && !sessionStorage.getItem(SESSION_TOKEN_KEY)) {
+    sessionStorage.setItem(SESSION_TOKEN_KEY, migratedStoredToken);
+    localStorage.removeItem(SESSION_TOKEN_KEY);
+}
+let currentToken = sessionStorage.getItem(SESSION_TOKEN_KEY);
 const ADMIN_VALID_SECTIONS = new Set(['banners', 'wiki']);
+
+function persistSession(token, expiresInSeconds = 3600) {
+    const safeTtl = Number.isFinite(Number(expiresInSeconds)) ? Number(expiresInSeconds) : 3600;
+    const expiresAt = Date.now() + Math.max(60, safeTtl) * 1000;
+    sessionStorage.setItem(SESSION_TOKEN_KEY, token);
+    sessionStorage.setItem(SESSION_EXP_KEY, String(expiresAt));
+}
+
+function clearSession() {
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
+    sessionStorage.removeItem(SESSION_EXP_KEY);
+    localStorage.removeItem(SESSION_TOKEN_KEY);
+}
+
+function hasValidSession() {
+    if (!currentToken) return false;
+    const expiryRaw = sessionStorage.getItem(SESSION_EXP_KEY);
+    const expiry = Number(expiryRaw);
+    if (!Number.isFinite(expiry) || Date.now() >= expiry) {
+        clearSession();
+        currentToken = null;
+        return false;
+    }
+    return true;
+}
 
 function getRouteStateFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -248,7 +279,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         });
         
         currentToken = data.token;
-        localStorage.setItem('admin_token', currentToken);
+        persistSession(currentToken, data.expiresIn || 3600);
         document.getElementById('login-error').classList.add('hidden');
         showToast('Login realizado com sucesso!');
         initDashboard();
@@ -260,7 +291,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
 function logout() {
     currentToken = null;
-    localStorage.removeItem('admin_token');
+    clearSession();
     switchView('login-view');
     document.getElementById('login-form').reset();
 }
@@ -436,8 +467,7 @@ function initApp() {
     const bannerEndInput = document.getElementById('banner-end');
     if (bannerEndInput) bannerEndInput.addEventListener('input', maskDate);
 
-    if (currentToken) {
-        // Verify token with backend (usando /api/health como dummy check ou pulando)
+    if (hasValidSession()) {
         apiCall('/api/health').then(() => {
             initDashboard();
         }).catch(() => {
