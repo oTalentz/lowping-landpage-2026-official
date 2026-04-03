@@ -721,7 +721,7 @@
                                 id="edition-hint"
                                 class="text-[11px] text-on-surface-variant mt-2"
                             >
-                                Ideal para Forge/Fabric/Paper • Porta padrao 25565
+                                Ideal para Forge/Fabric/Paper
                             </p>
                         </div>
 
@@ -1655,11 +1655,11 @@
                 const updateEditionHint = () => {
                     if (!editionHint) return;
                     if (selectedEdition === "bedrock") {
-                        editionHint.textContent = "Ideal para celular/console e crossplay • Porta padrao 19132";
+                        editionHint.textContent = "Ideal para celular/console e crossplay";
                         createServerBtn.textContent = "CRIAR SERVIDOR BEDROCK";
                         return;
                     }
-                    editionHint.textContent = "Ideal para Forge/Fabric/Paper • Porta padrao 25565";
+                    editionHint.textContent = "Ideal para Forge/Fabric/Paper";
                     createServerBtn.textContent = "CRIAR SERVIDOR JAVA";
                 };
 
