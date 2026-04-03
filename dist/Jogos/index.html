@@ -850,11 +850,13 @@
                             >
                         </div>
 
-                        <button
-                            class="w-full kinetic-gradient text-white py-5 rounded-xl font-headline font-black text-lg tracking-widest shadow-xl hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all"
+                        <a
+                            id="create-server-btn"
+                            href="https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/8gb"
+                            class="block w-full text-center kinetic-gradient text-white py-5 rounded-xl font-headline font-black text-lg tracking-widest shadow-xl hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all"
                         >
                             CRIAR SERVIDOR
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -1587,6 +1589,33 @@
                 let selectedRam = 8; // Valor padrao do plano de 8GB
                 let currentRegionMultiplier = 9.0; // Padrao Brasil
                 let selectedDiscount = 0;
+                let selectedRegion = "br";
+                const createServerBtn = document.getElementById("create-server-btn");
+                const checkoutLinks = {
+                    br: {
+                        4: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/4gb",
+                        8: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/8gb",
+                        12: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/12gb",
+                        16: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/16gb",
+                        20: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/20gb",
+                        24: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/24gb",
+                    },
+                    ca: {
+                        4: "https://financeiro.lowping.com.br/index.php?rp=/store/game-miami-usa-performance/4gb",
+                        8: "https://financeiro.lowping.com.br/index.php?rp=/store/game-miami-usa-performance/8gb",
+                        12: "https://financeiro.lowping.com.br/index.php?rp=/store/game-miami-usa-performance/12gb",
+                        16: "https://financeiro.lowping.com.br/index.php?rp=/store/game-miami-usa-performance/16gb",
+                        20: "https://financeiro.lowping.com.br/index.php?rp=/store/game-miami-usa-performance/20gb",
+                        24: "https://financeiro.lowping.com.br/index.php?rp=/store/game-miami-usa-performance/24gb",
+                    },
+                };
+
+                const updateCheckoutLink = () => {
+                    if (!createServerBtn) return;
+                    const regionLinks = checkoutLinks[selectedRegion] || checkoutLinks.br;
+                    const checkoutUrl = regionLinks[selectedRam] || regionLinks[8];
+                    if (checkoutUrl) createServerBtn.href = checkoutUrl;
+                };
 
                 const ramCards = document.querySelectorAll(".ram-card");
                 ramCards.forEach((card) => {
@@ -1606,6 +1635,7 @@
                         card.classList.add("bg-surface-container-high");
                         selectedRam = parseInt(card.dataset.ram, 10);
                         updatePrice();
+                        updateCheckoutLink();
                     });
                 });
 
@@ -1726,14 +1756,17 @@
                         processorDisplay.textContent = option.dataset.cpu;
                         
                         // Atualizar o preco baseado na regiao
+                        selectedRegion = option.dataset.value;
                         currentRegionMultiplier = parseFloat(option.dataset.multiplier);
                         updatePrice();
+                        updateCheckoutLink();
                         
                         dropdownMenu.classList.add("hidden");
                         dropdownIcon.style.transform = "";
                         dropdownBtn.style.borderColor = "transparent";
                     });
                 });
+                updateCheckoutLink();
             })();
         </script>
         <script>
