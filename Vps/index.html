@@ -22,10 +22,10 @@
             a, button, .interactive-card {
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            button:not(:disabled):hover, a:not(.nav-link):hover {
+            button:not(.no-hover-lift):not(:disabled):hover, a:not(.nav-link):hover {
                 transform: translateY(-2px);
             }
-            button:not(:disabled):active, a:not(.nav-link):active {
+            button:not(.no-hover-lift):not(:disabled):active, a:not(.nav-link):active {
                 transform: translateY(0);
             }
             /* Scroll Reveal Animation */
@@ -814,12 +814,12 @@
                     </div>
                     <div class="relative">
                         <button
-                            class="hidden lg:flex items-center justify-center h-10 w-10 rounded-lg border border-white/10 bg-surface-container-lowest/90 hover:bg-surface-container-highest transition-colors disabled:opacity-40 disabled:cursor-not-allowed absolute -left-5 top-1/2 -translate-y-1/2 z-10"
+                            class="no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 hover:bg-surface-container-highest hover:border-white/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed absolute -left-6 top-1/2 -translate-y-1/2 z-10"
                             id="vps-pro-prev"
                             type="button"
                             aria-label="Voltar planos VPS PRO"
                         >
-                            <span class="material-symbols-outlined text-on-surface-variant">chevron_left</span>
+                            <span class="material-symbols-outlined block leading-none text-[22px] text-on-surface-variant">chevron_left</span>
                         </button>
                         <div
                             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
@@ -1107,12 +1107,12 @@
                         </div>
                         </div>
                         <button
-                            class="hidden lg:flex items-center justify-center h-10 w-10 rounded-lg border border-white/10 bg-surface-container-lowest/90 hover:bg-surface-container-highest transition-colors disabled:opacity-40 disabled:cursor-not-allowed absolute -right-5 top-1/2 -translate-y-1/2 z-10"
+                            class="no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 hover:bg-surface-container-highest hover:border-white/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed absolute -right-6 top-1/2 -translate-y-1/2 z-10"
                             id="vps-pro-next"
                             type="button"
                             aria-label="Avançar planos VPS PRO"
                         >
-                            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                            <span class="material-symbols-outlined block leading-none text-[22px] text-on-surface-variant">chevron_right</span>
                         </button>
                     </div>
                 </div>
