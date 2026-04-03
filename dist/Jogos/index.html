@@ -76,6 +76,11 @@
                 background-color: #1d1f27;
                 color: #e2e2ec;
             }
+            .edition-tab.active {
+                background-color: #1d1f27;
+                color: #e2e2ec;
+                border: 1px solid rgba(173, 198, 255, 0.25);
+            }
             .faq-answer {
                 display: none;
             }
@@ -288,10 +293,10 @@
                 }
             }
         </style>
-      <script type="module" crossorigin src="/assets/jogos-DKqLV9hP.js"></script>
+      <script type="module" crossorigin src="/assets/jogos-BUddEwx8.js"></script>
       <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-BRIdl15F.js">
       <link rel="modulepreload" crossorigin href="/assets/promo-banner-manager-D92HkLg5.js">
-      <link rel="stylesheet" crossorigin href="/assets/style-D449K4it.css">
+      <link rel="stylesheet" crossorigin href="/assets/style-DwuKIEug.css">
     </head>
     <body class="font-body">
     <!-- Preloader Completo -->
@@ -691,6 +696,33 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <label
+                                class="font-label text-xs font-bold text-primary mb-3 block uppercase tracking-widest"
+                                >Edicao do Servidor</label
+                            >
+                            <div class="flex gap-2 p-1 bg-surface-container-lowest rounded-xl" id="edition-tabs">
+                                <button
+                                    class="edition-tab active flex-1 py-2 text-xs font-bold rounded-lg transition-colors"
+                                    data-edition="java"
+                                >
+                                    Java Edition
+                                </button>
+                                <button
+                                    class="edition-tab flex-1 py-2 text-xs font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
+                                    data-edition="bedrock"
+                                >
+                                    Bedrock Edition
+                                </button>
+                            </div>
+                            <p
+                                id="edition-hint"
+                                class="text-[11px] text-on-surface-variant mt-2"
+                            >
+                                Ideal para Forge/Fabric/Paper • Porta padrao 25565
+                            </p>
                         </div>
 
                         <!-- Selecao de RAM -->
@@ -1592,7 +1624,9 @@
                 let currentRegionMultiplier = 9.0; // Padrao Brasil
                 let selectedDiscount = 0;
                 let selectedRegion = "br";
+                let selectedEdition = "java";
                 const createServerBtn = document.getElementById("create-server-btn");
+                const editionHint = document.getElementById("edition-hint");
                 const checkoutLinks = {
                     br: {
                         4: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/4gb",
@@ -1617,6 +1651,16 @@
                     const regionLinks = checkoutLinks[selectedRegion] || checkoutLinks.br;
                     const checkoutUrl = regionLinks[selectedRam] || regionLinks[8];
                     if (checkoutUrl) createServerBtn.href = checkoutUrl;
+                };
+                const updateEditionHint = () => {
+                    if (!editionHint) return;
+                    if (selectedEdition === "bedrock") {
+                        editionHint.textContent = "Ideal para celular/console e crossplay • Porta padrao 19132";
+                        createServerBtn.textContent = "CRIAR SERVIDOR BEDROCK";
+                        return;
+                    }
+                    editionHint.textContent = "Ideal para Forge/Fabric/Paper • Porta padrao 25565";
+                    createServerBtn.textContent = "CRIAR SERVIDOR JAVA";
                 };
 
                 const ramCards = document.querySelectorAll(".ram-card");
@@ -1655,6 +1699,19 @@
                         document.getElementById("period-display").textContent =
                             tab.dataset.period;
                         updatePrice();
+                    });
+                });
+                const editionTabs = document.querySelectorAll(".edition-tab");
+                editionTabs.forEach((tab) => {
+                    tab.addEventListener("click", () => {
+                        editionTabs.forEach((t) => {
+                            t.classList.remove("active", "text-on-surface");
+                            t.classList.add("text-on-surface-variant");
+                        });
+                        tab.classList.add("active", "text-on-surface");
+                        tab.classList.remove("text-on-surface-variant");
+                        selectedEdition = tab.dataset.edition;
+                        updateEditionHint();
                     });
                 });
 
@@ -1769,6 +1826,7 @@
                     });
                 });
                 updateCheckoutLink();
+                updateEditionHint();
             })();
         </script>
         <script>
