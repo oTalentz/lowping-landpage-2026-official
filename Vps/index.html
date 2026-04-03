@@ -1156,6 +1156,21 @@
                                 <span class="ml-2 opacity-60">R$480/mês</span>
                             </button>
                         </div>
+                        <div
+                            data-vps-pro-placeholder
+                            class="hidden bg-transparent p-8 rounded-xl border border-white/10"
+                            aria-hidden="true"
+                        ></div>
+                        <div
+                            data-vps-pro-placeholder
+                            class="hidden bg-transparent p-8 rounded-xl border border-white/10"
+                            aria-hidden="true"
+                        ></div>
+                        <div
+                            data-vps-pro-placeholder
+                            class="hidden bg-transparent p-8 rounded-xl border border-white/10"
+                            aria-hidden="true"
+                        ></div>
                         </div>
                         <button
                             class="vps-pro-arrow no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest hover:border-white/20 disabled:opacity-40 disabled:cursor-not-allowed absolute -right-8 top-1/2 -translate-y-1/2 z-10"
@@ -1647,6 +1662,7 @@
                 const nextButton = document.getElementById('vps-pro-next');
                 if (!cardsWrapper || !prevButton || !nextButton) return;
                 const cards = Array.from(cardsWrapper.querySelectorAll('[data-vps-pro-card]'));
+                const placeholderCards = Array.from(cardsWrapper.querySelectorAll('[data-vps-pro-placeholder]'));
                 if (!cards.length) return;
                 const visibleCards = 4;
                 const pageStep = visibleCards;
@@ -1666,6 +1682,9 @@
                 const render = () => {
                     const maxStart = getMaxStart();
                     if (startIndex > maxStart) startIndex = maxStart;
+                    placeholderCards.forEach((placeholder) => {
+                        placeholder.classList.add('hidden');
+                    });
                     cards.forEach((card, index) => {
                         clearInlineMotion(card);
                         card.classList.remove('hidden');
@@ -1673,6 +1692,16 @@
                             card.classList.add('hidden');
                         }
                     });
+                    if (isDesktop()) {
+                        const visibleRealCardsCount = cards.reduce((count, _, index) => {
+                            if (index >= startIndex && index < startIndex + visibleCards) return count + 1;
+                            return count;
+                        }, 0);
+                        const missingCards = Math.max(visibleCards - visibleRealCardsCount, 0);
+                        placeholderCards.forEach((placeholder, index) => {
+                            if (index < missingCards) placeholder.classList.remove('hidden');
+                        });
+                    }
                     const desktopEnabled = isDesktop() && maxStart > 0;
                     prevButton.disabled = isAnimating || !desktopEnabled || startIndex === 0;
                     nextButton.disabled = isAnimating || !desktopEnabled || startIndex === maxStart;
