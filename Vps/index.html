@@ -1610,30 +1610,94 @@
                 if (!cards.length) return;
                 const visibleCards = 4;
                 let startIndex = 0;
+                let isAnimating = false;
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 const isDesktop = () => window.innerWidth >= 1024;
+                const clearInlineMotion = (card) => {
+                    card.style.opacity = '';
+                    card.style.transform = '';
+                };
+                const getVisibleCards = () => cards.filter((card, index) => {
+                    if (!isDesktop()) return true;
+                    return index >= startIndex && index < startIndex + visibleCards;
+                });
                 const render = () => {
                     const maxStart = Math.max(cards.length - visibleCards, 0);
                     if (startIndex > maxStart) startIndex = maxStart;
                     cards.forEach((card, index) => {
+                        clearInlineMotion(card);
                         card.classList.remove('hidden');
                         if (isDesktop() && (index < startIndex || index >= startIndex + visibleCards)) {
                             card.classList.add('hidden');
                         }
                     });
                     const desktopEnabled = isDesktop() && maxStart > 0;
-                    prevButton.disabled = !desktopEnabled || startIndex === 0;
-                    nextButton.disabled = !desktopEnabled || startIndex === maxStart;
+                    prevButton.disabled = isAnimating || !desktopEnabled || startIndex === 0;
+                    nextButton.disabled = isAnimating || !desktopEnabled || startIndex === maxStart;
+                };
+                const animateCards = (targets, keyframes, options) =>
+                    Promise.all(
+                        targets.map((card) =>
+                            card
+                                .animate(keyframes, options)
+                                .finished.catch(() => {})
+                        )
+                    );
+                const navigate = async (direction) => {
+                    if (!isDesktop() || isAnimating) return;
+                    const maxStart = Math.max(cards.length - visibleCards, 0);
+                    const nextStart = Math.min(Math.max(startIndex + direction, 0), maxStart);
+                    if (nextStart === startIndex) return;
+                    if (prefersReducedMotion) {
+                        startIndex = nextStart;
+                        render();
+                        return;
+                    }
+                    isAnimating = true;
+                    render();
+                    const outOffset = direction > 0 ? -36 : 36;
+                    const inOffset = direction > 0 ? 36 : -36;
+                    const outgoingCards = getVisibleCards();
+                    await animateCards(
+                        outgoingCards,
+                        [
+                            { opacity: 1, transform: 'translateX(0)' },
+                            { opacity: 0, transform: `translateX(${outOffset}px)` },
+                        ],
+                        {
+                            duration: 180,
+                            easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                            fill: 'forwards',
+                        }
+                    );
+                    startIndex = nextStart;
+                    render();
+                    const incomingCards = getVisibleCards();
+                    incomingCards.forEach((card) => {
+                        card.style.opacity = '0';
+                        card.style.transform = `translateX(${inOffset}px)`;
+                    });
+                    await animateCards(
+                        incomingCards,
+                        [
+                            { opacity: 0, transform: `translateX(${inOffset}px)` },
+                            { opacity: 1, transform: 'translateX(0)' },
+                        ],
+                        {
+                            duration: 220,
+                            easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+                            fill: 'forwards',
+                        }
+                    );
+                    incomingCards.forEach(clearInlineMotion);
+                    isAnimating = false;
+                    render();
                 };
                 prevButton.addEventListener('click', () => {
-                    if (!isDesktop()) return;
-                    startIndex = Math.max(startIndex - 1, 0);
-                    render();
+                    navigate(-1);
                 });
                 nextButton.addEventListener('click', () => {
-                    if (!isDesktop()) return;
-                    const maxStart = Math.max(cards.length - visibleCards, 0);
-                    startIndex = Math.min(startIndex + 1, maxStart);
-                    render();
+                    navigate(1);
                 });
                 window.addEventListener('resize', render, { passive: true });
                 render();
