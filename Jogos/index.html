@@ -838,6 +838,7 @@
                                     class="billing-tab active flex-1 py-2 text-xs font-bold rounded-lg transition-colors"
                                     data-discount="0"
                                     data-period="mes"
+                                    data-billingcycle="monthly"
                                 >
                                     Mensal
                                 </button>
@@ -845,6 +846,7 @@
                                     class="billing-tab flex-1 py-2 text-xs font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
                                     data-discount="0.10"
                                     data-period="3 meses"
+                                    data-billingcycle="quarterly"
                                 >
                                     Trimestral
                                     <span class="text-tertiary font-black"
@@ -855,6 +857,7 @@
                                     class="billing-tab flex-1 py-2 text-xs font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
                                     data-discount="0.15"
                                     data-period="ano"
+                                    data-billingcycle="annually"
                                 >
                                     Anual
                                     <span class="text-tertiary font-black"
@@ -1619,8 +1622,13 @@
                 let selectedDiscount = 0;
                 let selectedRegion = "br";
                 let selectedEdition = "java";
+                let selectedBillingCycle = "monthly";
                 const createServerBtn = document.getElementById("create-server-btn");
                 const editionHint = document.getElementById("edition-hint");
+                const gameConfigOptionValues = {
+                    java: "1",
+                    bedrock: "25",
+                };
                 const checkoutLinks = {
                     br: {
                         4: "https://financeiro.lowping.com.br/index.php?rp=/store/game-br-sao-paulo/4gb",
@@ -1644,7 +1652,14 @@
                     if (!createServerBtn) return;
                     const regionLinks = checkoutLinks[selectedRegion] || checkoutLinks.br;
                     const checkoutUrl = regionLinks[selectedRam] || regionLinks[8];
-                    if (checkoutUrl) createServerBtn.href = checkoutUrl;
+                    if (!checkoutUrl) return;
+                    const checkoutLink = new URL(checkoutUrl);
+                    checkoutLink.searchParams.set("billingcycle", selectedBillingCycle);
+                    checkoutLink.searchParams.set(
+                        "configoption[1]",
+                        gameConfigOptionValues[selectedEdition] || gameConfigOptionValues.java,
+                    );
+                    createServerBtn.href = checkoutLink.toString();
                 };
                 const updateEditionHint = () => {
                     if (!editionHint) return;
@@ -1690,9 +1705,11 @@
                         tab.classList.add("active", "text-on-surface");
                         tab.classList.remove("text-on-surface-variant");
                         selectedDiscount = parseFloat(tab.dataset.discount);
+                        selectedBillingCycle = tab.dataset.billingcycle || "monthly";
                         document.getElementById("period-display").textContent =
                             tab.dataset.period;
                         updatePrice();
+                        updateCheckoutLink();
                     });
                 });
                 const editionTabs = document.querySelectorAll(".edition-tab");
@@ -1706,6 +1723,7 @@
                         tab.classList.remove("text-on-surface-variant");
                         selectedEdition = tab.dataset.edition;
                         updateEditionHint();
+                        updateCheckoutLink();
                     });
                 });
 
