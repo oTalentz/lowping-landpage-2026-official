@@ -46,6 +46,17 @@
                     "opsz" 24;
                 vertical-align: middle;
             }
+            .vps-pro-arrow {
+                transform: translateY(-50%) !important;
+                transition-property: background-color, border-color, color, opacity;
+                transition-duration: 0.2s;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .vps-pro-arrow:hover,
+            .vps-pro-arrow:active,
+            .vps-pro-arrow:focus-visible {
+                transform: translateY(-50%) !important;
+            }
             .kinetic-text {
                 text-shadow: 0 0 40px rgba(255, 178, 187, 0.15);
             }
@@ -820,7 +831,7 @@
                     </div>
                     <div class="relative">
                         <button
-                            class="no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest hover:border-white/20 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed absolute -left-8 top-1/2 -translate-y-1/2 z-10"
+                            class="vps-pro-arrow no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest hover:border-white/20 disabled:opacity-40 disabled:cursor-not-allowed absolute -left-8 top-1/2 -translate-y-1/2 z-10"
                             id="vps-pro-prev"
                             type="button"
                             aria-label="Voltar planos VPS PRO"
@@ -1113,7 +1124,7 @@
                         </div>
                         </div>
                         <button
-                            class="no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest hover:border-white/20 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed absolute -right-8 top-1/2 -translate-y-1/2 z-10"
+                            class="vps-pro-arrow no-hover-lift hidden lg:flex items-center justify-center h-12 w-12 rounded-xl border border-white/10 bg-surface-container-lowest/90 backdrop-blur-sm shadow-lg shadow-black/25 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest hover:border-white/20 disabled:opacity-40 disabled:cursor-not-allowed absolute -right-8 top-1/2 -translate-y-1/2 z-10"
                             id="vps-pro-next"
                             type="button"
                             aria-label="Avançar planos VPS PRO"
